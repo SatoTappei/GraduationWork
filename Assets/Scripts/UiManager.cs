@@ -25,17 +25,58 @@ namespace Game
             return FindAnyObjectByType<UiManager>();
         }
 
-        public void AddBadge(Adventure adventure)
+        public int AddBadge(Adventure adventure)
         {
             for (int i = 0; i < _used.Length; i++)
             {
-                if (!_used[i])
+                if (_used[i]) continue;
+
+                _used[i] = true;
+                _badges[i].SetAdventureData();
+
+                return i;
+            }
+
+            Debug.LogWarning($"これ以上バッジを追加出来ない。: {adventure.name}");
+
+            return -1;
+        }
+
+        public void UpdateBadge(int id, Adventure adventure)
+        {
+            _badges[id].UpdateAdventureData();
+        }
+
+        public void ShowAdventureLine(int id, string line)
+        {
+
+        }
+
+        public void RemoveBadge(int id)
+        {
+            if (id < 0 || _used.Length <= id)
+            {
+                Debug.LogWarning($"IDに対応するバッジが存在しない。: {id}");
+                return;
+            }
+
+            for (int i = 0; i < _used.Length; i++)
+            {
+                if (_used[i] && i == id)
                 {
-                    _used[i] = true;
-                    _badges[i].SetAdventureData();
-                    break;
+                    _used[i] = false;
+                    _badges[i].DeleteAdventureData();
+
+                    return;
                 }
             }
+
+            Debug.LogWarning($"既に削除済みのバッジ。: {id}");
         }
     }
 }
+
+// アイコン、表示名、体力、心情
+// 名前、キャラクター設定
+// 体力と心情の更新
+// セリフの表示。

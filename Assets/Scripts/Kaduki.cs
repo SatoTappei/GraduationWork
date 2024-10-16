@@ -13,6 +13,7 @@ namespace Game
         Vector2Int _currentCoords;
         Vector2Int _currentDirection;
         List<Cell> _path;
+        int _badgeID;
 
         public override Vector2Int Coords => _currentCoords;
         public override Vector2Int Direction => _currentDirection;
@@ -27,12 +28,18 @@ namespace Game
             transform.position = cell.Position;
 
             UiManager ui = UiManager.Find();
-            ui.AddBadge(this);
+            _badgeID = ui.AddBadge(this);
 
             dm.AddActorOnCell(_currentCoords, this);
             // 本来ならここで、初期Directionのセットが必要。
 
             StartCoroutine(ActionAsync());
+        }
+
+        void OnDestroy()
+        {
+            UiManager ui = UiManager.Find();
+            if (ui != null) ui.RemoveBadge(_badgeID);
         }
 
         IEnumerator ActionAsync()

@@ -12,6 +12,8 @@ namespace Game
         [SerializeField] Image _emotionGauge;
         [SerializeField] Text _name;
         [SerializeField] GameObject _cover;
+        [SerializeField] GameObject _line;
+        [SerializeField] Text _lineText;
 
         private void Start()
         {
@@ -19,6 +21,8 @@ namespace Game
             _emotionGauge.transform.localScale = new Vector3(0, 1, 1);
             _name.text = string.Empty;
             _cover.SetActive(true);
+            _line.SetActive(false);
+            _lineText.text = string.Empty;
         }
 
         public void SetAdventureData()
@@ -30,6 +34,25 @@ namespace Game
             _cover.SetActive(false);
 
             StartCoroutine(PopAnimationAsync());
+        }
+
+        public void UpdateAdventureData()
+        {
+
+        }
+
+        public void ShowAdventureLine(string line)
+        {
+            _line.SetActive(true);
+            _lineText.text = line;
+        }
+
+        public void DeleteAdventureData()
+        {
+            _hpGauge.transform.localScale = new Vector3(0, 1, 1);
+            _emotionGauge.transform.localScale = new Vector3(0, 1, 1);
+            _name.text = string.Empty;
+            _cover.SetActive(true);
         }
 
         IEnumerator PopAnimationAsync()
