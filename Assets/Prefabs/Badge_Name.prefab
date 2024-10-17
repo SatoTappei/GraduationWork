@@ -226,11 +226,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _icon: {fileID: 2655364250495173942}
-  _hpGauge: {fileID: 3334169348697533996}
-  _emotionGauge: {fileID: 4749201232376589046}
+  _hpGauge: {fileID: 5663743144899430328}
+  _emotionGauge: {fileID: 4519976076402073527}
   _name: {fileID: 5949524708779267587}
   _cover: {fileID: 4363512860945946639}
-  _lineText: {fileID: 0}
+  _line: {fileID: 3259524403506870364}
+  _lineText: {fileID: 4281354186315583262}
 --- !u!1 &1942293967755636952
 GameObject:
   m_ObjectHideFlags: 0

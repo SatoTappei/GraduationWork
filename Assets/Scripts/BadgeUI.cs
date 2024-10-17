@@ -8,68 +8,94 @@ namespace Game
     public class BadgeUI : MonoBehaviour
     {
         [SerializeField] Image _icon;
-        [SerializeField] Image _hpGauge;
-        [SerializeField] Image _emotionGauge;
+        [SerializeField] Transform _hpGauge;
+        [SerializeField] Transform _emotionGauge;
         [SerializeField] Text _name;
         [SerializeField] GameObject _cover;
         [SerializeField] GameObject _line;
         [SerializeField] Text _lineText;
 
-        private void Start()
+        bool _isLineShowing;
+        WaitForSeconds _keepShowLine;
+
+        void Start()
         {
-            _hpGauge.transform.localScale = new Vector3(0, 1, 1);
-            _emotionGauge.transform.localScale = new Vector3(0, 1, 1);
-            _name.text = string.Empty;
-            _cover.SetActive(true);
-            _line.SetActive(false);
-            _lineText.text = string.Empty;
+            DeleteStatus();
+            DisableLine();
         }
 
-        public void SetAdventureData()
+        public void SetStatus(IBadgeDisplayStatus status)
         {
-            _icon.sprite = null;
-            _hpGauge.transform.localScale = Vector3.one;
-            _emotionGauge.transform.localScale = Vector3.one;
-            _name.text = "ÇÁÇÒÇÁÇÒ";
+            SetProfile(status.Icon, status.DisplayName);
+            SetHpGaugeScale(status.CurrentHp, status.MaxHp);
+            SetEmotionGaugeScale(status.CurrentEmotion, status.MaxEmotion);
             _cover.SetActive(false);
 
             StartCoroutine(PopAnimationAsync());
         }
 
-        public void UpdateAdventureData()
+        public void UpdateStatus(IBadgeDisplayStatus status)
         {
-
+            SetHpGaugeScale(status.CurrentHp, status.MaxHp);
+            SetEmotionGaugeScale(status.CurrentEmotion, status.MaxEmotion);
         }
 
-        public void ShowAdventureLine(string line)
+        public void DeleteStatus()
         {
-            _line.SetActive(true);
-            _lineText.text = line;
-        }
-
-        public void DeleteAdventureData()
-        {
-            _hpGauge.transform.localScale = new Vector3(0, 1, 1);
-            _emotionGauge.transform.localScale = new Vector3(0, 1, 1);
-            _name.text = string.Empty;
+            SetProfile(null, string.Empty);
+            SetHpGaugeScale(0, 0);
+            SetEmotionGaugeScale(0, 0);
             _cover.SetActive(true);
+        }
+
+        public void ShowLine(string line)
+        {
+            if (_isLineShowing) return;
+            
+            StartCoroutine(ShowLineAsync(line));
+        }
+
+        void SetProfile(Sprite icon, string displayName)
+        {
+            _icon.sprite = icon;
+            _name.text = displayName;
+        }
+
+        void SetHpGaugeScale(int current, int max) => SetGaugeScale(_emotionGauge, current, max);
+        void SetEmotionGaugeScale(int current, int max) => SetGaugeScale(_emotionGauge, current, max);
+
+        static void SetGaugeScale(Transform gauge, int current, int max)
+        {
+            float x;
+            if (max == 0) x = 0;
+            else x = 1.0f * current / max;
+            
+            gauge.transform.localScale = new Vector3(x, 1, 1);
         }
 
         IEnumerator PopAnimationAsync()
         {
-            yield return VerticalAnimationAsync(20);
-            yield return VerticalAnimationAsync(-20);
+            // à⁄ìÆó ÅB
+            const float Movement = 20.0f;
+
+            yield return VerticalAnimationAsync(Movement);
+            yield return VerticalAnimationAsync(-Movement);
         }
 
         IEnumerator VerticalAnimationAsync(float movement)
         {
+            // è„â∫Ç∑ÇÈë¨Ç≥ÅB
+            const float Speed = 6.0f;
+
             Vector3 start = transform.localPosition;
             Vector3 end = start + Vector3.up * movement;
-            for (float t = 0; t < 1.0f; t += Time.deltaTime * 6)
+            for (float t = 0; t <= 1.0f; t += Time.deltaTime * Speed)
             {
                 transform.localPosition = Vector3.Lerp(start, end, Easing(t));
                 yield return null;
             }
+
+            transform.localPosition = end;
         }
 
         static float Easing(float x)
@@ -83,6 +109,37 @@ namespace Game
                 float f = -2 * x + 2;
                 return 1 - f * f * f / 2;
             }
+        }
+
+        IEnumerator ShowLineAsync(string line)
+        {
+            _isLineShowing = true;
+
+            EnableLine(line);
+            yield return KeepShowLineAsync();
+            DisableLine();
+
+            _isLineShowing = false;
+        }
+
+        void EnableLine(string line)
+        {
+            _line.SetActive(true);
+            _lineText.text = line;
+        }
+
+        void DisableLine()
+        {
+            _line.SetActive(false);
+            _lineText.text = string.Empty;
+        }
+
+        IEnumerator KeepShowLineAsync()
+        {
+            // éùë±éûä‘ÅB
+            const float Duration = 2.0f;
+
+            yield return _keepShowLine ??= new WaitForSeconds(Duration);
         }
     }
 }

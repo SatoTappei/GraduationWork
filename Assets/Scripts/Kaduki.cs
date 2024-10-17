@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class Kaduki : Adventure
+    public class Kaduki : Adventure, IBadgeDisplayStatus
     {
         [SerializeField] Vector2Int _spawnCoords;
         //[SerializeField] Transform _seeker;
@@ -18,6 +18,13 @@ namespace Game
         public override Vector2Int Coords => _currentCoords;
         public override Vector2Int Direction => _currentDirection;
 
+        Sprite IBadgeDisplayStatus.Icon => null;
+        string IBadgeDisplayStatus.DisplayName => "Kaduki";
+        int IBadgeDisplayStatus.MaxHp => 100;
+        int IBadgeDisplayStatus.CurrentHp => 100;
+        int IBadgeDisplayStatus.MaxEmotion => 100;
+        int IBadgeDisplayStatus.CurrentEmotion => 100;
+
         void Start()
         {
             _currentCoords = _spawnCoords;
@@ -29,6 +36,7 @@ namespace Game
 
             UiManager ui = UiManager.Find();
             _badgeID = ui.AddBadge(this);
+            ui.ShowAdventureLine(_badgeID, "こんにちわ");
 
             dm.AddActorOnCell(_currentCoords, this);
             // 本来ならここで、初期Directionのセットが必要。

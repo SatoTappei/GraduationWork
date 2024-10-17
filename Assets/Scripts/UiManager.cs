@@ -1,23 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 
 namespace Game
 {
     public class UiManager : MonoBehaviour
     {
-        [SerializeField] BadgeUI[] _badges;
+        BadgeGroup _badgeGroup;
 
-        bool[] _used;
+        
+
+        Queue<string> _log;
+        StringBuilder _stringBuilder;
 
         void Awake()
         {
-            _used = new bool[_badges.Length];
-        }
-
-        void Start()
-        {
-
+            
         }
 
         public static UiManager Find()
@@ -25,58 +24,41 @@ namespace Game
             return FindAnyObjectByType<UiManager>();
         }
 
-        public int AddBadge(Adventure adventure)
+
+
+        public void AddLog(string message)
         {
-            for (int i = 0; i < _used.Length; i++)
-            {
-                if (_used[i]) continue;
+            _log ??= new Queue<string>();
+            _stringBuilder ??= new StringBuilder();
+            _stringBuilder.Clear();
 
-                _used[i] = true;
-                _badges[i].SetAdventureData();
+            _log.Enqueue(message);
+            if (_log.Count > 4) _log.Dequeue();
 
-                return i;
-            }
+            foreach (string s in _log) _stringBuilder.Append(s);
 
-            Debug.LogWarning($"これ以上バッジを追加出来ない。: {adventure.name}");
-
-            return -1;
+            //_log
         }
 
-        public void UpdateBadge(int id, Adventure adventure)
+        public int SetStatusToNewBadge(IBadgeDisplayStatus status)
         {
-            _badges[id].UpdateAdventureData();
+            // BadgeGroupクラスには 借りる と 返却する とGetメソッドがある。
+            // しかし、これだと任意の値を更新したりするのには借りてidを取得。
+            // GetでBadgeを取得して値を更新する必要がある。
+            // 今まではBadgeの配列はPrivateだったのにpublicになる必要があり複雑化してしまう。
+            // BadgeGroup内で値の操作は完了し、外部にBadgeクラスは渡さない方がSimpleなのでは？
+            // そもそもステータスバーという名前のUIパーツらしい。
+            int id = _badgeGroup.Provide(status);
         }
 
-        public void ShowAdventureLine(int id, string line)
+        public void UpdateBadgeStatus()
         {
 
         }
 
-        public void RemoveBadge(int id)
+        public void DeleteBadgeStatus()
         {
-            if (id < 0 || _used.Length <= id)
-            {
-                Debug.LogWarning($"IDに対応するバッジが存在しない。: {id}");
-                return;
-            }
 
-            for (int i = 0; i < _used.Length; i++)
-            {
-                if (_used[i] && i == id)
-                {
-                    _used[i] = false;
-                    _badges[i].DeleteAdventureData();
-
-                    return;
-                }
-            }
-
-            Debug.LogWarning($"既に削除済みのバッジ。: {id}");
         }
     }
 }
-
-// アイコン、表示名、体力、心情
-// 名前、キャラクター設定
-// 体力と心情の更新
-// セリフの表示。
