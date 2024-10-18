@@ -25,26 +25,15 @@ namespace Game
 
         public void Place(Vector2Int coords, Vector2Int direction)
         {
-            RemoveOnCell();
+            DungeonManager dm = DungeonManager.Find();
+            dm.RemoveActorOnCell(_currentCoords, this);
 
             transform.position = new Vector3(coords.x, 0, coords.y);            
             transform.Rotate(GetEulers(direction));
             _currentCoords = coords;
             _currentDirection = direction;
 
-            AddOnCell();
-        }
-
-        void AddOnCell()
-        {
-            DungeonManager dm = DungeonManager.Find();
             dm.AddActorOnCell(_currentCoords, this);
-        }
-
-        void RemoveOnCell()
-        {
-            DungeonManager dm = DungeonManager.Find();
-            dm.RemoveActorOnCell(_currentCoords, this);
         }
 
         Vector3 GetEulers(Vector2Int direction)

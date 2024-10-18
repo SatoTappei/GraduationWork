@@ -13,7 +13,7 @@ namespace Game
             [SerializeField] DungeonEntity _door;
             [SerializeField] DungeonEntity _treasure;
             [SerializeField] DungeonEntity _healingSpot;
-            [SerializeField] DungeonEntity _enemyKadukiSpawner;
+            [SerializeField] DungeonEntity _enemySpawner;
             [SerializeField] DungeonEntity _barrel;
             [SerializeField] DungeonEntity _container;
 
@@ -21,7 +21,7 @@ namespace Game
             public DungeonEntity Door => _door;
             public DungeonEntity Treasure => _treasure;
             public DungeonEntity HealingSpot => _healingSpot;
-            public DungeonEntity EnemyKadukiSpawner => _enemyKadukiSpawner;
+            public DungeonEntity EnemySpawner => _enemySpawner;
             public DungeonEntity Barrel => _barrel;
             public DungeonEntity Container => _container;
         }
@@ -56,7 +56,7 @@ namespace Game
             BuildDirectionalEntity(Blueprint.Doors, _prefabs.Door);
             BuildDirectionalEntity(Blueprint.Treasures, _prefabs.Treasure);
             BuildNonDirectionalEntity('h', _prefabs.HealingSpot);
-            BuildNonDirectionalEntity('k', _prefabs.EnemyKadukiSpawner);
+            BuildNonDirectionalEntity('e', _prefabs.EnemySpawner);
             BuildNonDirectionalEntity('B', _prefabs.Barrel);
             BuildNonDirectionalEntity('C', _prefabs.Container);
         }
@@ -94,14 +94,7 @@ namespace Game
         static Terrain GetCellTerrain(int x, int y)
         {
             if (Blueprint.Base[y][x] == '#') return Terrain.Wall;
-
-            // 宝箱は上下左右の向きがあるので4種類の文字で判定。
-            bool isTreasure = "2468".Contains(Blueprint.Treasures[y][x]);
-            if (isTreasure) return Terrain.Impassable;
-
-            // 一応"通行可能"の地形を作ったが、特殊なルールが必要になるまでは扉や敵の湧き地点も床扱い。
-            // 座標をそれぞれのBlueprintで判定する必要があるので面倒くさい。
-            return Terrain.Floor;
+            else return Terrain.Floor;
         }
 
         void BuildDirectionalEntity(string[] blueprint, DungeonEntity prefab)

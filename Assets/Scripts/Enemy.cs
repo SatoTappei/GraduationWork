@@ -4,9 +4,8 @@ using UnityEngine;
 
 namespace Game
 {
-    public class Enemy : Character
+    public abstract class Enemy : Character
     {
-        public override Vector2Int Coords => throw new System.NotImplementedException();
-        public override Vector2Int Direction => throw new System.NotImplementedException();
+        public abstract void Place(Vector2Int coords);
     }
 }

@@ -9,8 +9,6 @@ namespace Game
     {
         Floor,
         Wall,
-        Passable,
-        Impassable,
         // ここに追加
     }
 
@@ -20,12 +18,13 @@ namespace Game
 
         public Cell(Vector3 position, int x, int y, int cost, Terrain terrain)
         {
+            _actors = new List<Actor>();
             Position = position;
             X = x;
             Y = y;
             Cost = cost;
             Terrain = terrain;
-            _actors = new List<Actor>();
+            IsAvoid = false;
         }
 
         public Vector3 Position { get; }
@@ -35,6 +34,9 @@ namespace Game
         public Terrain Terrain { get; }
         public Vector2Int Coords => new Vector2Int(X, Y);
 
+        // 宝箱や戦闘中のキャラクターがいるマスなど、動的に状態が変化する場合に使用するフラグ。
+        public bool IsAvoid { get; set; }
+
         public Cell Parent { get; set; }
         public int GCost { get; set; }
         public int HCost { get; set; }
@@ -42,7 +44,7 @@ namespace Game
 
         public bool IsPassable()
         {
-            return Terrain == Terrain.Floor || Terrain == Terrain.Passable;
+            return Terrain == Terrain.Floor && !IsAvoid;
         }
 
         public bool IsImpassable()

@@ -59,6 +59,16 @@ namespace Game
             PlacedActors.Remove(actor);
         }
 
+        public void AddAvoidCell(Vector2Int coords)
+        {
+            GetCell(coords).IsAvoid = true;
+        }
+
+        public void RemoveAvoidCell(Vector2Int coords)
+        {
+            GetCell(coords).IsAvoid = false;
+        }
+
         public IReadOnlyList<Actor> GetActorsOnCell(Vector2Int coords)
         {
             return GetCell(coords).GetActors();

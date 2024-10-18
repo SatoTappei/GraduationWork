@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class Kaduki : Adventure, IBadgeDisplayStatus
+    public class Kaduki : Adventure, IStatusBarDisplayStatus
     {
         [SerializeField] Vector2Int _spawnCoords;
         //[SerializeField] Transform _seeker;
@@ -13,17 +13,17 @@ namespace Game
         Vector2Int _currentCoords;
         Vector2Int _currentDirection;
         List<Cell> _path;
-        int _badgeID;
+        int _statusID;
 
         public override Vector2Int Coords => _currentCoords;
         public override Vector2Int Direction => _currentDirection;
 
-        Sprite IBadgeDisplayStatus.Icon => null;
-        string IBadgeDisplayStatus.DisplayName => "Kaduki";
-        int IBadgeDisplayStatus.MaxHp => 100;
-        int IBadgeDisplayStatus.CurrentHp => 100;
-        int IBadgeDisplayStatus.MaxEmotion => 100;
-        int IBadgeDisplayStatus.CurrentEmotion => 100;
+        Sprite IStatusBarDisplayStatus.Icon => null;
+        string IStatusBarDisplayStatus.DisplayName => "Kaduki";
+        int IStatusBarDisplayStatus.MaxHp => 100;
+        int IStatusBarDisplayStatus.CurrentHp => 100;
+        int IStatusBarDisplayStatus.MaxEmotion => 100;
+        int IStatusBarDisplayStatus.CurrentEmotion => 100;
 
         void Start()
         {
@@ -35,8 +35,9 @@ namespace Game
             transform.position = cell.Position;
 
             UiManager ui = UiManager.Find();
-            _badgeID = ui.AddBadge(this);
-            ui.ShowAdventureLine(_badgeID, "こんにちわ");
+            _statusID = ui.RegisterToStatusBar(this);
+            ui.ShowLine(_statusID, "こんにちわ");
+            ui.AddLog("Kadukiがダンジョンにやてきた。");
 
             dm.AddActorOnCell(_currentCoords, this);
             // 本来ならここで、初期Directionのセットが必要。
@@ -47,7 +48,7 @@ namespace Game
         void OnDestroy()
         {
             UiManager ui = UiManager.Find();
-            if (ui != null) ui.RemoveBadge(_badgeID);
+            if (ui != null) ui.DeleteStatusBarStatus(_statusID);
         }
 
         IEnumerator ActionAsync()
@@ -111,6 +112,20 @@ namespace Game
                 }
                 //Debug.Log("目の前のセルは" + Blueprint.Doors[front.y][front.x]);
 
+                // 移動先に他のKadukiがいるかチェック
+                while (true)
+                {
+                    if (dm.GetActorsOnCell(_path[k].Coords).Where(ca => ca.ID == "Kaduki").Count() == 0) break;
+
+                    yield return null;
+                }
+
+                // 移動予定のセルに自身を登録。
+                dm.RemoveActorOnCell(_currentCoords, this);
+                Vector2Int newCoords = _path[k].Coords;
+                _currentCoords = newCoords;
+                dm.AddActorOnCell(_currentCoords, this);
+
                 Vector3 goal = _path[k].Position;
                 Quaternion fwd = forwardAxis.rotation;
                 Vector3 dir = (goal - start).normalized;
@@ -128,11 +143,6 @@ namespace Game
                 }
                 
                 start = goal;
-
-                dm.RemoveActorOnCell(_currentCoords, this);
-                Vector2Int newCoords = _path[k].Coords;
-                _currentCoords = newCoords;
-                dm.AddActorOnCell(_currentCoords, this);
             }
 
             {

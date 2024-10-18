@@ -10,23 +10,19 @@ namespace Game
         [SerializeField] GameObject _openChest;
         [SerializeField] ParticleSystem _particle;
 
-        void Awake()
+        void Start()
         {
             Close();
+            DungeonManager.Find().AddAvoidCell(Coords);
         }
 
         public override void Interact(Actor user)
         {
-            RemoveOnCell();
             Open();
-            PlaySE();
-            _particle.Play();
-        }
+            DungeonManager.Find().RemoveActorOnCell(Coords, this);
 
-        void RemoveOnCell()
-        {
-            DungeonManager dm = DungeonManager.Find();
-            dm.RemoveActorOnCell(Coords, this);
+            _particle.Play();
+            if (TryGetComponent(out AudioSource source)) source.Play();
         }
 
         void Open() => SetChestState(isOpen: true);
@@ -36,11 +32,6 @@ namespace Game
         {
             _openChest.SetActive(isOpen);
             _closeChest.SetActive(!isOpen);
-        }
-
-        void PlaySE()
-        {
-            if (TryGetComponent(out AudioSource source)) source.Play();
         }
     }
 }
