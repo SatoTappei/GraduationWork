@@ -30,6 +30,7 @@ namespace Game
         UiManager _uiManager;
         Animator _animator;
         AudioSource _audioSource;
+        AdventureAI _adventureAI;
 
         Vector2Int _currentCoords;
         Vector2Int _currentDirection;
@@ -59,6 +60,7 @@ namespace Game
             _uiManager = UiManager.Find();
             _animator = GetComponentInChildren<Animator>();
             _audioSource = GetComponent<AudioSource>();
+            _adventureAI = GetComponent<AdventureAI>();
             _currentHp = MaxHp;
             _currentEmotion = MaxEmotion;
         }
@@ -89,7 +91,7 @@ namespace Game
         {
             while (true)
             {
-                string selected = await SelectNextActionAsync();
+                string selected = await _adventureAI.SelectNextActionAsync();
                 if (selected == "Move Treasure") await MoveAsync("Treasure");
                 else if (selected == "Move Enemy") await MoveAsync("Enemy");
                 else if (selected == "Move Entrance") await MoveAsync("Entrance");
@@ -97,26 +99,14 @@ namespace Game
                 else if (selected == "Interact Scav") await ScavAsync();
                 else if (selected == "Interact Talk") await TalkAsync();
 
+                ReportActionResult();
+
                 if (await DeathAsync() || await EscapeAsync()) break;
 
                 await UniTask.Yield();
             }
 
             Destroy(gameObject);
-        }
-
-        // ここがAIの判断に置きかわる。
-        async UniTask<string> SelectNextActionAsync()
-        {
-            await UniTask.WaitUntil(() => Input.anyKey);
-
-            if (Input.GetKeyDown(KeyCode.Alpha1)) return "Move Treasure";
-            if (Input.GetKeyDown(KeyCode.Alpha2)) return "Move Enemy";
-            if (Input.GetKeyDown(KeyCode.Alpha3)) return "Move Entrance";
-            if (Input.GetKeyDown(KeyCode.Alpha4)) return "Interact Attack";
-            if (Input.GetKeyDown(KeyCode.Alpha5)) return "Interact Scav";
-            if (Input.GetKeyDown(KeyCode.Alpha6)) return "Interact Talk";
-            else return string.Empty;
         }
 
         // 隣のセルに移動。
@@ -472,6 +462,15 @@ namespace Game
             _dungeonManager.RemoveActorOnCell(_currentCoords, this);
 
             return true;
+        }
+
+        // 行動の結果をAIに報告。
+        void ReportActionResult()
+        {
+            Cell upCell = _dungeonManager.GetCell(_currentCoords + Vector2Int.up);
+            Cell downCell = _dungeonManager.GetCell(_currentCoords + Vector2Int.down);
+            Cell leftCell = _dungeonManager.GetCell(_currentCoords + Vector2Int.left);
+            Cell rightCell = _dungeonManager.GetCell(_currentCoords + Vector2Int.right);
         }
     }
 }

@@ -76,6 +76,7 @@ GameObject:
   - component: {fileID: 7316387981275482934}
   - component: {fileID: -3058112180202616303}
   - component: {fileID: -7289036823765215008}
+  - component: {fileID: 5490422420076971711}
   m_Layer: 0
   m_Name: Adventure_Kaduki
   m_TagString: Untagged
@@ -211,6 +212,18 @@ MonoBehaviour:
   _punchHitSE: {fileID: 8300000, guid: 11ace16e3191e694b87d3a8fa81372a6, type: 3}
   _deathSE: {fileID: 8300000, guid: a9a75d7b75acab547b3fd6754b8cf436, type: 3}
   _icon: {fileID: 21300000, guid: 0d67770bf1a6b0f42afd92908553e2d1, type: 3}
+--- !u!114 &5490422420076971711
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6972671287923862920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f47bc965b44e44c48b50f1bfa75b733f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &489531028917111896
 PrefabInstance:
   m_ObjectHideFlags: 0

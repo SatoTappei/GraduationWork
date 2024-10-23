@@ -21,7 +21,7 @@ namespace Game
         public void Add(string message)
         {
             // Å‘ås”B
-            const int Max = 4;
+            const int Max = 5;
 
             _log ??= new Queue<string>();
             _stringBuilder ??= new StringBuilder();
