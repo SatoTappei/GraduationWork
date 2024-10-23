@@ -13,7 +13,7 @@ namespace Game
         Queue<string> _log;
         StringBuilder _stringBuilder;
 
-        void Start()
+        void Awake()
         {
             _text.text = string.Empty;
         }

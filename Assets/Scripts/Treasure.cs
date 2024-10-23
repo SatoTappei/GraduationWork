@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class Treasure : DungeonEntity
+    public class Treasure : DungeonEntity, IScavengeable
     {
         [SerializeField] GameObject _closeChest;
         [SerializeField] GameObject _openChest;
@@ -16,13 +16,19 @@ namespace Game
             DungeonManager.Find().AddAvoidCell(Coords);
         }
 
-        public override void Interact(Actor user)
+        public override void Interact(Actor _)
         {
             Open();
             DungeonManager.Find().RemoveActorOnCell(Coords, this);
 
             _particle.Play();
             if (TryGetComponent(out AudioSource source)) source.Play();
+        }
+
+        public string Scavenge()
+        {
+            Interact(null);
+            return string.Empty;
         }
 
         void Open() => SetChestState(isOpen: true);

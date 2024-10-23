@@ -17,17 +17,17 @@ namespace Game
             _closed = new HashSet<Cell>();
         }
 
-        public void Pathfinding(Vector2Int startCoords, Vector2Int goalCoords, List<Cell> result)
+        public bool Pathfinding(Vector2Int startCoords, Vector2Int goalCoords, List<Cell> result)
         {
             if (!IsInGrid(_grid, startCoords.x, startCoords.y))
             {
                 Debug.LogWarning($"経路探索のスタート座標がグリッド外: {startCoords}");
-                return;
+                return false;
             }
             if (!IsInGrid(_grid, goalCoords.x, goalCoords.y))
             {
                 Debug.LogWarning($"経路探索のゴール座標がグリッド外: {goalCoords}");
-                return;
+                return false;
             }
 
             Cell start = _grid[startCoords.y, startCoords.x];
@@ -37,7 +37,7 @@ namespace Game
             _open.Add(start);
             _closed.Clear();
 
-            if (startCoords == goalCoords) return;
+            if (startCoords == goalCoords) return true;
 
             while (_open.Count > 0)
             {
@@ -46,7 +46,7 @@ namespace Game
                 if (IsGoalCell(current, goal)) 
                 { 
                     CreatePath(start, goal, result);
-                    return; 
+                    return true;
                 }
 
                 _open.Remove(current);
@@ -70,6 +70,9 @@ namespace Game
                     if (isUnopened) _open.Add(neighbour);
                 }
             }
+
+            Debug.LogWarning($"経路が見つからなかった。{startCoords}->{goalCoords}");
+            return false;
         }
 
         static Cell GetMinCostCell(IReadOnlyList<Cell> list)

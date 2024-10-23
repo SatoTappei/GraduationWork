@@ -44,7 +44,7 @@ namespace Game
 
         public static DungeonManager Find()
         {
-            return FindAnyObjectByType<DungeonManager>();
+            return GameObject.FindGameObjectWithTag("DungeonManager").GetComponent<DungeonManager>();
         }
 
         public void AddActorOnCell(Vector2Int coords, Actor actor)
@@ -87,16 +87,16 @@ namespace Game
             return Dungeon.Grid[coords.y, coords.x];
         }
 
-        public void Pathfinding(int startX, int startY, int goalX, int goalY, List<Cell> result)
+        public bool Pathfinding(int startX, int startY, int goalX, int goalY, List<Cell> result)
         {
             Vector2Int start = new Vector2Int(startX, startY);
             Vector2Int goal = new Vector2Int(goalX, goalY);
-            Pathfinding(start, goal, result);
+            return Pathfinding(start, goal, result);
         }
 
-        public void Pathfinding(Vector2Int start, Vector2Int goal, List<Cell> result)
+        public bool Pathfinding(Vector2Int start, Vector2Int goal, List<Cell> result)
         {
-            AStar.Pathfinding(start, goal, result);
+            return AStar.Pathfinding(start, goal, result);
         }
     }
 }

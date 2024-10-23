@@ -8,6 +8,7 @@ namespace Game
     public class StatusBarUI : MonoBehaviour
     {
         [SerializeField] Image _icon;
+        [SerializeField] Sprite _emptyIcon;
         [SerializeField] Transform _hpGauge;
         [SerializeField] Transform _emotionGauge;
         [SerializeField] Text _name;
@@ -18,7 +19,7 @@ namespace Game
         bool _isLineShowing;
         WaitForSeconds _keepShowLine;
 
-        void Start()
+        void Awake()
         {
             DeleteStatus();
             DisableLine();
@@ -42,7 +43,7 @@ namespace Game
 
         public void DeleteStatus()
         {
-            SetProfile(null, string.Empty);
+            SetProfile(_emptyIcon, string.Empty);
             SetHpGaugeScale(0, 0);
             SetEmotionGaugeScale(0, 0);
             _cover.SetActive(true);
@@ -61,7 +62,7 @@ namespace Game
             _name.text = displayName;
         }
 
-        void SetHpGaugeScale(int current, int max) => SetGaugeScale(_emotionGauge, current, max);
+        void SetHpGaugeScale(int current, int max) => SetGaugeScale(_hpGauge, current, max);
         void SetEmotionGaugeScale(int current, int max) => SetGaugeScale(_emotionGauge, current, max);
 
         static void SetGaugeScale(Transform gauge, int current, int max)
@@ -70,7 +71,7 @@ namespace Game
             if (max == 0) x = 0;
             else x = 1.0f * current / max;
             
-            gauge.transform.localScale = new Vector3(x, 1, 1);
+            gauge.localScale = new Vector3(x, 1, 1);
         }
 
         IEnumerator PopAnimationAsync()
@@ -137,7 +138,7 @@ namespace Game
         IEnumerator KeepShowLineAsync()
         {
             // éùë±éûä‘ÅB
-            const float Duration = 2.0f;
+            const float Duration = 3.0f;
 
             yield return _keepShowLine ??= new WaitForSeconds(Duration);
         }

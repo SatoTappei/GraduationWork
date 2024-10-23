@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c88a49ce78476ee4e951a2e5cc8bdd38, type: 3}
+  m_Name: CharacterSheetTemplate_AkaKaduki
+  m_EditorClassIdentifier: 
+  _value:
+    _name: AkaKaduki
+    _sex: "\u7537"
+    _job: 
+    _age: 15
+    _background: "\u8D64\u9AEA\u306E\u5B50\u3002\u5929\u771F\u721B\u6F2B\u3002\u8A9E\u5C3E\u306B\u300C\u3086\u300D\u3092\u4ED8\u3051\u308B\u3002"
+    _lineSample1: "\u304A\u306F\u3088\u3046\u3054\u3056\u3044\u307E\u3059\u3086\uFF01"
+    _lineSample2: "\u3086\u3093\u2661"
+    _lineSample3: "\u3086\u30FC\u3086\u3063\u3086\u3063\u3086\u3063\uFF57\uFF57\uFF57"
+    _strength: 80
+    _inteligence: 50
+    _charm: 40
+    _dexterity: 60
+    _sensitivity: 30

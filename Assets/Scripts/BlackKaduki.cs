@@ -1,3 +1,4 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,110 +6,192 @@ using UnityEngine;
 
 namespace Game
 {
+    // 冒険者とセルが重ならないようにしないといけない。
+    //  キャラクターは移動前に移動先が予約済みかどうかチェックするようなロジックにすることで重なりを防ぐ？
+    //   幅1マスの通路だと、お互いがを避けられず積んでしまう。ローグライクならこの状況をプレイヤーがどちらかを殺すことで打破できるが…
+    // 生成位置から動かなければ問題は解決するが…
+    // 生成位置を中心に3*3の範囲内をうろうろするようにし、冒険者が警戒範囲に入った場合、生成位置に戻って警戒するとか？
+    // ターン制にする？
     public class BlackKaduki : Enemy
     {
-        Vector2Int _spawnCoords;
+        [SerializeField] AudioClip _punchHitSE;
+        [SerializeField] AudioClip _deathSE;
+
+        DungeonManager _dungeonManager;
+        UiManager _uiManager;
+        Animator _animator;
+        AudioSource _audioSource;
+
+        Vector2Int _placeCoords;
         Vector2Int _currentCoords;
         Vector2Int _currentDirection;
         List<Cell> _path;
+        bool _isKnockback;
+        int _currentHp;
 
         public override Vector2Int Coords => _currentCoords;
         public override Vector2Int Direction => _currentDirection;
 
-        public override void Place(Vector2Int coords)
+        void Awake()
         {
-            _spawnCoords = coords;
-            _currentCoords = coords;
+            _dungeonManager = DungeonManager.Find();
+            _uiManager = UiManager.Find();
+            _animator = GetComponentInChildren<Animator>();
+            _audioSource = GetComponent<AudioSource>();
             _path = new List<Cell>();
-
-            DungeonManager dm = DungeonManager.Find();
-            Cell cell = dm.GetCell(_currentCoords);
-            transform.position = cell.Position;
-
-            UiManager ui = UiManager.Find();
-            ui.AddLog("BlackKadukiがダンジョンに出現。");
-
-            dm.AddActorOnCell(_currentCoords, this);
-
-            // 初期方向は現状モデルの向きとか考えず適当に指定。
-            _currentDirection = Vector2Int.up;
-
-            StartCoroutine(ActionAsync());
+            _currentHp = 100;
         }
 
-        IEnumerator ActionAsync()
+        void Start()
+        {
+            UpdateAsync().Forget();
+        }
+
+        public override void Place(Vector2Int coords)
+        {
+            _dungeonManager.RemoveActorOnCell(_currentCoords, this);
+            
+            _placeCoords = coords;
+            _currentCoords = coords;
+            _currentDirection = Vector2Int.up;
+            
+            _dungeonManager.AddActorOnCell(_currentCoords, this);
+            
+            Cell cell = _dungeonManager.GetCell(_currentCoords);
+            transform.position = cell.Position;
+        }
+
+        async UniTask UpdateAsync()
         {
             while (true)
             {
-                yield return WalkAsync();
-                yield return null; // 無限ループ防止。
+                if (GetNeighbourAdventure() == null)
+                {
+                    await WalkAsync();
+                }
+                else
+                {
+                    await AttackAsync();
+                }
+
+                if (await DeathAsync()) break;
+
+                await UniTask.Yield(); // 無限ループ防止。
             }
         }
 
-        IEnumerator WalkAsync()
+        // 自身の上下左右の座標にいる冒険者を返す。
+        Adventure GetNeighbourAdventure()
         {
-            // 生成地点を中心とした3*3の範囲のどこかの位置。
-            List<Vector2Int> choices = GetSpawnCoordsNeighbours().ToList();
-            Vector2Int goalCoords = choices[Random.Range(0, choices.Count)];
-            DungeonManager dm = DungeonManager.Find();
-            dm.Pathfinding(_currentCoords, goalCoords, _path);
-
-            Animator animator = GetComponentInChildren<Animator>();
-            animator.Play("Walk");
-
-            Transform forwardAxis = transform.Find("ForwardAxis");
-
-            Vector3 start = transform.position;
-            for (int k = 0; k < _path.Count; k++)
+            Adventure target = null;
+            for (int i = -1; i <= 1; i++)
             {
-                // 自身の向いている方向更新
-                _currentDirection = _path[k].Coords - Coords;
-                // 正面のセルの座標
-                Vector2Int front = _currentCoords + _currentDirection;
-
-                //Debug.Log("目の前のセルは" + Blueprint.Doors[front.y][front.x]);
-
-                // 移動先にKadukiがいるかチェック
-                while (true)
+                for (int k = -1; k <= 1; k++)
                 {
-                    if (dm.GetActorsOnCell(_path[k].Coords).Where(ca => ca.ID == "Kaduki").Count() == 0) break;
+                    // 上下左右の4方向のみ。
+                    if ((i == 0 && k == 0) || Mathf.Abs(i * k) > 0) continue;
 
-                    yield return null;
+                    Vector2Int neighbourCoords = new Vector2Int(_currentCoords.x + k, _currentCoords.y + i);
+                    Cell cell = _dungeonManager.GetCell(neighbourCoords);
+
+                    if (cell.GetActors().Count == 0) continue;
+
+                    foreach (Actor actor in cell.GetActors())
+                    {
+                        if (actor is Adventure adventure)
+                        {
+                            target = adventure;
+                            break;
+                        }
+                    }
+
+                    if (target != null) break;
                 }
 
-                // 移動予定のセルに自身を登録。
-                dm.RemoveActorOnCell(_currentCoords, this);
-                Vector2Int newCoords = _path[k].Coords;
-                _currentCoords = newCoords;
-                dm.AddActorOnCell(_currentCoords, this);
-
-                Vector3 goal = _path[k].Position;
-                Quaternion fwd = forwardAxis.rotation;
-                Vector3 dir = (goal - start).normalized;
-                Quaternion rot = Quaternion.LookRotation(dir);
-                for (float t = 0; t <= 1; t += Time.deltaTime * 1.0f)
-                {
-                    Quaternion look = Quaternion.Lerp(fwd, rot, t * 4);
-                    forwardAxis.rotation = look;
-                    transform.position = Vector3.Lerp(start, goal, t);
-
-                    yield return null;
-                }
-
-                start = goal;
+                if (target != null) break;
             }
+
+            return target;
         }
 
-        IEnumerable<Vector2Int> GetSpawnCoordsNeighbours()
+        // 自身の上下左右の座標にいる何れかの冒険者を攻撃。
+        async UniTask AttackAsync()
+        {
+            const float AnimationLength = 1.1f;
+
+            Adventure target = GetNeighbourAdventure();
+
+            // 目標を向く。
+            Vector3 position = _dungeonManager.GetCell(_currentCoords).Position;
+            Vector3 targetPosition = _dungeonManager.GetCell(target.Coords).Position;
+            Transform axis = transform.Find("ForwardAxis");
+            Vector3 goalDirection = (targetPosition - position).normalized;
+            Quaternion startRotation = axis.rotation;
+            Quaternion goalRotation = Quaternion.LookRotation(goalDirection);
+            for (float t = 0; t <= 1; t += Time.deltaTime * 1.0f)
+            {
+                axis.rotation = Quaternion.Lerp(startRotation, goalRotation, t * 4);
+
+                await UniTask.Yield();
+            }
+
+            target.Damage(ID, "パンチ", 11, Coords);
+
+            _animator.Play("Attack");
+            await UniTask.WaitForSeconds(AnimationLength);
+        }
+
+        // 配置座標を中心とした3*3の範囲内の何れかの座標に移動。
+        async UniTask WalkAsync()
+        {
+            Cell cell = GetSpawnCoordsRandomAroundCell();
+
+            // 移動予定のセルに自身を登録。
+            _dungeonManager.RemoveActorOnCell(_currentCoords, this);
+            _currentCoords = cell.Coords;
+            _dungeonManager.AddActorOnCell(_currentCoords, this);
+
+            _animator.Play("Walk");
+
+            // 移動。
+            Vector3 startPosition = transform.position;
+            Vector3 goalPosition = cell.Position;
+            Transform axis = transform.Find("ForwardAxis");
+            Vector3 goalDirection = (goalPosition - startPosition).normalized;
+            Quaternion startRotation = axis.rotation;
+            Quaternion goalRotation = Quaternion.LookRotation(goalDirection);
+            for (float t = 0; t <= 1; t += Time.deltaTime * 1.0f)
+            {
+                axis.rotation = Quaternion.Lerp(startRotation, goalRotation, t * 4);
+                transform.position = Vector3.Lerp(startPosition, goalPosition, t);
+
+                await UniTask.Yield();
+            }
+
+            _animator.Play("Idle");
+        }
+
+        // 現在のセルから上下左右移動で移動できるランダムなセルを返す。
+        Cell GetSpawnCoordsRandomAroundCell()
+        {
+            List<Vector2Int> choices = GetPlaceCoordsAroundCoords().Where(v => 
+            {
+                return Vector2Int.Distance(v, _currentCoords) < 1.4f;
+            }).ToList();
+
+            Vector2Int coords = choices[Random.Range(0, choices.Count)];
+            return _dungeonManager.GetCell(coords);
+        }
+
+        // 隣接する座標のみではなく、配置座標も含める。
+        IEnumerable<Vector2Int> GetPlaceCoordsAroundCoords()
         {
             for (int i = -1; i <= 1; i++)
             {
                 for (int k = -1; k <= 1; k++)
                 {
-                    if (i == 0 && k == 0) continue;
-
-                    int nx = _spawnCoords.x + k;
-                    int ny = _spawnCoords.y + i;
+                    int nx = _placeCoords.x + k;
+                    int ny = _placeCoords.y + i;
 
                     if (Blueprint.Base[ny][nx] == '_')
                     {
@@ -118,11 +201,74 @@ namespace Game
             }
         }
 
-        // 冒険者とセルが重ならないようにしないといけない。
-        //  キャラクターは移動前に移動先が予約済みかどうかチェックするようなロジックにすることで重なりを防ぐ？
-        //   幅1マスの通路だと、お互いがを避けられず積んでしまう。ローグライクならこの状況をプレイヤーがどちらかを殺すことで打破できるが…
-        // 生成位置から動かなければ問題は解決するが…
-        // 生成位置を中心に3*3の範囲内をうろうろするようにし、冒険者が警戒範囲に入った場合、生成位置に戻って警戒するとか？
-        // ターン制にする？
+        // 死亡している場合は演出を再生しtrueを返す。生きている場合は何もせずfalseを返す。
+        async UniTask<bool> DeathAsync()
+        {
+            const float AnimationLength = 2.5f;
+
+            if (_currentHp > 0) return false;
+
+            _animator.Play("Death");
+            _audioSource.clip = _deathSE;
+            _audioSource.Play();
+
+            await UniTask.WaitForSeconds(AnimationLength);
+
+            _dungeonManager.RemoveActorOnCell(_currentCoords, this);
+
+            return true;
+        }
+
+        public override string Damage(string id, string weapon, int value, Vector2Int coords)
+        {
+            if (_currentHp <= 0) return "Corpse";
+
+            _currentHp -= value;
+            _currentHp = Mathf.Max(0, _currentHp);
+
+            if (!_isKnockback) StartCoroutine(HitEffectAsync(coords));
+
+            if (_currentHp <= 0) return "Defeated";
+            else return "Hit";
+        }
+
+        // 攻撃が自身にヒットした演出。
+        IEnumerator HitEffectAsync(Vector2Int coords)
+        {
+            _isKnockback = true;
+
+            ParticleSystem particle = transform.Find("ForwardAxis")
+                .Find("Particle_Damage").GetComponent<ParticleSystem>();
+            particle.Play();
+
+            _audioSource.clip = _punchHitSE;
+            _audioSource.Play();
+
+            Vector2Int diff = coords - _currentCoords;
+            Vector3 forward = new Vector3(diff.x, 0, diff.y);
+            yield return KnockbackAsync(-forward);
+            yield return KnockbackAsync(forward);
+
+            Transform fbx = transform.Find("ForwardAxis").Find("FBX");
+            fbx.localPosition = Vector3.zero;
+
+            _isKnockback = false;
+        }
+
+        // ノックバック。
+        IEnumerator KnockbackAsync(Vector3 direction)
+        {
+            const float Speed = 10.0f;
+            const float Distance = 0.2f;
+
+            Transform fbx = transform.GetChild(0).GetChild(0);
+            Vector3 start = fbx.position;
+            Vector3 goal = start + direction * Distance;
+            for (float t = 0; t <= 1; t += Time.deltaTime * Speed)
+            {
+                fbx.position = Vector3.Lerp(start, goal, t);
+                yield return null;
+            }
+        }
     }
 }

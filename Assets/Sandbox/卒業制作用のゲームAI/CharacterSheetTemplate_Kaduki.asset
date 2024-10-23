@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c88a49ce78476ee4e951a2e5cc8bdd38, type: 3}
+  m_Name: CharacterSheetTemplate_Kaduki
+  m_EditorClassIdentifier: 
+  _value:
+    _name: Kaduki
+    _sex: "\u5973"
+    _job: 
+    _age: 17
+    _background: "\u91D1\u9AEA\u306E\u5B50\u3002\u30C4\u30F3\u30C7\u30EC\u3002"
+    _lineSample1: "\u3058\u3083\u306A\u3044\u3093\u3060\u304B\u3089\u306D\uFF01"
+    _lineSample2: "\u3075\u3093\u3063\uFF01"
+    _lineSample3: "\u3079\u3001\u5225\u306B\u2026"
+    _strength: 30
+    _inteligence: 70
+    _charm: 20
+    _dexterity: 60
+    _sensitivity: 40

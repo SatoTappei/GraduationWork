@@ -17,7 +17,7 @@ namespace Game
 
         public static UiManager Find()
         {
-            return FindAnyObjectByType<UiManager>();
+            return GameObject.FindGameObjectWithTag("UiManager").GetComponent<UiManager>();
         }
 
         public int RegisterToStatusBar(IStatusBarDisplayStatus status)

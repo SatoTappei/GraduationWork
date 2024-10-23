@@ -1,4 +1,3 @@
-using Game;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,33 +6,27 @@ public class キャラクターたくさん生成テスト : MonoBehaviour
 {
     [SerializeField] GameObject _prefab;
 
-    void Start()
-    {
-        StartCoroutine(UpdateAsync());
-    }
+    bool _isSpawned;
 
-    void Update()
+    void OnGUI()
     {
-        if (Input.GetKeyDown(KeyCode.C))
+        GUIStyle stylebutton = GUI.skin.GetStyle("button");
+        stylebutton.fontSize = 25;
+
+        if (!_isSpawned && GUI.Button(new Rect(0, 0, 300, 70), "冒険者を生成"))
         {
-            DungeonManager dm = DungeonManager.Find();
-            foreach (Cell c in dm.GetCells("Kaduki"))
-            {
-                GameObject g = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                g.transform.position = c.Position;
-            }
+            StartCoroutine(UpdateAsync());
         }
     }
 
     IEnumerator UpdateAsync()
     {
-        for (int i = 0; i < 10; i++)
-        {
-            GameObject g = Instantiate(_prefab);
+        _isSpawned = true;
 
+        for (int i = 0; i < 4; i++)
+        {
+            Instantiate(_prefab);
             yield return new WaitForSeconds(1.0f);
         }
     }
 }
-
-// たくさん生成は出来た。宝箱へ行って帰るだけなら特に異常なし。

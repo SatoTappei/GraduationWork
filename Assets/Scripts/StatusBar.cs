@@ -23,7 +23,7 @@ namespace Game
 
                 _used[i] = true;
                 _statusBarUI[i].SetStatus(status);
-
+                
                 return i;
             }
 
