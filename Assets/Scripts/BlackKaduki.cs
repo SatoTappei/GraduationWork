@@ -81,9 +81,9 @@ namespace Game
         }
 
         // 自身の上下左右の座標にいる冒険者を返す。
-        Adventure GetNeighbourAdventure()
+        Adventurer GetNeighbourAdventure()
         {
-            Adventure target = null;
+            Adventurer target = null;
             for (int i = -1; i <= 1; i++)
             {
                 for (int k = -1; k <= 1; k++)
@@ -98,7 +98,7 @@ namespace Game
 
                     foreach (Actor actor in cell.GetActors())
                     {
-                        if (actor is Adventure adventure)
+                        if (actor is Adventurer adventure)
                         {
                             target = adventure;
                             break;
@@ -119,7 +119,7 @@ namespace Game
         {
             const float AnimationLength = 1.1f;
 
-            Adventure target = GetNeighbourAdventure();
+            Adventurer target = GetNeighbourAdventure();
 
             // 目標を向く。
             Vector3 position = _dungeonManager.GetCell(_currentCoords).Position;
@@ -127,7 +127,9 @@ namespace Game
             Transform axis = transform.Find("ForwardAxis");
             Vector3 goalDirection = (targetPosition - position).normalized;
             Quaternion startRotation = axis.rotation;
-            Quaternion goalRotation = Quaternion.LookRotation(goalDirection);
+            Quaternion goalRotation;
+            if (goalDirection == Vector3.zero) goalRotation = Quaternion.identity;
+            else goalRotation = Quaternion.LookRotation(goalDirection);
             for (float t = 0; t <= 1; t += Time.deltaTime * 1.0f)
             {
                 axis.rotation = Quaternion.Lerp(startRotation, goalRotation, t * 4);
@@ -159,7 +161,9 @@ namespace Game
             Transform axis = transform.Find("ForwardAxis");
             Vector3 goalDirection = (goalPosition - startPosition).normalized;
             Quaternion startRotation = axis.rotation;
-            Quaternion goalRotation = Quaternion.LookRotation(goalDirection);
+            Quaternion goalRotation;
+            if (goalDirection == Vector3.zero) goalRotation = Quaternion.identity;
+            else goalRotation = Quaternion.LookRotation(goalDirection);
             for (float t = 0; t <= 1; t += Time.deltaTime * 1.0f)
             {
                 axis.rotation = Quaternion.Lerp(startRotation, goalRotation, t * 4);

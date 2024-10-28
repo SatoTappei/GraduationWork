@@ -82,7 +82,8 @@ namespace Game
             Vector3 position = basePosition + new Vector3(x, 0, y);
             int cost = GetCellCost(x, y);
             Terrain terrain = GetCellTerrain(x, y);
-            return new Cell(position, x, y, cost, terrain);
+            Location location = GetCellLocation(x, y);
+            return new Cell(position, x, y, cost, terrain, location);
         }
 
         static int GetCellCost(int x, int y)
@@ -93,8 +94,27 @@ namespace Game
 
         static Terrain GetCellTerrain(int x, int y)
         {
-            if (Blueprint.Base[y][x] == '#') return Terrain.Wall;
-            else return Terrain.Floor;
+            char c = Blueprint.Base[y][x];
+            if (c == '#') return Terrain.Wall;
+            if (c == '_') return Terrain.Floor;
+
+            Debug.LogWarning($"ï∂éöÇ…ëŒâûÇ∑ÇÈTerrainÇ™ë∂ç›ÇµÇ»Ç¢ÅB: {new Vector2Int(x, y)}{c}");
+            return Terrain.None;
+        }
+
+        static Location GetCellLocation(int x, int y)
+        {
+            char c = Blueprint.Location[y][x];
+            if (c == '0') return Location.Corridor;
+            if (c == '1') return Location.Room;
+            if (c == '2') return Location.EntranceHall;
+            if (c == '3') return Location.TreasureVault;
+            if (c == '4') return Location.Prison;
+            if (c == '5') return Location.Arena;
+            if (c == '#') return Location.Wall;
+
+            Debug.LogWarning($"ï∂éöÇ…ëŒâûÇ∑ÇÈLocationÇ™ë∂ç›ÇµÇ»Ç¢ÅB: {new Vector2Int(x, y)}{c}");
+            return Location.None;
         }
 
         void BuildDirectionalEntity(string[] blueprint, DungeonEntity prefab)

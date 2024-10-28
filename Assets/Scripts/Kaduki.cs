@@ -7,30 +7,17 @@ using UnityEngine;
 
 namespace Game
 {
-    // 何かしらイベントが起きた場合はAIが次の行動を判断する。(移動中に敵に殴られたなど)
-    // 何もない場合はその行動を継続する。(目標に向けて移動するなど)
-    //  目標に向けて移動する。
-    //   宝箱、敵、曲がり角、入口。
-    //    経路探索->向く->移動。
-    //  周囲にインタラクト。
-    //   敵に攻撃、宝箱などを調べる。他のキャラクターに話しかける。
-    //  待機。
-    // 結果を知る。
-    // 攻撃されたり話しかけられたりなど他キャラクターからの接触。
-    //  1歩ごとに中断判定(ダメージや死亡など)が必要
-    // 死んだり脱出した場合はここで分岐。
-    public class Kaduki : Adventure, IStatusBarDisplayStatus
+    public class Kaduki : Adventurer
     {
         [SerializeField] Vector2Int _spawnCoords;
         [SerializeField] AudioClip _punchHitSE;
         [SerializeField] AudioClip _deathSE;
-        [SerializeField] Sprite _icon;
 
         DungeonManager _dungeonManager;
         UiManager _uiManager;
         Animator _animator;
         AudioSource _audioSource;
-        AdventureAI _adventureAI;
+        AdventurerAI _adventurerAI;
 
         Vector2Int _currentCoords;
         Vector2Int _currentDirection;
@@ -39,20 +26,9 @@ namespace Game
         List<Cell> _path;
         int _statusBarID;
         bool _isKnockback;
-        int _currentHp;
-        int _currentEmotion;
-        int _treasureCount;
-        int _defeatCount;
 
         public override Vector2Int Coords => _currentCoords;
         public override Vector2Int Direction => _currentDirection;
-
-        public Sprite Icon => _icon;
-        public string DisplayName => "Kaduki";
-        public int MaxHp => 100;
-        public int CurrentHp => _currentHp;
-        public int MaxEmotion => 100;
-        public int CurrentEmotion => _currentEmotion;
 
         void Awake()
         {
@@ -60,9 +36,9 @@ namespace Game
             _uiManager = UiManager.Find();
             _animator = GetComponentInChildren<Animator>();
             _audioSource = GetComponent<AudioSource>();
-            _adventureAI = GetComponent<AdventureAI>();
-            _currentHp = MaxHp;
-            _currentEmotion = MaxEmotion;
+            _adventurerAI = GetComponent<AdventurerAI>();
+            CurrentHp = MaxHp;
+            CurrentEmotion = MaxEmotion;
         }
 
         void Start()
@@ -91,15 +67,17 @@ namespace Game
         {
             while (true)
             {
-                string selected = await _adventureAI.SelectNextActionAsync();
-                if (selected == "Move Treasure") await MoveAsync("Treasure");
-                else if (selected == "Move Enemy") await MoveAsync("Enemy");
-                else if (selected == "Move Entrance") await MoveAsync("Entrance");
-                else if (selected == "Interact Attack") await AttackAsync();
-                else if (selected == "Interact Scav") await ScavAsync();
-                else if (selected == "Interact Talk") await TalkAsync();
+                ElapsedTurn++;
 
-                ReportActionResult();
+                string selected = await _adventurerAI.SelectNextActionAsync();
+                if (selected == "Move North") await MoveAsync(Vector2Int.up);
+                else if (selected == "Move South") await MoveAsync(Vector2Int.down);
+                else if (selected == "Move East") await MoveAsync(Vector2Int.right);
+                else if (selected == "Move West") await MoveAsync(Vector2Int.left);
+                else if (selected == "Return To Entrance") await MoveAsync("Entrance");
+                else if (selected == "Attack Surrounding") await AttackAsync();
+                else if (selected == "Scavenge Surrounding") await ScavAsync();
+                else if (selected == "Talk Surrounding") await TalkAsync();
 
                 if (await DeathAsync() || await EscapeAsync()) break;
 
@@ -110,24 +88,43 @@ namespace Game
         }
 
         // 隣のセルに移動。
-        async UniTask MoveAsync(string target)
+        async UniTask MoveAsync(Vector2Int direction)
         {
-            PathfindingIfTargetChanged(target);
+            Cell targetCell = _dungeonManager.GetCell(_currentCoords + direction);
+            if (targetCell.IsPassable())
+            {
+                _dungeonManager.Pathfinding(_currentCoords, _currentCoords + direction, _path);
+                _pathTarget = direction.ToString();
+            }
+            else
+            {
+                // 経路探索が出来ないので直接更新。移動せず向きだけ変えるために移動処理を行う。
+                _path.Clear();
+                _path.Add(targetCell);
+                _pathTarget = $"{direction}(IsImpassable)";
+            }
+
+            _currentPathIndex = 0;
+
             await MoveNextCellAsync();
         }
 
-        // 現在の経路と違う目標を選択した場合は再度経路探索。
-        void PathfindingIfTargetChanged(string target)
+        // 経路に沿って移動。
+        async UniTask MoveAsync(string target)
         {
+            // 現在の経路と違う目標を選択した場合は再度経路探索。
             if (_pathTarget != target)
             {
                 if (target == "Treasure") PathfindingToTreasure();
                 else if (target == "Enemy") PathfindingToEnemy();
                 else if (target == "Entrance") PathfindingToEntrance();
+                else Debug.LogWarning($"対応する目標が存在しないため経路探索が出来ない。: {target}");
 
                 _pathTarget = target;
                 _currentPathIndex = 0;
             }
+
+            await MoveNextCellAsync();
         }
 
         // とりあえず、経路探索するごとにランダムな宝箱を選ぶようにしておく。
@@ -186,12 +183,6 @@ namespace Game
             _dungeonManager.Pathfinding(_currentCoords, entrance.Coords, _path);
         }
 
-        // ダンジョン内を適当にうろうろする場合、それらしい移動先が必要？
-        void PathfindingToCheckPoint()
-        {
-            // 
-        }
-
         // 次のセルに移動。
         async UniTask MoveNextCellAsync()
         {
@@ -211,32 +202,59 @@ namespace Game
                 }
             }
 
-            // 目の前のセルに自身を登録。他のキャラクターとの交差は許容するので回避セルには登録しない。
-            _dungeonManager.RemoveActorOnCell(_currentCoords, this);
-            _currentCoords = _path[_currentPathIndex].Coords;
-            _dungeonManager.AddActorOnCell(_currentCoords, this);
-
-            _animator.Play("Walk");
-
-            // 移動。
-            Vector3 startPosition = transform.position;
-            Vector3 goalPosition = _path[_currentPathIndex].Position;
-            Transform axis = transform.Find("ForwardAxis");
-            Vector3 goalDirection = (goalPosition - startPosition).normalized;
-            Quaternion startRotation = axis.rotation;
-            Quaternion goalRotation = Quaternion.LookRotation(goalDirection);
-            for (float t = 0; t <= 1; t += Time.deltaTime * 1.0f)
+            if (_path[_currentPathIndex].IsPassable())
             {
-                axis.rotation = Quaternion.Lerp(startRotation, goalRotation, t * 4);
-                transform.position = Vector3.Lerp(startPosition, goalPosition, t);
+                // 目の前のセルに自身を登録。他のキャラクターとの交差は許容するので回避セルには登録しない。
+                _dungeonManager.RemoveActorOnCell(_currentCoords, this);
+                _currentCoords = _path[_currentPathIndex].Coords;
+                _dungeonManager.AddActorOnCell(_currentCoords, this);
 
-                await UniTask.Yield();
+                _animator.Play("Walk");
+
+                Vector3 startPosition = transform.position;
+                Vector3 goalPosition = _path[_currentPathIndex].Position;
+                Transform axis = transform.Find("ForwardAxis");
+                Vector3 goalDirection = (goalPosition - startPosition).normalized;
+                Quaternion startRotation = axis.rotation;
+                Quaternion goalRotation;
+                if (goalDirection == Vector3.zero) goalRotation = Quaternion.identity;
+                else goalRotation = Quaternion.LookRotation(goalDirection);
+                for (float t = 0; t <= 1; t += Time.deltaTime * 1.0f)
+                {
+                    axis.rotation = Quaternion.Lerp(startRotation, goalRotation, t * 4);
+                    transform.position = Vector3.Lerp(startPosition, goalPosition, t);
+                    await UniTask.Yield();
+                }
+
+                _animator.Play("Idle");
+
+                _currentPathIndex++;
+                _currentPathIndex = Mathf.Min(_currentPathIndex, _path.Count - 1);
+
+                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: move from {_currentCoords} to {frontCoords} success.");
+                _adventurerAI.ReportExploredCell(_currentCoords);
             }
+            else
+            {
+                Vector3 startPosition = transform.position;
+                Vector3 goalPosition = _path[_currentPathIndex].Position;
+                Transform axis = transform.Find("ForwardAxis");
+                Vector3 goalDirection = (goalPosition - startPosition).normalized;
+                Quaternion startRotation = axis.rotation;
+                Quaternion goalRotation;
+                if (goalDirection == Vector3.zero) goalRotation = Quaternion.identity;
+                else goalRotation = Quaternion.LookRotation(goalDirection);
+                for (float t = 0; t <= 1; t += Time.deltaTime * 1.0f)
+                {
+                    axis.rotation = Quaternion.Lerp(startRotation, goalRotation, t * 4);
+                    await UniTask.Yield();
+                }
 
-            _animator.Play("Idle");
+                _currentPathIndex++;
+                _currentPathIndex = Mathf.Min(_currentPathIndex, _path.Count - 1);
 
-            _currentPathIndex++;
-            _currentPathIndex = Mathf.Min(_currentPathIndex, _path.Count - 1);
+                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: move from {_currentCoords} to {frontCoords} failure.");
+            }
         }
 
         // 周囲のActorに攻撃する。
@@ -273,7 +291,11 @@ namespace Game
                 if (targetDamageable != null) break;
             }
 
-            if (targetDamageable == null) return;
+            if (targetDamageable == null)
+            {
+                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: attack neighbour target failure.");
+                return;
+            }
 
             // 目標を向く。
             Vector3 position = _dungeonManager.GetCell(_currentCoords).Position;
@@ -281,7 +303,9 @@ namespace Game
             Transform axis = transform.Find("ForwardAxis");
             Vector3 goalDirection = (targetPosition - position).normalized;
             Quaternion startRotation = axis.rotation;
-            Quaternion goalRotation = Quaternion.LookRotation(goalDirection);
+            Quaternion goalRotation;
+            if (goalDirection == Vector3.zero) goalRotation = Quaternion.identity;
+            else goalRotation = Quaternion.LookRotation(goalDirection);
             for (float t = 0; t <= 1; t += Time.deltaTime * 1.0f)
             {
                 axis.rotation = Quaternion.Lerp(startRotation, goalRotation, t * 4);
@@ -297,8 +321,11 @@ namespace Game
             {
                 _uiManager.ShowLine(_statusBarID, "殺した。");
                 _uiManager.AddLog("KadukiがBlackKadukiを殺した。");
-                _defeatCount++;
+                DefeatCount++;
+                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: we attacked the enemy. And defeated them.");
             }
+
+            _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: we attacked the enemy. The enemy is still alive.");
         }
 
         // 周囲のActorを漁る。
@@ -339,7 +366,11 @@ namespace Game
                 if (targetActor != null && targetActor.ID == "Treasure") break;
             }
 
-            if (targetScavengeable == null) return;
+            if (targetScavengeable == null)
+            {
+                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: scavenge neighbour target failure.");
+                return;
+            }
             
             // 目標を向く。
             Vector3 position = _dungeonManager.GetCell(_currentCoords).Position;
@@ -347,7 +378,9 @@ namespace Game
             Transform axis = transform.Find("ForwardAxis");
             Vector3 goalDirection = (targetPosition - position).normalized;
             Quaternion startRotation = axis.rotation;
-            Quaternion goalRotation = Quaternion.LookRotation(goalDirection);
+            Quaternion goalRotation;
+            if (goalDirection == Vector3.zero) goalRotation = Quaternion.identity;
+            else goalRotation = Quaternion.LookRotation(goalDirection);
             for (float t = 0; t <= 1; t += Time.deltaTime * 1.0f)
             {
                 axis.rotation = Quaternion.Lerp(startRotation, goalRotation, t * 4);
@@ -360,9 +393,11 @@ namespace Game
             targetScavengeable.Scavenge();
             if (targetActor.ID == "Treasure")
             {
-                _treasureCount++;
+                TreasureCount++;
                 _uiManager.ShowLine(_statusBarID, "宝を入手。");
             }
+
+            _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: scavenge neighbour target success.");
         }
 
         // 周囲のAdventureと会話する。
@@ -376,7 +411,7 @@ namespace Game
         {
             const float AnimationLength = 2.5f;
 
-            if (_currentHp > 0) return false;
+            if (CurrentHp > 0) return false;
 
             _animator.Play("Death");
             _audioSource.clip = _deathSE;
@@ -393,16 +428,16 @@ namespace Game
         // ダメージを受ける。
         public override string Damage(string id, string weapon, int value, Vector2Int coords)
         {
-            if (_currentHp <= 0) return "Corpse";
+            if (CurrentHp <= 0) return "Corpse";
 
-            _currentHp -= value;
-            _currentHp = Mathf.Max(0, _currentHp);
+            CurrentHp -= value;
+            CurrentHp = Mathf.Max(0, CurrentHp);
             _uiManager.UpdateStatusBarStatus(_statusBarID, this);
             _uiManager.ShowLine(_statusBarID, "ダメージを受けた。");
 
             if (!_isKnockback) StartCoroutine(HitEffectAsync(coords));
 
-            if (_currentHp <= 0) return "Defeated";
+            if (CurrentHp <= 0) return "Defeated";
             else return "Hit";
         }
 
@@ -450,7 +485,7 @@ namespace Game
         {
             const float AnimationLength = 1.0f * 2;
 
-            if (_treasureCount == 0 && _defeatCount == 0) return false;
+            if (TreasureCount == 0 && DefeatCount == 0) return false;
             else if (Blueprint.Interaction[_currentCoords.y][_currentCoords.x] != '<') return false;
 
             _animator.Play("Jump");
@@ -462,15 +497,6 @@ namespace Game
             _dungeonManager.RemoveActorOnCell(_currentCoords, this);
 
             return true;
-        }
-
-        // 行動の結果をAIに報告。
-        void ReportActionResult()
-        {
-            Cell upCell = _dungeonManager.GetCell(_currentCoords + Vector2Int.up);
-            Cell downCell = _dungeonManager.GetCell(_currentCoords + Vector2Int.down);
-            Cell leftCell = _dungeonManager.GetCell(_currentCoords + Vector2Int.left);
-            Cell rightCell = _dungeonManager.GetCell(_currentCoords + Vector2Int.right);
         }
     }
 }

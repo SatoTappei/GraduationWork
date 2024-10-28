@@ -46,7 +46,7 @@ public class 一定間隔で攻撃するテスト : Character
     IEnumerator AttackAsync()
     {
         // 周囲のセルから目標を選ぶ。
-        Adventure target = null;
+        Adventurer target = null;
         for (int i = -1; i <= 1; i++)
         {
             for (int k = -1; k <= 1; k++)
@@ -61,7 +61,7 @@ public class 一定間隔で攻撃するテスト : Character
 
                 foreach (Actor actor in cell.GetActors())
                 {
-                    if (actor is Adventure adventure)
+                    if (actor is Adventurer adventure)
                     {
                         target = adventure;
                         break;
