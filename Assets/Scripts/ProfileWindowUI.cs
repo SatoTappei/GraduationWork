@@ -15,15 +15,20 @@ namespace Game
         [SerializeField] Text _infomation;
 
         CanvasGroup _canvasGroup;
+        AudioSource _audioSource;
 
         void Awake()
         {
             _canvasGroup = GetComponent<CanvasGroup>();
+            _audioSource = GetComponent<AudioSource>();
+
+            Close();
+            DeleteStatus();
         }
 
         void Start()
         {
-            Close();
+            
         }
 
         public void SetStatus(IProfileWindowDisplayStatus status)
@@ -32,7 +37,7 @@ namespace Game
             _job.text = status.Job;
             _background.text = status.Background;
             
-            if (status.Goal == string.Empty)
+            if (status.Goal == default)
             {
                 _goal.text = "--";
             }
@@ -41,15 +46,17 @@ namespace Game
                 _goal.text = status.Goal;
             }
 
+            _item.text = string.Empty;
             foreach (string s in status.Items)
             {
-                if (s == string.Empty) _item.text += "--\n";
+                if (s == default) _item.text += "--\n";
                 else _item.text += $"{s}\n";
             }
 
+            _infomation.text = string.Empty;
             foreach (string s in status.Infomation)
             {
-                if (s == string.Empty) _infomation.text += "--\n";
+                if (s == default) _infomation.text += "--\n";
                 else _infomation.text += $"{s}\n";
             }
         }
@@ -61,12 +68,30 @@ namespace Game
 
         public void DeleteStatus()
         {
-            //
+            _name.text = "--";
+            _job.text = "--";
+            _background.text = "--";
+            _goal.text = "--";
+
+            // 持ち物欄は最大3つ表示可能なデザインになっている。
+            _item.text = string.Empty;
+            for (int i = 0; i < 3; i++)
+            {
+                _item.text += "--\n";
+            }
+
+            // 知っている情報欄は最大4つ表示可能なデザインになっている。
+            _infomation.text = string.Empty;
+            for (int i = 0; i < 4; i++)
+            {
+                _item.text += "--\n";
+            }
         }
 
         public void Open()
         {
             _canvasGroup.alpha = 1.0f;
+            _audioSource.Play();
         }
 
         public void Close()
