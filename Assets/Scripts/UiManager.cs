@@ -8,11 +8,13 @@ namespace Game
     {
         StatusBar _statusBar;
         GameLog _gameLog;
+        ProfileWindow _profileWindow;
         
         void Awake()
         {
             _statusBar = GetComponent<StatusBar>();
             _gameLog = GetComponent<GameLog>();
+            _profileWindow = GetComponent<ProfileWindow>();
         }
 
         public static UiManager Find()
@@ -43,6 +45,21 @@ namespace Game
         public void AddLog(string message)
         {
             _gameLog.Add(message);
+        }
+
+        public int RegisterToProfileWindow(IProfileWindowDisplayStatus status)
+        {
+            return _profileWindow.RegisterStatus(status);
+        }
+
+        public void UpdateProfileWindowStatus(int id, IProfileWindowDisplayStatus status)
+        {
+            _profileWindow.UpdateStatus(id, status);
+        }
+
+        public void DeleteProfileWindowStatus(int id)
+        {
+            _profileWindow.DeleteStatus(id);
         }
     }
 }

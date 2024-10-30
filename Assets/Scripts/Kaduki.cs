@@ -25,6 +25,7 @@ namespace Game
         int _currentPathIndex;
         List<Cell> _path;
         int _statusBarID;
+        int _profileWindowID;
         bool _isKnockback;
 
         public override Vector2Int Coords => _currentCoords;
@@ -39,6 +40,8 @@ namespace Game
             _adventurerAI = GetComponent<AdventurerAI>();
             CurrentHp = MaxHp;
             CurrentEmotion = MaxEmotion;
+            Items = new string[3];
+            Infomation = new string[4];
         }
 
         void Start()
@@ -54,6 +57,7 @@ namespace Game
             _statusBarID = _uiManager.RegisterToStatusBar(this);
             _uiManager.ShowLine(_statusBarID, "こんにちは。");
             _uiManager.AddLog("Kadukiがダンジョンにやってきた。");
+            _profileWindowID = _uiManager.RegisterToProfileWindow(this);
 
             UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
@@ -70,7 +74,8 @@ namespace Game
                 ElapsedTurn++;
 
                 string selected = await _adventurerAI.SelectNextActionAsync();
-                if (selected == "Move North") await MoveAsync(Vector2Int.up);
+                if (selected == "Move Forward") await MoveAsync(_currentDirection);
+                else if (selected == "Move North") await MoveAsync(Vector2Int.up);
                 else if (selected == "Move South") await MoveAsync(Vector2Int.down);
                 else if (selected == "Move East") await MoveAsync(Vector2Int.right);
                 else if (selected == "Move West") await MoveAsync(Vector2Int.left);
@@ -202,6 +207,13 @@ namespace Game
                 }
             }
 
+            string directionName = default;
+            Vector2Int coordsDirection = frontCoords - _currentCoords;
+            if (coordsDirection == Vector2Int.up) directionName = "north";
+            if (coordsDirection == Vector2Int.down) directionName = "south";
+            if (coordsDirection == Vector2Int.left) directionName = "west";
+            if (coordsDirection == Vector2Int.right) directionName = "east";
+
             if (_path[_currentPathIndex].IsPassable())
             {
                 // 目の前のセルに自身を登録。他のキャラクターとの交差は許容するので回避セルには登録しない。
@@ -231,7 +243,7 @@ namespace Game
                 _currentPathIndex++;
                 _currentPathIndex = Mathf.Min(_currentPathIndex, _path.Count - 1);
 
-                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: move from {_currentCoords} to {frontCoords} success.");
+                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: Successfully moved to the {directionName}.");
                 _adventurerAI.ReportExploredCell(_currentCoords);
             }
             else
@@ -253,7 +265,7 @@ namespace Game
                 _currentPathIndex++;
                 _currentPathIndex = Mathf.Min(_currentPathIndex, _path.Count - 1);
 
-                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: move from {_currentCoords} to {frontCoords} failure.");
+                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: Failed to move to the {directionName}. Cannot move in this direction.");
             }
         }
 
@@ -403,7 +415,74 @@ namespace Game
         // 周囲のAdventureと会話する。
         async UniTask TalkAsync()
         {
-            //
+            const float ParticlePlayTime = 5.0f;
+            const float AnimationPlayTime = 7.0f;
+
+            // 周囲のセルから目標を選ぶ。
+            ITalkable targetTalkable = null;
+            Actor targetActor = null;
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int k = -1; k <= 1; k++)
+                {
+                    // 上下左右の4方向のみ。
+                    if ((i == 0 && k == 0) || Mathf.Abs(i * k) > 0) continue;
+
+                    Vector2Int neighbourCoords = new Vector2Int(_currentCoords.x + k, _currentCoords.y + i);
+                    Cell cell = _dungeonManager.GetCell(neighbourCoords);
+
+                    if (cell.GetActors().Count == 0) continue;
+
+                    foreach (Actor actor in cell.GetActors())
+                    {
+                        if (actor is ITalkable talkable)
+                        {
+                            targetTalkable = talkable;
+                            targetActor = actor;
+                            break;
+                        }
+                    }
+
+                    if (targetTalkable != null) break;
+                }
+
+                if (targetTalkable != null) break;
+            }
+
+            if (targetTalkable == null)
+            {
+                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: talk neighbour target failure.");
+                return;
+            }
+
+            // 目標を向く。
+            Vector3 position = _dungeonManager.GetCell(_currentCoords).Position;
+            Vector3 targetPosition = _dungeonManager.GetCell(targetActor.Coords).Position;
+            Transform axis = transform.Find("ForwardAxis");
+            Vector3 goalDirection = (targetPosition - position).normalized;
+            Quaternion startRotation = axis.rotation;
+            Quaternion goalRotation;
+            if (goalDirection == Vector3.zero) goalRotation = Quaternion.identity;
+            else goalRotation = Quaternion.LookRotation(goalDirection);
+            for (float t = 0; t <= 1; t += Time.deltaTime * 1.0f)
+            {
+                axis.rotation = Quaternion.Lerp(startRotation, goalRotation, t * 4);
+
+                await UniTask.Yield();
+            }
+
+            _animator.Play("Talk");
+            _uiManager.ShowLine(_statusBarID, "会話する。");
+
+            ParticleSystem particle = transform.Find("ForwardAxis")
+                .Find("Particle_Talk").GetComponent<ParticleSystem>();
+            particle.Play();
+
+            targetTalkable.Talk(ID, _adventurerAI.GetTopic(), _currentCoords);
+
+            _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: talk neighbour target success.");
+
+            await UniTask.WaitForSeconds(Mathf.Max(ParticlePlayTime, AnimationPlayTime));
         }
 
         // 死亡している場合は演出を再生しtrueを返す。生きている場合は何もせずfalseを返す。
@@ -497,6 +576,12 @@ namespace Game
             _dungeonManager.RemoveActorOnCell(_currentCoords, this);
 
             return true;
+        }
+        
+        // 周囲の会話可能なキャラクターと会話する。
+        public override void Talk(string id, string topic, Vector2Int coords)
+        {
+            _adventurerAI.SetRumor("Adventurer", topic);
         }
     }
 }

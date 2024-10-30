@@ -117,12 +117,12 @@ namespace Game
             return Location.None;
         }
 
-        void BuildDirectionalEntity(string[] blueprint, DungeonEntity prefab)
+        static void BuildDirectionalEntity(string[] blueprint, DungeonEntity prefab)
         {
             Build(blueprint, '8', '2', '4', '6', prefab);
         }
 
-        void BuildNonDirectionalEntity(char letter, DungeonEntity prefab)
+        static void BuildNonDirectionalEntity(char letter, DungeonEntity prefab)
         {
             Build(Blueprint.Interaction, letter, letter, letter, letter, prefab);
         }

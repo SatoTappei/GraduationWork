@@ -28,7 +28,7 @@ namespace Game
         public string Scavenge()
         {
             Interact(null);
-            return string.Empty;
+            return "Treasure";
         }
 
         void Open() => SetChestState(isOpen: true);

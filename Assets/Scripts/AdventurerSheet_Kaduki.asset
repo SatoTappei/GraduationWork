@@ -12,7 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af45c5d5c079d184186950e13f21f9db, type: 3}
   m_Name: AdventurerSheet_Kaduki
   m_EditorClassIdentifier: 
-  _name: Kaduki
+  _icon: {fileID: 21300000, guid: 0d67770bf1a6b0f42afd92908553e2d1, type: 3}
+  _fullName: Kaduki
+  _displayName: Kaduki
   _sex: "\u5973"
   _job: "\u5973\u5B50\u9AD8\u6821\u751F"
   _age: 17

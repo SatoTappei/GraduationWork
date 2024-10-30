@@ -5,7 +5,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "AdventurerSheet_", menuName = "AdventurerSheet")]
 public class AdventurerSheet : ScriptableObject
 {
-    [SerializeField] string _name;
+    [SerializeField] Sprite _icon;
+    [SerializeField] string _fullName;
+    [SerializeField] string _displayName;
     [SerializeField] string _sex;
     [SerializeField] string _job;
     [SerializeField] int _age;
@@ -20,17 +22,19 @@ public class AdventurerSheet : ScriptableObject
     [SerializeField] int _dexterity;
     [SerializeField] int _sensitivity;
 
-    public string Name { get => _name; }
-    public string Sex { get => _sex; }
-    public string Job { get => _job; }
-    public int Age { get => _age; }
-    public string Background { get => _background; }
-    public string LineSample1 {  get => _lineSample1; }
-    public string LineSample2 {  get => _lineSample2; }
-    public string LineSample3 { get => _lineSample3; }
-    public int Strength { get => _strength; set => _strength = value; }
-    public int Inteligence { get => _inteligence; set => _inteligence = value; }
-    public int Charm { get => _charm; set => _charm = value; }
-    public int Dexterity { get => _dexterity; set => _dexterity = value; }
-    public int Sensitivity { get => _sensitivity; set => _sensitivity = value; }
+    public Sprite Icon => _icon;
+    public string FullName => _fullName;
+    public string DisplayName => _displayName;
+    public string Sex => _sex;
+    public string Job => _job;
+    public int Age => _age;
+    public string Background => _background;
+    public string LineSample1 => _lineSample1;
+    public string LineSample2 => _lineSample2;
+    public string LineSample3 => _lineSample3;
+    public int Strength => _strength;
+    public int Inteligence => _inteligence; 
+    public int Charm => _charm;
+    public int Dexterity => _dexterity;
+    public int Sensitivity => _sensitivity;
 }

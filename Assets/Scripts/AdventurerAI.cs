@@ -1,19 +1,10 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Game
 {
-    // AIは宝箱の隣に立ってSurroundingを選ぶ…という宝箱の開け方を知らない。
-    // AIは敵の攻撃が成功=敵を倒したと思っているので1回しか攻撃しない。
-    // AIはダンジョンの入口を探す時も未探索のセルを優先的に探索してしまう。
-    //  プログラム側で入口に戻るようなセルのスコアを上げてしまうのはルールベースと同じになってしまう。
-    //  AI側が入口に戻るようなセルのスコアを上げるようにならないか？
-    //  BluePrint.Baseを渡してダンジョンのマップ代わりにならないだろうか？
-    // ★サブゴールの達成具合でAvailableActionsを解禁する方式にする。
-    //    例えば宝箱を見つけるまでは東西南北への移動のみ、宝箱を見つけた場合は入口に戻るというアクションを追加してやる。
-    //    そうすればアクションのスコア付けによって戻るもしくはまだ探索するみたいな選択をAI側が出来るかも？
     public class AdventurerAI : MonoBehaviour
     {
         const string GetTreasure = "Find the treasure chest in the dungeon and scavenge.";
@@ -24,6 +15,14 @@ namespace Game
         const string DefeatBossEnemy = "Defeat the dungeon boss.";
         const string DefeatAdventurer = "Defeat the adventurers.";
         const string ReturnToEntrance = "Return to the entrance.";
+
+        static readonly string[] Hints =
+        {
+            "The door on the north side of the entrance intrigues me.",
+            "The door on the south side of the entrance intrigues me.",
+            "The door on the east side of the entrance intrigues me.",
+            "The door on the west side of the entrance intrigues me.",
+        };
 
         [System.Serializable]
         class RequestFormat
@@ -51,17 +50,37 @@ namespace Game
             public string West;
         }
 
+        [System.Serializable]
+        class Rumor
+        {
+            public string Message;
+            public string Source;
+            public float Score;
+        }
+
+        [System.Serializable]
+        class TalkTopicChoices
+        {
+            public string[] Value;
+        }
+
         [SerializeField] AdventurerSheet _adventurerSheet;
+        [Space(10)]
+        [SerializeField] List<Rumor> _rumors;
+        [SerializeField] string _talkTopic;
+        [SerializeField] string _selectedAction;
 
         DungeonManager _dungeonManager;
         Adventurer _adventurer;
         GptRequest _rolePlayAI;
         GptRequest _gamePlayAI;
         Queue<string> _actionLog;
+        Queue<Rumor> _unevaluatedRumors;
         List<string> _availableActions;
         string[] _subGoals;
         int _currentSubGoalIndex;
         int[,] _explored;
+        
         bool _isInitialized;
 
         void Awake()
@@ -69,31 +88,51 @@ namespace Game
             _dungeonManager = DungeonManager.Find();
             _adventurer = GetComponent<Adventurer>();
             _actionLog = new Queue<string>();
+            _unevaluatedRumors = new Queue<Rumor>();
+            _rumors = new List<Rumor>()
+            {
+               new Rumor(){ Message = Hints[Random.Range(0, Hints.Length)], Source = "Spoiler" }
+            };
             _availableActions = new List<string>()
             {
+                "Move Forward",
                 "Move North",
                 "Move South",
                 "Move East",
                 "Move West",
                 "Attack Surrounding",
-                "Scavenge Surrounding"
+                "Scavenge Surrounding",
+                "Talk Surrounding"
             };
             _explored = new int[Blueprint.Height, Blueprint.Width];
         }
 
         void Start()
         {
-            InitializeAsync().Forget();
+            UpdateAsync().Forget();
         }
 
-        // 非同期処理で初期化。
-        async UniTask InitializeAsync()
+        async UniTask UpdateAsync()
         {
             CreateRolePlayAI();
             await CreateSubGoalAsync();
             CreateGamePlayAI();
+            
+            // 最初の1回はデフォルトで保持している噂から話題を選ぶ。
+            await UpdateTalkTopicAsync();
 
             _isInitialized = true;
+
+            while (true)
+            {
+                if (_unevaluatedRumors.TryDequeue(out Rumor info))
+                {
+                    await EvaluateRumorsAsync(info.Source, info.Message);
+                    await UpdateTalkTopicAsync();
+                }
+
+                await UniTask.Yield();
+            }
         }
 
         // ChatGPTのAPIに次の行動を選択させる。
@@ -123,10 +162,7 @@ namespace Game
             format.Surroundings.East = GetCellInfo(_adventurer.Coords + Vector2Int.right);
             format.Surroundings.West = GetCellInfo(_adventurer.Coords + Vector2Int.left);
             format.ActionLog = _actionLog.ToArray();
-            format.Rumors = new string[]
-            {
-                "Attack and defeat Kaduki."
-            };
+            format.Rumors = _rumors.Select(r => r.Message).ToArray();
             format.AvailableActions = _availableActions.ToArray();
             format.Goal = _subGoals[_currentSubGoalIndex];
 
@@ -143,10 +179,13 @@ namespace Game
 #if true
             Debug.Log("AIの判断: " + response);
 #endif
+
+            _selectedAction = response;
+
             return response;
         }
 
-        // 行動の結果を報告。
+        // AIが選択した行動の結果を報告してもらう。
         public void ReportActionResult(string result)
         {
             _actionLog ??= new Queue<string>();
@@ -155,10 +194,24 @@ namespace Game
             if (_actionLog.Count > 10) _actionLog.Dequeue();
         }
 
-        // 探索されたセルを報告。
+        // AIが移動を選択し、実際にセルを移動した場合は報告してもらう。
         public void ReportExploredCell(Vector2Int coords)
         {
             _explored[coords.y, coords.x]++;
+        }
+
+        // 会話の内容を取得。
+        public string GetTopic()
+        {
+            return _talkTopic;
+        }
+
+        // 会話相手から聞いた噂をAIが判定。
+        public void SetRumor(string source, string message)
+        {
+            if (message == string.Empty) return;
+
+            _unevaluatedRumors.Enqueue(new Rumor() { Source = source, Message = message });
         }
 
         // キャラクターとして振る舞うAIは、台詞や背景などをUIに表示するので日本語。
@@ -251,7 +304,7 @@ namespace Game
             }
 
             _currentSubGoalIndex = 0;
-#if true
+#if false
             foreach (string s in _subGoals) Debug.Log("設定したサブゴール: " + s);
 #endif
         }
@@ -310,14 +363,103 @@ namespace Game
             Cell cell = _dungeonManager.GetCell(coords);
             foreach (Actor actor in cell.GetActors())
             {
-                if (actor is Adventurer adventurer) return tag + adventurer.ID;
+                if (actor is Adventurer adventurer) return tag + $"There is {adventurer.ID}, an adventurer like me.";
                 if (actor is Enemy _) return tag + "Enemy";
-                if (actor.ID == "Treasure") return tag + "Treasure";
+                if (actor.ID == "Treasure") return tag + "There is a treasure chest. You can get it when you scavenge out the contents.";
                 if (actor.ID == "Door") return tag + "Door";
                 if (actor.ID == "Entrance") return tag + "Entrance";
+                if (actor.ID == "Barrel") return tag + "There's a barrel. You might be able to obtain items or information by scavenging it.";
+                if (actor.ID == "Container") return tag + "There's a container. You might be able to obtain items or information by scavenging it.";
             }
 
             return tag + "Floor";
+        }
+
+        // 噂をAIが評価し、スコア順に並べる。
+        async UniTask EvaluateRumorsAsync(string source, string message)
+        {
+            string prompt =
+                $"# Instructions\n" +
+                $"- You are a player in a game of dungeon exploration.\n" +
+                $"- The combination of information and source is given in Json format.\n" +
+                $"- It determines if the information is reliable or not and outputs only the confidence level with a value between 0 and 1.\n" +
+                $"'''\n" +
+                $"# OutputExample\n" +
+                $"- 0.2\n" +
+                $"- 1.0\n";
+            GptRequest ai = GptRequestFactory.Create(prompt);
+            Rumor rumor = new Rumor() { Message = message, Source = source };
+            string result = await ai.RequestAsync(JsonUtility.ToJson(rumor));
+
+            foreach (string s in result.Split())
+            {
+                if (float.TryParse(s, out rumor.Score)) break;
+            }
+
+            _rumors.Add(rumor);
+
+            Sort(_rumors, 0, _rumors.Count - 1);
+
+            if (_rumors.Count > 4)
+            {
+                _rumors.RemoveAt(_rumors.Count - 1);
+            }
+        }
+
+        // 自身の保持している噂から、会話する際に相手に伝える噂を選ぶ。
+        async UniTask UpdateTalkTopicAsync()
+        {
+            // 保持している噂の中身が空文字しか無い場合はAIが正常に判断できない可能性がある。
+            bool isEmpty = true;
+            foreach (Rumor r in _rumors)
+            {
+                if (r.Message != string.Empty)
+                {
+                    isEmpty = false;
+                    break;
+                }
+            }
+
+            if (isEmpty) return;
+
+            // 他の冒険者に伝える内容を判断する基準はAI任せなので、ヒントより挨拶を優先してしまうことがある。
+            string prompt =
+                $"# Instructions\n" +
+                $"- You are a player in a game of dungeon exploration.\n" +
+                $"- Some sentences are given in Json format.\n" +
+                $"- A sentence deemed appropriate to communicate to other players is output as is.";
+            GptRequest ai = GptRequestFactory.Create(prompt);
+            TalkTopicChoices choices = new TalkTopicChoices();
+            choices.Value = _rumors.Select(r => r.Message).ToArray();
+            _talkTopic = await ai.RequestAsync(JsonUtility.ToJson(choices));
+        }
+
+        static void Sort(List<Rumor> array, int left, int right)
+        {
+            if (left >= right) return;
+
+            float pivot = array[right].Score;
+            int current = left;
+            for (int i = left; i <= right - 1; i++)
+            {
+                if (array[i].Score > pivot)
+                {
+                    Swap(array, current, i);
+                    current++;
+                }
+            }
+
+            Swap(array, current, right);
+
+            Sort(array, left, current - 1);
+            Sort(array, current + 1, right);
+        }
+
+        static void Swap(List<Rumor> array, int a, int b)
+        {
+            Rumor x = array[a];
+            array[a] = array[b];
+            array[b] = x;
         }
     }
 }
