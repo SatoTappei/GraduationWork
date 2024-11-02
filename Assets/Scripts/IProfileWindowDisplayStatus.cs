@@ -10,7 +10,7 @@ namespace Game
         public string Job { get; }
         public string Background { get; }
         public string Goal { get; }
-        public string[] Items { get; }
-        public string[] Infomation { get; }
+        public IReadOnlyList<string> Item { get; }
+        public IReadOnlyList<SharedInformation> Information { get; }
     }
 }

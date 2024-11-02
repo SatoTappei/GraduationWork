@@ -6,12 +6,27 @@ namespace Game
 {
     public class ReturnToEntrance : SubGoal
     {
-        public ReturnToEntrance(Adventurer owner) : base(owner) { }
-        public ReturnToEntrance(Adventurer owner, SubGoal next) : base(owner, next) { }
+        public static readonly BilingualString StaticText;
 
-        public override bool IsClear()
+        static ReturnToEntrance()
         {
-            throw new System.NotImplementedException();
+            string j = "ƒ_ƒ“ƒWƒ‡ƒ“‚Ì“üŒû‚É–ß‚éB";
+            string e = "Return to the entrance.";
+            StaticText = new BilingualString(j, e);
+        }
+
+        public ReturnToEntrance(Adventurer owner) : base(owner) { }
+
+        public override BilingualString Text => StaticText;
+
+        public override bool IsCompleted()
+        {
+            return Blueprint.Interaction[Owner.Coords.y][Owner.Coords.x] == '<';
+        }
+
+        public override IEnumerable<string> GetAdditionalChoices()
+        {
+            yield return "Return To Entrance";
         }
     }
 }

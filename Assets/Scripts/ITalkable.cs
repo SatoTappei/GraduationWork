@@ -6,6 +6,6 @@ namespace Game
 {
     public interface ITalkable
     {
-        public void Talk(string id, string topic, Vector2Int coords);
+        public void Talk(string id, BilingualString text, Vector2Int coords);
     }
 }

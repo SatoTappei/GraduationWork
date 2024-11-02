@@ -19,6 +19,7 @@ namespace Game
         AudioSource _audioSource;
         AdventurerAI _adventurerAI;
 
+        Queue<SharedInformation> _pendingInfomation;
         Vector2Int _currentCoords;
         Vector2Int _currentDirection;
         string _pathTarget;
@@ -40,26 +41,52 @@ namespace Game
             _adventurerAI = GetComponent<AdventurerAI>();
             CurrentHp = MaxHp;
             CurrentEmotion = MaxEmotion;
-            Items = new string[3];
-            Infomation = new string[4];
+            Item = new string[3];
+            Information = new SharedInformation[4];
+            ExploreRecord = new ExploreRecord(Blueprint.Height, Blueprint.Width);
+            ActionLog = new Queue<string>();
+
+            // 最初から知っている情報をAIが判定するのに使う型に変換する。
+            for (int i = 0; i < AdventurerSheet.DecisionSupportContext.Length; i++)
+            {
+                BilingualString text = AdventurerSheet.DecisionSupportContext[i];
+                if (text.Japanese != string.Empty && text.English != string.Empty)
+                {
+                    Information[i] = new SharedInformation(text, "Myself");
+                }
+            }
+
+            AvailableActions = new List<string>()
+            {
+                "Move Forward",
+                "Move North",
+                "Move South",
+                "Move East",
+                "Move West",
+                "Attack Surrounding",
+                "Scavenge Surrounding",
+                "Talk Surrounding"
+            };
+
+            _currentCoords = _spawnCoords;
+            _currentDirection = Vector2Int.up;
+            _path = new List<Cell>();
+            _pendingInfomation = new Queue<SharedInformation>();
         }
 
         void Start()
         {
-            _currentCoords = _spawnCoords;
-            _currentDirection = Vector2Int.up;
-            _path = new List<Cell>();
-
             _dungeonManager.AddActorOnCell(_currentCoords, this);
             Cell cell = _dungeonManager.GetCell(_currentCoords);
             transform.position = cell.Position;
 
             _statusBarID = _uiManager.RegisterToStatusBar(this);
             _uiManager.ShowLine(_statusBarID, "こんにちは。");
-            _uiManager.AddLog("Kadukiがダンジョンにやってきた。");
+            _uiManager.AddLog($"{AdventurerSheet.DisplayName}がダンジョンにやってきた。");
             _profileWindowID = _uiManager.RegisterToProfileWindow(this);
 
             UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
+            EvaluatePendingInfomationAsync().Forget();
         }
 
         void OnDestroy()
@@ -69,8 +96,13 @@ namespace Game
 
         async UniTask UpdateAsync(CancellationToken token)
         {
+            SubGoals = await _adventurerAI.SelectSubGoalAsync();
+            CurrentSubGoalIndex = 0;
+
             while (true)
             {
+                _uiManager.UpdateProfileWindowStatus(_profileWindowID, this);
+
                 ElapsedTurn++;
 
                 string selected = await _adventurerAI.SelectNextActionAsync();
@@ -86,10 +118,45 @@ namespace Game
 
                 if (await DeathAsync() || await EscapeAsync()) break;
 
+                // サブゴールを達成した場合、次のサブゴールを設定。
+                if (SubGoals[CurrentSubGoalIndex].IsCompleted())
+                {
+                    CurrentSubGoalIndex++;
+
+                    // 利用可能な行動の選択肢がある場合は追加。
+                    IEnumerable<string> choices = SubGoals[CurrentSubGoalIndex].GetAdditionalChoices();
+                    AvailableActions.AddRange(choices);
+                }
+
                 await UniTask.Yield();
             }
 
             Destroy(gameObject);
+        }
+
+        async UniTask EvaluatePendingInfomationAsync()
+        {
+            while (true)
+            {
+                if (_pendingInfomation.TryDequeue(out SharedInformation info))
+                {
+                    info.Score = await _adventurerAI.EvaluateInformationAsync(info);
+                    List<SharedInformation> temp = Information.ToList();
+                    temp.Add(info);
+                    Sort(temp, 0, temp.Count);
+
+                    if (temp.Count > 4)
+                    {
+                        temp.RemoveAt(temp.Count - 1);
+                    }
+
+                    Information = temp.ToArray();
+
+                    TalkContent = await _adventurerAI.SelectTalkContentAsync(Information);
+                }
+
+                await UniTask.Yield();
+            }
         }
 
         // 隣のセルに移動。
@@ -243,8 +310,8 @@ namespace Game
                 _currentPathIndex++;
                 _currentPathIndex = Mathf.Min(_currentPathIndex, _path.Count - 1);
 
-                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: Successfully moved to the {directionName}.");
-                _adventurerAI.ReportExploredCell(_currentCoords);
+                AddActionLog($"turn{ElapsedTurn}: Successfully moved to the {directionName}.");
+                UpdateExploreRecord(_currentCoords);
             }
             else
             {
@@ -265,7 +332,7 @@ namespace Game
                 _currentPathIndex++;
                 _currentPathIndex = Mathf.Min(_currentPathIndex, _path.Count - 1);
 
-                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: Failed to move to the {directionName}. Cannot move in this direction.");
+                AddActionLog($"turn{ElapsedTurn}: Failed to move to the {directionName}. Cannot move in this direction.");
             }
         }
 
@@ -305,7 +372,7 @@ namespace Game
 
             if (targetDamageable == null)
             {
-                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: attack neighbour target failure.");
+                AddActionLog($"turn{ElapsedTurn}: attack neighbour target failure.");
                 return;
             }
 
@@ -334,10 +401,10 @@ namespace Game
                 _uiManager.ShowLine(_statusBarID, "殺した。");
                 _uiManager.AddLog("KadukiがBlackKadukiを殺した。");
                 DefeatCount++;
-                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: we attacked the enemy. And defeated them.");
+                AddActionLog($"turn{ElapsedTurn}: we attacked the enemy. And defeated them.");
             }
 
-            _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: we attacked the enemy. The enemy is still alive.");
+            AddActionLog($"turn{ElapsedTurn}: we attacked the enemy. The enemy is still alive.");
         }
 
         // 周囲のActorを漁る。
@@ -380,7 +447,7 @@ namespace Game
 
             if (targetScavengeable == null)
             {
-                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: scavenge neighbour target failure.");
+                AddActionLog($"turn{ElapsedTurn}: scavenge neighbour target failure.");
                 return;
             }
             
@@ -409,7 +476,7 @@ namespace Game
                 _uiManager.ShowLine(_statusBarID, "宝を入手。");
             }
 
-            _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: scavenge neighbour target success.");
+            AddActionLog($"turn{ElapsedTurn}: scavenge neighbour target success.");
         }
 
         // 周囲のAdventureと会話する。
@@ -451,7 +518,7 @@ namespace Game
 
             if (targetTalkable == null)
             {
-                _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: talk neighbour target failure.");
+                AddActionLog($"turn{ElapsedTurn}: talk neighbour target failure.");
                 return;
             }
 
@@ -478,9 +545,9 @@ namespace Game
                 .Find("Particle_Talk").GetComponent<ParticleSystem>();
             particle.Play();
 
-            targetTalkable.Talk(ID, _adventurerAI.GetTopic(), _currentCoords);
+            targetTalkable.Talk(ID, TalkContent.Text, _currentCoords);
 
-            _adventurerAI.ReportActionResult($"turn{ElapsedTurn}: talk neighbour target success.");
+            AddActionLog($"turn{ElapsedTurn}: talk neighbour target success.");
 
             await UniTask.WaitForSeconds(Mathf.Max(ParticlePlayTime, AnimationPlayTime));
         }
@@ -579,9 +646,51 @@ namespace Game
         }
         
         // 周囲の会話可能なキャラクターと会話する。
-        public override void Talk(string id, string topic, Vector2Int coords)
+        public override void Talk(string id, BilingualString text, Vector2Int coords)
         {
-            _adventurerAI.SetRumor("Adventurer", topic);
+            SharedInformation info = new SharedInformation(text, "Adventurer");
+            _pendingInfomation.Enqueue(info);
+        }
+
+        // 行動ログを追加。
+        void AddActionLog(string text)
+        {
+            ActionLog.Enqueue(text);
+            
+            if (ActionLog.Count > 10) ActionLog.Dequeue();
+        }
+
+        void UpdateExploreRecord(Vector2Int coords)
+        {
+            ExploreRecord.IncreaseCount(coords);
+        }
+
+        static void Sort(List<SharedInformation> list, int left, int right)
+        {
+            if (left >= right) return;
+
+            float pivot = list[right].Score;
+            int current = left;
+            for (int i = left; i <= right - 1; i++)
+            {
+                if (list[i].Score > pivot)
+                {
+                    Swap(list, current, i);
+                    current++;
+                }
+            }
+
+            Swap(list, current, right);
+
+            Sort(list, left, current - 1);
+            Sort(list, current + 1, right);
+        }
+
+        static void Swap(List<SharedInformation> list, int a, int b)
+        {
+            SharedInformation x = list[a];
+            list[a] = list[b];
+            list[b] = x;
         }
     }
 }

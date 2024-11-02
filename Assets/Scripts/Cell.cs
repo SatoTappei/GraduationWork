@@ -47,7 +47,7 @@ namespace Game
         public int Y { get; }
         public int Cost { get; }
         public Terrain Terrain { get; }
-        public Location Location { get; } 
+        public Location Location { get; }
         public Vector2Int Coords => new Vector2Int(X, Y);
 
         // 宝箱や戦闘中のキャラクターがいるマスなど、動的に状態が変化する場合に使用するフラグ。

@@ -6,12 +6,22 @@ namespace Game
 {
     public class GetTreasure : SubGoal
     {
-        public GetTreasure(Adventurer owner) : base(owner) { }
-        public GetTreasure(Adventurer owner, SubGoal next) : base(owner, next) { }
+        public static readonly BilingualString StaticText;
 
-        public override bool IsClear()
+        static GetTreasure()
         {
-            throw new System.NotImplementedException();
+            string j = "‚¨•ó‚ðŽè‚É“ü‚ê‚éB";
+            string e = "Find the treasure chest in the dungeon and scavenge.";
+            StaticText = new BilingualString(j, e);
+        }
+
+        public GetTreasure(Adventurer owner) : base(owner) { }
+
+        public override BilingualString Text => StaticText;
+
+        public override bool IsCompleted()
+        {
+            return Owner.TreasureCount >= 1;
         }
     }
 }

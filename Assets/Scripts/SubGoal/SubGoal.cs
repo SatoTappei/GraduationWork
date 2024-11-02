@@ -11,14 +11,10 @@ namespace Game
             Owner = owner;
         }
 
-        public SubGoal(Adventurer owner, SubGoal next) : this(owner)
-        {
-            Next = next;
-        }
-
-        public abstract bool IsClear();
-
-        public SubGoal Next { get; set; }
         protected Adventurer Owner { get; }
+        public abstract BilingualString Text { get; }
+
+        public abstract bool IsCompleted();
+        public virtual IEnumerable<string> GetAdditionalChoices() { yield break; }
     }
 }

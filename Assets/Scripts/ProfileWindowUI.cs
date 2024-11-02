@@ -12,7 +12,7 @@ namespace Game
         [SerializeField] Text _background;
         [SerializeField] Text _goal;
         [SerializeField] Text _item;
-        [SerializeField] Text _infomation;
+        [SerializeField] Text _information;
 
         CanvasGroup _canvasGroup;
         AudioSource _audioSource;
@@ -26,66 +26,31 @@ namespace Game
             DeleteStatus();
         }
 
-        void Start()
-        {
-            
-        }
-
         public void SetStatus(IProfileWindowDisplayStatus status)
         {
-            _name.text = status.FullName;
-            _job.text = status.Job;
-            _background.text = status.Background;
-            
-            if (status.Goal == default)
-            {
-                _goal.text = "--";
-            }
-            else
-            {
-                _goal.text = status.Goal;
-            }
-
-            _item.text = string.Empty;
-            foreach (string s in status.Items)
-            {
-                if (s == default) _item.text += "--\n";
-                else _item.text += $"{s}\n";
-            }
-
-            _infomation.text = string.Empty;
-            foreach (string s in status.Infomation)
-            {
-                if (s == default) _infomation.text += "--\n";
-                else _infomation.text += $"{s}\n";
-            }
+            SetName(status.FullName);
+            SetJob(status.Job);
+            SetBackground(status.Background);
+            SetGoal(status.Goal);
+            SetItem(status.Item);
+            SetInfomation(status.Information);
         }
 
         public void UpdateStatus(IProfileWindowDisplayStatus status)
         {
-            //
+            SetGoal(status.Goal);
+            SetItem(status.Item);
+            SetInfomation(status.Information);
         }
 
         public void DeleteStatus()
         {
-            _name.text = "--";
-            _job.text = "--";
-            _background.text = "--";
-            _goal.text = "--";
-
-            // 持ち物欄は最大3つ表示可能なデザインになっている。
-            _item.text = string.Empty;
-            for (int i = 0; i < 3; i++)
-            {
-                _item.text += "--\n";
-            }
-
-            // 知っている情報欄は最大4つ表示可能なデザインになっている。
-            _infomation.text = string.Empty;
-            for (int i = 0; i < 4; i++)
-            {
-                _item.text += "--\n";
-            }
+            SetName("--");
+            SetJob("--");
+            SetBackground("--");
+            SetGoal("--");
+            SetItem(null);
+            SetInfomation(null);
         }
 
         public void Open()
@@ -97,6 +62,75 @@ namespace Game
         public void Close()
         {
             _canvasGroup.alpha = 0;
+        }
+
+        void SetName(string fullName)
+        {
+            _name.text = fullName;
+        }
+
+        void SetJob(string job)
+        {
+            _job.text = job;
+        }
+
+        void SetBackground(string background)
+        {
+            _background.text = background;
+        }
+
+        void SetGoal(string goal)
+        {
+            if (goal == default) _goal.text = "--";
+            else _goal.text = goal;
+        }
+
+        void SetItem(IReadOnlyList<string> item)
+        {
+            // 持ち物欄は最大3つ表示可能なデザインになっている。
+            const int Max = 3;
+
+            _item.text = string.Empty;
+
+            if (item == null)
+            {
+                for (int i = 0; i < Max; i++)
+                {
+                    _item.text += "--\n";
+                }
+            }
+            else
+            {
+                for (int i = 0; i < Max; i++)
+                {
+                    if (item[i] == default) _item.text += "--\n";
+                    else _item.text += $"{item[i]}\n";
+                }
+            }
+        }
+
+        void SetInfomation(IReadOnlyList<SharedInformation> information)
+        {
+            // 知っている情報欄は最大4つ表示可能なデザインになっている。
+            const int Max = 4;
+
+            _information.text = string.Empty;
+
+            if (information == null)
+            {
+                for (int i = 0; i < Max; i++)
+                {
+                    _information.text += "--\n";
+                }
+            }
+            else
+            {
+                for (int i = 0; i < Max; i++)
+                {
+                    if (information[i] == default) _information.text += "--\n";
+                    else _information.text += $"{information[i].Text.Japanese}\n";
+                }
+            }
         }
     }
 }

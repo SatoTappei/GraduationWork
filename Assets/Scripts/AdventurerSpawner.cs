@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class AdventurerSpawner : MonoBehaviour
 {
-    [SerializeField] GameObject _prefab;
+    [SerializeField] GameObject[] _prefabs;
 
     GameObject[] _spawned;
     WaitForSeconds _interval;
@@ -52,7 +52,8 @@ public class AdventurerSpawner : MonoBehaviour
         {
             if (_spawned[i] == null)
             {
-                _spawned[i] = Instantiate(_prefab);
+                GameObject prefab = _prefabs[Random.Range(0, _prefabs.Length)];
+                _spawned[i] = Instantiate(prefab);
                 break;
             }
         }

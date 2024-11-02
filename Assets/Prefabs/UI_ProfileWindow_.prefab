@@ -832,7 +832,7 @@ MonoBehaviour:
   _background: {fileID: 2640596173053083839}
   _goal: {fileID: 715244052282032056}
   _item: {fileID: 6354890111196316430}
-  _infomation: {fileID: 2291067137017684011}
+  _information: {fileID: 2291067137017684011}
 --- !u!1 &3579932216407291668
 GameObject:
   m_ObjectHideFlags: 0
@@ -1225,7 +1225,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8160432601053947052}
   m_Layer: 0
-  m_Name: Infomation
+  m_Name: Information
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
