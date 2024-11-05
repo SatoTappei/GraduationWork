@@ -19,7 +19,7 @@ namespace Game
         [SerializeField] string _lineSample2;
         [SerializeField] string _lineSample3;
         [Space(10)]
-        [SerializeField] BilingualString[] _decisionSupportContext;
+        [SerializeField] SharedInformation[] _decisionSupportContext;
         [Header("ˆÈ‰º‚ÍƒQ[ƒ€ƒvƒŒƒCAI‚ªˆµ‚¤‚Ì‚Å‰pŒê‚Å‹L“ü")]
         [TextArea]
         [SerializeField] string _personality;
@@ -38,7 +38,7 @@ namespace Game
         public string LineSample1 => _lineSample1;
         public string LineSample2 => _lineSample2;
         public string LineSample3 => _lineSample3;
-        public BilingualString[] DecisionSupportContext => _decisionSupportContext;
+        public SharedInformation[] DecisionSupportContext => _decisionSupportContext;
         public string Personality => _personality;
         public string Motivation => _motivation;
         public string Weaknesses => _weaknesses;

@@ -4,27 +4,32 @@ using UnityEngine;
 
 namespace Game
 {
+    [System.Serializable]
     public class SharedInformation
     {
+        [SerializeField] BilingualString _text;
+        [SerializeField] string _source;
+        [SerializeField] float _score;
+
         public SharedInformation(BilingualString text, string source, float score) : this(text, source)
         {
-            Score = score;
+            _score = score;
         }
 
         public SharedInformation(BilingualString text, string source)
         {
-            Text = text;
-            Source = source;
+            _text = text;
+            _source = source;
         }
 
         public SharedInformation(string japaneseText, string englishText, string source)
         {
-            Text = new BilingualString(japaneseText, englishText);
-            Source = source;
+            _text = new BilingualString(japaneseText, englishText);
+            _source = source;
         }
 
-        public BilingualString Text { get; }
-        public string Source { get; }
-        public float Score { get; set; }
+        public BilingualString Text => _text;
+        public string Source => _source;
+        public float Score { get => _score; set => _score = value; }
     }
 }

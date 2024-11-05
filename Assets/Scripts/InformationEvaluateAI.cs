@@ -3,11 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Threading;
 
 namespace Game
 {
     public class InformationEvaluateAI
     {
+        [System.Serializable]
         class RequestFormat
         {
             public string Text;
@@ -31,8 +33,10 @@ namespace Game
             _ai = AIRequestFactory.Create(prompt);
         }
 
-        public async UniTask<float> EvaluateAsync(SharedInformation information)
+        public async UniTask<float> EvaluateAsync(SharedInformation information, CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
+
             // SharedInformation型にはAIが判定するのに必要ない日本語の文章とスコア情報が含まれている。
             // リクエスト専用の型に必要な値をコピーし、その型でリクエストする。
             RequestFormat request = new RequestFormat();

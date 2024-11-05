@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -32,14 +33,14 @@ namespace Game
             SetJob(status.Job);
             SetBackground(status.Background);
             SetGoal(status.Goal);
-            SetItem(status.Item);
+            SetItem(status.ItemInventory);
             SetInfomation(status.Information);
         }
 
         public void UpdateStatus(IProfileWindowDisplayStatus status)
         {
             SetGoal(status.Goal);
-            SetItem(status.Item);
+            SetItem(status.ItemInventory);
             SetInfomation(status.Information);
         }
 
@@ -85,14 +86,14 @@ namespace Game
             else _goal.text = goal;
         }
 
-        void SetItem(IReadOnlyList<string> item)
+        void SetItem(IReadOnlyInventory itemInventory)
         {
             // 持ち物欄は最大3つ表示可能なデザインになっている。
             const int Max = 3;
 
             _item.text = string.Empty;
 
-            if (item == null)
+            if (itemInventory == null)
             {
                 for (int i = 0; i < Max; i++)
                 {
@@ -101,10 +102,16 @@ namespace Game
             }
             else
             {
-                for (int i = 0; i < Max; i++)
+                IEnumerable<InventoryItem> allItem = itemInventory.GetAllInventoryItem();
+                foreach (InventoryItem item in allItem)
                 {
-                    if (item[i] == default) _item.text += "--\n";
-                    else _item.text += $"{item[i]}\n";
+                    _item.text += $"{item.Name}\n";
+                }
+
+                int emptyCount = Max - allItem.Count();
+                for (int i = 0; i < emptyCount; i++)
+                {
+                    _item.text += "--\n";
                 }
             }
         }
@@ -127,8 +134,18 @@ namespace Game
             {
                 for (int i = 0; i < Max; i++)
                 {
-                    if (information[i] == default) _information.text += "--\n";
-                    else _information.text += $"{information[i].Text.Japanese}\n";
+                    if (information.Count <= i)
+                    {
+                        _information.text += "--\n";
+                    }
+                    else if (information[i] == null)
+                    {
+                        _information.text += "--\n";
+                    }
+                    else
+                    {
+                        _information.text += $"{information[i].Text.Japanese}\n";
+                    }
                 }
             }
         }

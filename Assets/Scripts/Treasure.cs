@@ -25,10 +25,10 @@ namespace Game
             if (TryGetComponent(out AudioSource source)) source.Play();
         }
 
-        public string Scavenge()
+        public Item Scavenge()
         {
             Interact(null);
-            return "Treasure";
+            return new Item("•ó•¨", "Treasure");
         }
 
         void Open() => SetChestState(isOpen: true);

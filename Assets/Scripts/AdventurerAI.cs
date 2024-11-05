@@ -1,5 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 
 namespace Game
@@ -62,8 +63,10 @@ namespace Game
         }
 
         // AIに次の行動を選択させる。
-        public async UniTask<string> SelectNextActionAsync()
+        public async UniTask<string> SelectNextActionAsync(CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
+
             await WaitInitializeAsync();
             string response = await _gamePlayAI.RequestNextActionAsync();
 
@@ -74,15 +77,15 @@ namespace Game
         }
 
         // 内容と情報源を基に、AIに情報の信頼度を評価させる。
-        public async UniTask<float> EvaluateInformationAsync(SharedInformation information)
+        public async UniTask<float> EvaluateInformationAsync(SharedInformation information, CancellationToken token)
         {
-            return await _informationEvaluateAI.EvaluateAsync(information);
+            return await _informationEvaluateAI.EvaluateAsync(information, token);
         }
 
         // 自身の知っている情報のうち、他の冒険者に喋るものをAIに選択させる。
-        public async UniTask<SharedInformation> SelectTalkContentAsync(IReadOnlyList<SharedInformation> information)
+        public async UniTask<SharedInformation> SelectInformationAsync(IReadOnlyList<SharedInformation> information, CancellationToken token)
         {
-            return await _talkContentSelectAI.SelectAsync(information);
+            return await _talkContentSelectAI.SelectAsync(information, token);
         }
 
         async UniTask WaitInitializeAsync()

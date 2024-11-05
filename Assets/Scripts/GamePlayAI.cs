@@ -77,7 +77,7 @@ namespace Game
                 .Select(info => info.Text.English)
                 .ToArray();
             format.AvailableActions = _resource.AvailableActions.ToArray();
-            format.Goal = _resource.SubGoals[_resource.CurrentSubGoalIndex].Text.English;
+            format.Goal = _resource.CurrentSubGoal.Text.English;
 
             try
             {

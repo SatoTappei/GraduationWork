@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Game
 {
@@ -21,7 +20,13 @@ namespace Game
 
         public override bool IsCompleted()
         {
-            return Owner.Item.Contains("依頼されたアイテム");
+            foreach (Item item in Owner.Item)
+            {
+                if (item == null) continue;
+                if (item.Name.Japanese == "依頼されたアイテム") return true;
+            }
+
+            return false;
         }
     }
 }

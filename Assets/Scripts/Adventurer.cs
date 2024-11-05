@@ -1,5 +1,8 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace Game
@@ -12,21 +15,41 @@ namespace Game
         IRolePlayAIResource
     {
         [SerializeField] AdventurerSheet _adventurerSheet;
+        [SerializeField] Vector2Int _spawnCoords;
 
-        public List<string> AvailableActions { get; protected set; }
-        public SubGoal[] SubGoals { get; protected set; }
-        public int CurrentSubGoalIndex { get; protected set; }
-        public ExploreRecord ExploreRecord { get; protected set; }
-        public Queue<string> ActionLog { get; protected set; }
-        public int ElapsedTurn { get; protected set; }
-        public int TreasureCount { get; protected set; }
-        public int ItemCount { get; protected set; }
-        public int DefeatCount { get; protected set; }
-        public string[] Item { get; protected set; }
-        public SharedInformation[] Information { get; protected set; }
-        public SharedInformation TalkContent { get; set; }
-        public int CurrentHp { get; protected set; }
-        public int CurrentEmotion { get; protected set; }
+        DungeonManager _dungeonManager;
+        UiManager _uiManager;
+        Animator _animator;
+        AdventurerAI _adventurerAI;
+
+        Vector2Int _currentCoords;
+        Vector2Int _currentDirection;
+        Transform _forwardAxis;
+        Inventory _inventory;
+        HoldedInformation _holdedInformation;
+        Queue<SharedInformation> _pendingInformation;
+        SharedInformation _selectedInformation;
+        List<Cell> _path;
+        string _pathTarget;
+        int _currentPathIndex;
+        SubGoal[] _subGoals;
+        int _currentSubGoalIndex;
+        int _statusBarID;
+        int _profileWindowID;
+
+        public override Vector2Int Coords => _currentCoords;
+        public override Vector2Int Direction => _currentDirection;
+
+        public List<string> AvailableActions { get; private set; }
+        public Item[] Item { get; private set; }
+        public ExploreRecord ExploreRecord { get; private set; }
+        public Queue<string> ActionLog { get; private set; }
+        public int CurrentHp { get; private set; }
+        public int CurrentEmotion { get; private set; }
+        public int ElapsedTurn { get; private set; }
+        public int TreasureCount { get; private set; }
+        public int ItemCount { get; private set; }
+        public int DefeatCount { get; private set; }
 
         public AdventurerSheet AdventurerSheet => _adventurerSheet;
         public Sprite Icon => _adventurerSheet.Icon;
@@ -36,27 +59,768 @@ namespace Game
         public string Background => _adventurerSheet.Background;
         public int MaxHp => 100;
         public int MaxEmotion => 100;
-        public string Goal
+        public SubGoal CurrentSubGoal
         {
             get
             {
-                if (SubGoals == null) return "--";
-                if (CurrentSubGoalIndex < 0 || SubGoals.Length <= CurrentSubGoalIndex) return "--";
-                if (SubGoals[CurrentSubGoalIndex] == null) return "--";
+                if (_subGoals == null) return null;
+                if (_currentSubGoalIndex < 0 || _subGoals.Length <= _currentSubGoalIndex) return null;
+                if (_subGoals[_currentSubGoalIndex] == null) return null;
 
-                return SubGoals[CurrentSubGoalIndex].Text.Japanese;
+                return _subGoals[_currentSubGoalIndex];
             }
         }
+        public bool IsDefeated => CurrentHp <= 0;
+        public bool IsAlive => !IsDefeated;
 
-        IReadOnlyList<string> IProfileWindowDisplayStatus.Item => Item;
-        IReadOnlyList<SharedInformation> IProfileWindowDisplayStatus.Information => Information;
+        string IProfileWindowDisplayStatus.Goal
+        {
+            get
+            {
+                if (CurrentSubGoal == null) return string.Empty;
+                else return CurrentSubGoal.Text.Japanese;
+            }
+        }
+        IReadOnlyInventory IProfileWindowDisplayStatus.ItemInventory => _inventory;
+        IReadOnlyList<SharedInformation> IProfileWindowDisplayStatus.Information => _holdedInformation.Contents;
 
         IReadOnlyExploreRecord IGamePlayAIResource.ExploreRecord => ExploreRecord;
         IReadOnlyCollection<string> IGamePlayAIResource.ActionLog => ActionLog;
-        IReadOnlyList<SharedInformation> IGamePlayAIResource.Information => Information;
+        IReadOnlyList<SharedInformation> IGamePlayAIResource.Information => _holdedInformation.Contents;
         IReadOnlyList<string> IGamePlayAIResource.AvailableActions => AvailableActions;
-        IReadOnlyList<SubGoal> IGamePlayAIResource.SubGoals => SubGoals;
 
-        public virtual void Talk(string id, BilingualString text, Vector2Int coords) { }
+        protected virtual void Awake()
+        {
+            _currentCoords = _spawnCoords;
+            _currentDirection = Vector2Int.up;
+            _forwardAxis = transform.FindChildRecursive("ForwardAxis");
+            _inventory = new Inventory();
+            _holdedInformation = new HoldedInformation(AdventurerSheet.DecisionSupportContext);
+            _pendingInformation = new Queue<SharedInformation>();
+            _path = new List<Cell>();
+
+            AvailableActions = new List<string>()
+            {
+                "Move North",
+                "Move South",
+                "Move East",
+                "Move West",
+                "Attack Surrounding",
+                "Scavenge Surrounding",
+                "Talk Surrounding"
+            };
+
+            Item = new Item[3];
+            ExploreRecord = new ExploreRecord(Blueprint.Height, Blueprint.Width);
+            ActionLog = new Queue<string>();
+            CurrentHp = MaxHp;
+            CurrentEmotion = MaxEmotion;
+
+            _dungeonManager = DungeonManager.Find();
+            _uiManager = UiManager.Find();
+            _animator = GetComponentInChildren<Animator>();
+            _adventurerAI = GetComponent<AdventurerAI>();
+        }
+
+        protected virtual void Start()
+        {
+            RegisterStatusBar();
+            RegisterProfileWindow();
+            AddActorOnCell();
+            SetPosition(Coords);
+            ShowLine("こんにちは。");
+            AddGameLog($"{AdventurerSheet.DisplayName}がダンジョンにやってきた。");
+
+            CancellationToken token = this.GetCancellationTokenOnDestroy();
+            UpdateHoldedInformationAsync(token).Forget();
+            UpdateAsync(token).Forget();
+        }
+
+        protected virtual void OnDestroy()
+        {
+            DeleteStatusBar();
+            DeleteProfileWindow();
+        }
+
+        public void Talk(string id, BilingualString text, Vector2Int coords)
+        {
+            AddPendingInformation(text, "Adventurer");
+        }
+
+        public sealed override string Damage(string id, string weapon, int value, Vector2Int coords)
+        {
+            if (IsDefeated) return "Corpse";
+
+            PlayDamageEffect(coords);
+            DecreaseHp(value);
+            ShowLine("ダメージを受けた。");
+            UpdateStatusBar();
+
+            if (IsDefeated) return "Defeated";
+            else return "Hit";
+        }
+
+        async UniTask UpdateHoldedInformationAsync(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            while (!token.IsCancellationRequested)
+            {
+                // 保留中の情報がある場合、評価して既存の情報と比較＆入れ替えを行う。
+                // 自身が保持している情報が更新されたので、他冒険者との会話の際に伝える情報も更新する。
+                if (_pendingInformation.TryDequeue(out SharedInformation info))
+                {
+                    info.Score = await _adventurerAI.EvaluateInformationAsync(info, token);
+                    _holdedInformation.Add(info);
+                    _selectedInformation = await _adventurerAI.SelectInformationAsync(_holdedInformation.Contents, token);
+                }
+
+                await UniTask.Yield(cancellationToken: token);
+            }
+        }
+
+        async UniTask UpdateAsync(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            _subGoals = await _adventurerAI.SelectSubGoalAsync();
+            _currentSubGoalIndex = 0;
+
+            while (!token.IsCancellationRequested)
+            {
+                ElapsedTurn++;
+                UpdateProfileWindow();
+
+                switch (await _adventurerAI.SelectNextActionAsync(token))
+                {
+                    case "Move North": await MoveAsync(Vector2Int.up, token); break;
+                    case "Move South": await MoveAsync(Vector2Int.down, token); break;
+                    case "Move East": await MoveAsync(Vector2Int.right, token); break;
+                    case "Move West": await MoveAsync(Vector2Int.left, token); break;
+                    case "Return To Entrance": await MoveAsync("Entrance", token); break;
+                    case "Attack Surrounding": await AttackAsync(token); break;
+                    case "Scavenge Surrounding": await ScavengeAsync(token); break;
+                    case "Talk Surrounding": await TalkAsync(token); break;
+                }
+
+                if (await DefeatedAsync(token) || await EscapeAsync(token)) break;
+
+                // サブゴールを達成した場合、次のサブゴールを設定。
+                if (CurrentSubGoal.IsCompleted())
+                {
+                    _currentSubGoalIndex++;
+
+                    // 利用可能な行動の選択肢がある場合は追加。
+                    AvailableActions.AddRange(CurrentSubGoal.GetAdditionalChoices());
+                }
+
+                // OnUpdateAsyncが同期的の場合、無限ループに陥るので1フレーム待つ。
+                await UniTask.Yield();
+            }
+
+            Destroy(gameObject);
+        }
+
+        async UniTask MoveAsync(Vector2Int direction, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            PathfindingToNeighbourCell(direction);
+            await MoveNextCellAsync(token);
+        }
+
+        async UniTask MoveAsync(string target, CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+            PathfindingIfTargetChanged(target);
+            await MoveNextCellAsync(token);
+        }
+
+        async UniTask AttackAsync(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            if (TryGetAttackTarget(out Actor target))
+            {
+                await RotateToActorDirectionAsync(target, token);
+                PlayAnimation("Attack");
+                ShowLine("攻撃する。");
+
+                switch (ApplyDamage(target as IDamageable))
+                {
+                    case "Defeated":
+                        ShowLine("殺した。");
+                        AddGameLog($"{DisplayName}が敵を倒した。");
+                        AddActionLog("I attacked the enemy. I defeated the enemy.");
+                        DefeatCount++;
+                        break;
+                    case "Hit":
+                        AddActionLog("I attacked the enemy. The enemy is still alive.");
+                        break;
+                    case "Corpse":
+                        AddActionLog("I tried to attack it, but it was already dead.");
+                        break;
+                }
+            }
+            else
+            {
+                AddActionLog("There are no enemies around to attack.");
+            }
+        }
+
+        async UniTask ScavengeAsync(CancellationToken token)
+        {
+            if (TryGetScavengeTarget(out Actor target))
+            {
+                await RotateToActorDirectionAsync(target, token);
+                PlayAnimation("Scav");
+
+                string foundItem = ApplyScavenge(target as IScavengeable);
+                switch (foundItem)
+                {
+                    case "Treasure":
+                        AddActionLog("I scavenged the surrounding treasure chests. I got the treasure.");
+                        ShowLine("宝を入手。");
+                        TreasureCount++;
+                        break;
+                    case "Empty":
+                        AddActionLog("I scavenged the surrounding boxes. There was nothing in them.");
+                        break;
+                    default:
+                        AddActionLog($"I scavenged the surrounding boxes. I got the {foundItem}.");
+                        break;
+                }
+            }
+            else
+            {
+                AddActionLog("There are no areas around that can be scavenged.");
+            }
+        }
+
+        async UniTask TalkAsync(CancellationToken token)
+        {
+            const float PlayTime = 7.0f;
+
+            token.ThrowIfCancellationRequested();
+
+            if (TryGetTalkTarget(out Actor target))
+            {
+                await RotateToActorDirectionAsync(target, token);
+                PlayAnimation("Talk");
+                ShowLine("会話する。");
+                PlayTalkEffect();
+                ApplyTalk(target as ITalkable);
+                AddActionLog("I talked to the adventurers around me about what I knew.");
+                await WaitForSecondsAsync(PlayTime, token);
+            }
+            else
+            {
+                AddActionLog("I tried to talk with other adventurers, but there was no one around.");
+            }
+        }
+
+        async UniTask<bool> DefeatedAsync(CancellationToken token)
+        {
+            const float AnimationLength = 2.5f;
+
+            if (IsAlive) return false;
+
+            PlayDefeatedEffect();
+            ShowLine("死亡した。");
+            await WaitForSecondsAsync(AnimationLength, token);
+            RemoveActorOnCell();
+
+            return true;
+        }
+
+        async UniTask<bool> EscapeAsync(CancellationToken token)
+        {
+            const float AnimationLength = 1.0f * 2;
+
+            if (IsLastSubGoal() && IsEntrancePlacedCell(Coords) && CurrentSubGoal.IsCompleted())
+            {
+                PlayAnimation("Jump");
+                ShowLine("目的を達成して脱出。");
+                AddGameLog($"{DisplayName}がダンジョンから脱出した。");
+
+                await WaitForSecondsAsync(AnimationLength, token);
+                RemoveActorOnCell();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        bool IsLastSubGoal()
+        {
+            return _currentSubGoalIndex == _subGoals.Length - 1;
+        }
+
+        bool IsEntrancePlacedCell(Vector2Int coords)
+        {
+            return Blueprint.Interaction[coords.y][coords.x] == '<';
+        }
+
+        void PathfindingToNeighbourCell(Vector2Int direction)
+        {
+            Cell cell = GetCell(GetNeighbourCoords(direction));
+            CreatePathManually(direction.ToString(), cell);
+        }
+
+        void PathfindingIfTargetChanged(string target)
+        {
+            if (_pathTarget == target) return;
+
+            switch (target)
+            {
+                case "Treasure": PathfindingToTreasure(); break;
+                case "Entrance": PathfindingToEntrance(); break;
+                default: Debug.LogWarning($"対応する目標が存在しないため経路探索が出来ない。: {target}"); break;
+            }
+        }
+
+        async UniTask MoveNextCellAsync(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            SetDirectionToNextCell();
+            OpenForwardDoor();
+
+            string directionName = GetDirectionName();
+
+            if (IsNextCellPassable())
+            {
+                PlayAnimation("Walk");
+                RemoveActorOnCell();
+                SetCoordsToNextCell();
+                AddActorOnCell();
+                
+                await (TranslateAsync(token), RotateToNextCellDirectionAsync(token));
+                
+                PlayAnimation("Idle");
+                UpdateNextCell();
+                AddActionLog($"Successfully moved to the {directionName}.");
+                UpdateExploreRecord(Coords);
+            }
+            else
+            {
+                await RotateToNextCellDirectionAsync(token);
+
+                UpdateNextCell();
+                AddActionLog($"Failed to move to the {directionName}. Cannot move in this direction.");
+            }
+        }
+
+        bool TryGetAttackTarget(out Actor target)
+        {
+            return TryGetTarget<IDamageable>(out target);
+        }
+
+        bool TryGetScavengeTarget(out Actor target)
+        {
+            // 宝箱を優先して漁る。
+            if (TryGetTarget("Treasure", out target)) return true;
+            if (TryGetTarget<IScavengeable>(out target)) return true;
+
+            target = null;
+            return false;
+        }
+
+        bool TryGetTalkTarget(out Actor target)
+        {
+            return TryGetTarget<ITalkable>(out target);
+        }
+
+        string ApplyDamage(IDamageable target)
+        {
+            if (target == null) return string.Empty;
+
+            // まだ武器と攻撃力のデータを作っていない。
+            return target.Damage(ID, "パンチ", 34, _currentCoords);
+        }
+
+        string ApplyScavenge(IScavengeable target)
+        {
+            if (target == null) return string.Empty;
+
+            Item result = target.Scavenge();
+            if (result != null)
+            {
+                AddItemInventory(result);
+                return result.Name.English;
+            }
+            else
+            {
+                return "Empty";
+            }
+        }
+
+        void ApplyTalk(ITalkable target)
+        {
+            if (target == null || _selectedInformation == null) return;
+
+            target.Talk(ID, _selectedInformation.Text, Coords);
+        }
+
+        void PathfindingToTreasure()
+        {
+            Actor treasure = GetAnyCell("Treasure").GetActors().Where(a => a.ID == "Treasure").FirstOrDefault();
+            // 宝箱のマスへは経路探索が出来ないので、正面の位置までの経路探索。
+            Pathfinding("Treasure", treasure.Coords + treasure.Direction);
+        }
+
+        void PathfindingToEntrance()
+        {
+            Cell cell = GetAnyCell("Entrance");
+            Pathfinding("Entrance", cell.Coords);
+        }
+
+        void SetDirectionToNextCell()
+        {
+            _currentDirection = _path[_currentPathIndex].Coords - Coords;
+        }
+
+        void OpenForwardDoor()
+        {
+            Vector2Int forwardCoords = GetNeighbourCoords(Direction);
+            if (IsDoorPlacedCell(forwardCoords) && TryGetDoorOnCell(forwardCoords, out DungeonEntity door))
+            {
+                door.Interact(this);
+            }
+        }
+
+        bool IsNextCellPassable()
+        {
+            return _path[_currentPathIndex].IsPassable();
+        }
+
+        async UniTask TranslateAsync(CancellationToken token)
+        {
+            const float Speed = 1.0f;
+
+            token.ThrowIfCancellationRequested();
+
+            Vector3 start = GetPosition();
+            Vector3 goal = GetNextCellPosition();
+            for (float t = 0; t <= 1; t += Time.deltaTime * Speed)
+            {
+                SetPosition(Vector3.Lerp(start, goal, t));
+                await UniTask.Yield(cancellationToken: token);
+            }
+
+            SetPosition(goal);
+        }
+
+        async UniTask RotateToActorDirectionAsync(Actor actor, CancellationToken token)
+        {
+            await RotateAsync(GetRotationToTarget(actor.Coords), token);
+        }
+
+        async UniTask RotateToNextCellDirectionAsync(CancellationToken token)
+        {
+            await RotateAsync(GetRotationToNextCell(), token);
+        }
+
+        async UniTask RotateAsync(Quaternion goal, CancellationToken token)
+        {
+            const float Speed = 4.0f;
+
+            token.ThrowIfCancellationRequested();
+
+            Quaternion start = GetRotation();
+            for (float t = 0; t <= 1; t += Time.deltaTime * Speed)
+            {
+                SetRotation(Quaternion.Lerp(start, goal, t));
+                await UniTask.Yield(cancellationToken: token);
+            }
+        }
+
+        void AddActorOnCell()
+        {
+            _dungeonManager.AddActorOnCell(Coords, this);
+        }
+
+        void RemoveActorOnCell()
+        {
+            _dungeonManager.RemoveActorOnCell(Coords, this);
+        }
+
+        void SetCoordsToNextCell()
+        {
+            _currentCoords = _path[_currentPathIndex].Coords;
+        }
+
+        void UpdateNextCell()
+        {
+            _currentPathIndex++;
+            _currentPathIndex = Mathf.Min(_currentPathIndex, _path.Count - 1);
+        }
+
+        string GetDirectionName()
+        {
+            if (Direction == Vector2Int.up) return "north";
+            if (Direction == Vector2Int.down) return "south";
+            if (Direction == Vector2Int.left) return "west";
+            if (Direction == Vector2Int.right) return "east";
+
+            return string.Empty;
+        }
+
+        Vector3 GetPosition()
+        {
+            return transform.position;
+        }
+
+        Vector3 GetNextCellPosition()
+        {
+            return _path[_currentPathIndex].Position;
+        }
+
+        Quaternion GetRotation()
+        {
+            return _forwardAxis.rotation;
+        }
+
+        void SetRotation(Quaternion rotation)
+        {
+            _forwardAxis.rotation = rotation;
+        }
+
+        Quaternion GetRotationToNextCell()
+        {
+            return CalculateRotation(GetPosition(), GetNextCellPosition());
+        }
+
+        Quaternion GetRotationToTarget(Vector2Int targetCoords)
+        {
+            Cell a = GetCell(Coords);
+            Cell b = GetCell(targetCoords);
+            return CalculateRotation(a.Position, b.Position);
+        }
+
+        static Quaternion CalculateRotation(Vector3 a, Vector3 b)
+        {
+            Vector3 dir = (b - a).normalized;
+            if (dir == Vector3.zero) return Quaternion.identity;
+            else return Quaternion.LookRotation(dir);
+        }
+
+        bool TryGetTarget<T>(out Actor target)
+        {
+            foreach (Actor actor in GetNeighboursActors())
+            {
+                if (actor is T _)
+                {
+                    target = actor;
+                    return true;
+                }
+            }
+
+            target = null;
+            return false;
+        }
+
+        bool TryGetTarget(string id, out Actor target)
+        {
+            foreach (Actor actor in GetNeighboursActors())
+            {
+                if (actor.ID == id)
+                {
+                    target = actor;
+                    return true;
+                }
+            }
+
+            target = null;
+            return false;
+        }
+
+        IEnumerable<Actor> GetNeighboursActors()
+        {
+            for (int i = -1; i <= 1; i++)
+            {
+                for (int k = -1; k <= 1; k++)
+                {
+                    // 上下左右の4方向のみ。
+                    if ((i == 0 && k == 0) || Mathf.Abs(i * k) > 0) continue;
+
+                    Cell cell = GetCell(GetNeighbourCoords(new Vector2Int(k, i)));
+                    if (cell.GetActors().Count > 0)
+                    {
+                        foreach (Actor actor in cell.GetActors()) yield return actor;
+                    }
+                }
+            }
+        }
+
+        void RegisterStatusBar()
+        {
+            _statusBarID = _uiManager.RegisterToStatusBar(this);
+        }
+
+        void RegisterProfileWindow()
+        {
+            _profileWindowID = _uiManager.RegisterToProfileWindow(this);
+        }
+
+        void UpdateStatusBar()
+        {
+            _uiManager.UpdateStatusBarStatus(_statusBarID, this);
+        }
+
+        void UpdateProfileWindow()
+        {
+            _uiManager.UpdateProfileWindowStatus(_profileWindowID, this);
+        }
+
+        void DeleteStatusBar()
+        {
+            if (_uiManager == null) return;
+
+            _uiManager.DeleteStatusBarStatus(_statusBarID);
+        }
+
+        void DeleteProfileWindow()
+        {
+            if (_uiManager == null) return;
+
+            _uiManager.DeleteProfileWindowStatus(_profileWindowID);
+        }
+
+        void AddPendingInformation(BilingualString text, string source)
+        {
+            SharedInformation info = new SharedInformation(text, source);
+            _pendingInformation.Enqueue(info);
+        }
+
+        void AddItemInventory(Item item)
+        {
+            _inventory.Add(item);
+        }
+
+        Cell GetAnyCell(string id)
+        {
+            return _dungeonManager.GetCells(id).FirstOrDefault();
+        }
+
+        void SetPosition(Vector2Int coords)
+        {
+            Cell cell = _dungeonManager.GetCell(coords);
+            SetPosition(cell.Position);
+        }
+
+        void SetPosition(Vector3 position)
+        {
+            transform.position = position;
+        }
+
+        void ShowLine(string text)
+        {
+            _uiManager.ShowLine(_statusBarID, text);
+        }
+
+        static bool IsDoorPlacedCell(Vector2Int coords)
+        {
+            // ダンジョン生成時、ドアを生成するセルは 上(8),下(2),左(4),右(6) で向きを指定している。
+            return "2468".Contains(Blueprint.Doors[coords.y][coords.x]);
+        }
+
+        bool TryGetDoorOnCell(Vector2Int coords, out DungeonEntity door)
+        {
+            Actor actor = GetCell(coords).GetActors().Where(c => c.ID == "Door").FirstOrDefault();
+            door = actor as DungeonEntity;
+            return door != null;
+        }
+
+        Vector2Int GetNeighbourCoords(Vector2Int direction)
+        {
+            // 隣接していないセルには移動しないようにする。
+            int x = System.Math.Sign(direction.x);
+            int y = System.Math.Sign(direction.y);
+            return Coords + new Vector2Int(x, y);
+        }
+
+        void Pathfinding(string target, Vector2Int targetCoords)
+        {
+            _dungeonManager.Pathfinding(Coords, targetCoords, _path);
+            _pathTarget = target;
+            _currentPathIndex = 0;
+        }
+
+        void CreatePathManually(string target, params Cell[] cells)
+        {
+            _path.Clear();
+            _path.AddRange(cells);
+            _pathTarget = target;
+            _currentPathIndex = 0;
+        }
+
+        void IncreaseHp(int value)
+        {
+            DecreaseHp(-value);
+        }
+
+        void DecreaseHp(int value)
+        {
+            CurrentHp -= value;
+            CurrentHp = Mathf.Max(0, CurrentHp);
+        }
+
+        void AddActionLog(string text)
+        {
+            ActionLog.Enqueue($"Turn{ElapsedTurn}: {text}");
+
+            // 次の行動を選択するAIにリクエストすることを考慮して、適当に手動で設定。
+            if (ActionLog.Count > 10) ActionLog.Dequeue();
+        }
+
+        void AddGameLog(string text)
+        {
+            _uiManager.AddLog(text);
+        }
+
+        void PlayAnimation(string name)
+        {
+            _animator.Play(name);
+        }
+
+        Cell GetCell(Vector2Int coords)
+        {
+            return _dungeonManager.GetCell(coords);
+        }
+
+        void UpdateExploreRecord(Vector2Int coords)
+        {
+            ExploreRecord.IncreaseCount(coords);
+        }
+
+        void PlayDamageEffect(Vector2Int attackerCoords)
+        {
+            if (TryGetComponent(out DamageEffect effect))
+            {
+                effect.Play(Coords, attackerCoords);
+            }
+        }
+
+        void PlayDefeatedEffect()
+        {
+            if (TryGetComponent(out DefeatedEffect effect))
+            {
+                effect.Play();
+            }
+        }
+
+        void PlayTalkEffect()
+        {
+            if (TryGetComponent(out TalkEffect effect))
+            {
+                effect.Play();
+            }
+        }
+
+        async UniTask WaitForSecondsAsync(float duration, CancellationToken token)
+        {
+            await UniTask.WaitForSeconds(duration, cancellationToken: token);
+        }
     }
 }

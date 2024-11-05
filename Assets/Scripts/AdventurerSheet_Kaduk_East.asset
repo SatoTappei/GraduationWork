@@ -23,8 +23,11 @@ MonoBehaviour:
   _lineSample2: "\u3079\u3001\u5225\u306B\u2026\uFF01"
   _lineSample3: "\u3068\u3057\u3042\u304D\u2026"
   _decisionSupportContext:
-  - _japanese: "\u3042\u306A\u305F\u306F\u5165\u53E3\u306E\u6771\u5074\u306E\u6249\u304C\u6C17\u306B\u306A\u308B\u3002"
-    _english: The door on the east side of the entrance intrigues me.
+  - _text:
+      _japanese: "\u307E\u305A\u306F\u6771\u5074\u306B\u884C\u3053\u3046\u3002"
+      _english: Let's go to the east side first.
+    _source: Myself
+    _score: 1
   _personality: Normally being sharp but at some prompt suddenly becoming lovestruck.
   _motivation: I want to be praised.
   _weaknesses: I don't like small places.

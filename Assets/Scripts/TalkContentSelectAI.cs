@@ -2,17 +2,20 @@ using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace Game
 {
     public class TalkContentSelectAI
     {
+        [System.Serializable]
         class RequestFormat
         {
             public Choice[] Choices;
         }
 
+        [System.Serializable]
         class Choice
         {
             public string Text;
@@ -33,8 +36,10 @@ namespace Game
             _ai = AIRequestFactory.Create(prompt);
         }
 
-        public async UniTask<SharedInformation> SelectAsync(IReadOnlyList<SharedInformation> information)
+        public async UniTask<SharedInformation> SelectAsync(IReadOnlyList<SharedInformation> information, CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
+
             // 全ての情報が空文字の場合はAIが正常に判断できない可能性がある。
             bool isEmpty = true;
             foreach (SharedInformation info in information)
@@ -45,28 +50,30 @@ namespace Game
                     break;
                 }
             }
-
+            
             if (isEmpty) return null;
-
+            
             Choice[] choices = new Choice[information.Count];
             for (int i = 0; i < choices.Length; i++)
             {
+                if (information[i] == null) continue;
+
                 choices[i] = new Choice();
                 choices[i].Text = information[i].Text.English;
                 choices[i].Number = i;
             }
-
+            
             RequestFormat request = new RequestFormat();
             request.Choices = choices;
             string result = await _ai.RequestAsync(JsonUtility.ToJson(request));
-
+            
             // 出力された文章の中に数値以外の文字列が含まれている可能性があるので、弾いてから数値に変換。
             int number = result
                 .Split()
                 .Where(s => int.TryParse(s, out int _))
                 .Select(t => int.Parse(t))
                 .FirstOrDefault();
-
+            
             return information[number];
         }
     }

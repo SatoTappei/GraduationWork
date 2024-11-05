@@ -82,6 +82,12 @@ namespace Game
             }
         }
 
+        public Cell GetCell(int x, int y)
+        {
+            Vector2Int coords = new Vector2Int(x, y);
+            return GetCell(coords);
+        }
+
         public Cell GetCell(Vector2Int coords)
         {
             return Dungeon.Grid[coords.y, coords.x];

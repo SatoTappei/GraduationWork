@@ -11,9 +11,9 @@ namespace Game
             DungeonManager.Find().AddAvoidCell(Coords);
         }
 
-        public string Scavenge()
+        public Item Scavenge()
         {
-            return string.Empty;
+            return new Item("ˆË—Š‚³‚ê‚½ƒAƒCƒeƒ€", "RequestedItem");
         }
     }
 }

@@ -76,8 +76,11 @@ GameObject:
   m_Component:
   - component: {fileID: 7316387981275482934}
   - component: {fileID: -3058112180202616303}
-  - component: {fileID: -7289036823765215008}
+  - component: {fileID: 5497321501034917427}
   - component: {fileID: 1550749500583681940}
+  - component: {fileID: 3674281184868569340}
+  - component: {fileID: -2847407126997356142}
+  - component: {fileID: -5102355277686044588}
   m_Layer: 0
   m_Name: Adventurer_Kaduki_North
   m_TagString: Untagged
@@ -198,7 +201,7 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &-7289036823765215008
+--- !u!114 &5497321501034917427
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -207,13 +210,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6972671287923862920}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7144d5acb4bb9434fbcc30a3036a5a2c, type: 3}
+  m_Script: {fileID: 11500000, guid: d8419f081b96aac47a1094db2f710052, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _adventurerSheet: {fileID: 11400000, guid: 1391399d11825014ba4238971085b31b, type: 2}
   _spawnCoords: {x: 11, y: 8}
-  _punchHitSE: {fileID: 8300000, guid: 11ace16e3191e694b87d3a8fa81372a6, type: 3}
-  _deathSE: {fileID: 8300000, guid: a9a75d7b75acab547b3fd6754b8cf436, type: 3}
 --- !u!114 &1550749500583681940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,10 +227,44 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ad8d10b13cd83784bbe16d0c6c61880b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _adventurerSheet: {fileID: 11400000, guid: 1391399d11825014ba4238971085b31b, type: 2}
-  _rumors: []
-  _talkTopic: 
-  _selectedAction: 
+--- !u!114 &3674281184868569340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6972671287923862920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9de0d5a44cab52a4183bf34ab7f40414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _damageSE: {fileID: 8300000, guid: 11ace16e3191e694b87d3a8fa81372a6, type: 3}
+--- !u!114 &-2847407126997356142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6972671287923862920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2817fe339548794abfb2711d2fe74c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _defeatedSE: {fileID: 8300000, guid: a9a75d7b75acab547b3fd6754b8cf436, type: 3}
+--- !u!114 &-5102355277686044588
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6972671287923862920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: abf7b8cc9cbad044eb57c37f2c102e73, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &489531028917111896
 PrefabInstance:
   m_ObjectHideFlags: 0
