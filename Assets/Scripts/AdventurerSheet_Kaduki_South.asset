@@ -28,6 +28,7 @@ MonoBehaviour:
       _english: Let's go to the south side first.
     _source: Myself
     _score: 1
+    _remainingTurn: 20
   _personality: Normally being sharp but at some prompt suddenly becoming lovestruck.
   _motivation: I want to be praised.
   _weaknesses: I don't like small places.

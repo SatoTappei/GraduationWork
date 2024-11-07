@@ -15,6 +15,6 @@ namespace Game
         public abstract BilingualString Text { get; }
 
         public abstract bool IsCompleted();
-        public virtual IEnumerable<string> GetAdditionalChoices() { yield break; }
+        public virtual IEnumerable<string> GetAdditionalActions() { yield break; }
     }
 }

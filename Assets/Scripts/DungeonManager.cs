@@ -6,7 +6,16 @@ namespace Game
 {
     public class DungeonManager : MonoBehaviour
     {
+        enum GizmosMode
+        {
+            Dungeon,
+            TerrainFeatures,
+        }
+
+        [SerializeField] GizmosMode _gizmosMode;
+
         Dungeon _dungeon;
+        TerrainFeatures _terrainFeatures;
         AStar _aStar;
         PlacedActors _placedActors;
 
@@ -37,9 +46,19 @@ namespace Game
             }
         }
 
+        public TerrainFeatures TerrainFeatures
+        {
+            get
+            {
+                if (_terrainFeatures == null) _terrainFeatures = GetComponent<TerrainFeatures>();
+                return _terrainFeatures;
+            }
+        }
+
         void OnDrawGizmosSelected()
         {
-            Dungeon.Draw();
+            if (_gizmosMode == GizmosMode.Dungeon) Dungeon.Draw();
+            if (_gizmosMode == GizmosMode.TerrainFeatures) TerrainFeatures.Draw();
         }
 
         public static DungeonManager Find()

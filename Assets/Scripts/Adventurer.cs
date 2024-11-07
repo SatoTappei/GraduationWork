@@ -142,9 +142,9 @@ namespace Game
             DeleteProfileWindow();
         }
 
-        public void Talk(string id, BilingualString text, Vector2Int coords)
+        public void Talk(BilingualString text, string source, Vector2Int coords)
         {
-            AddPendingInformation(text, "Adventurer");
+            AddPendingInformation(text, source);
         }
 
         public sealed override string Damage(string id, string weapon, int value, Vector2Int coords)
@@ -170,7 +170,8 @@ namespace Game
                 // 自身が保持している情報が更新されたので、他冒険者との会話の際に伝える情報も更新する。
                 if (_pendingInformation.TryDequeue(out SharedInformation info))
                 {
-                    info.Score = await _adventurerAI.EvaluateInformationAsync(info, token);
+                    info.Score = await _adventurerAI.EvaluateScoreAsync(info, token);
+                    info.RemainingTurn = await _adventurerAI.EvaluateTurnAsync(info, token);
                     _holdedInformation.Add(info);
                     _selectedInformation = await _adventurerAI.SelectInformationAsync(_holdedInformation.Contents, token);
                 }
@@ -189,6 +190,7 @@ namespace Game
             while (!token.IsCancellationRequested)
             {
                 ElapsedTurn++;
+                RefreshHoldedInformation();
                 UpdateProfileWindow();
 
                 switch (await _adventurerAI.SelectNextActionAsync(token))
@@ -211,7 +213,7 @@ namespace Game
                     _currentSubGoalIndex++;
 
                     // 利用可能な行動の選択肢がある場合は追加。
-                    AvailableActions.AddRange(CurrentSubGoal.GetAdditionalChoices());
+                    AddAvailableActions(CurrentSubGoal.GetAdditionalActions());
                 }
 
                 // OnUpdateAsyncが同期的の場合、無限ループに陥るので1フレーム待つ。
@@ -436,7 +438,7 @@ namespace Game
             if (target == null) return string.Empty;
 
             // まだ武器と攻撃力のデータを作っていない。
-            return target.Damage(ID, "パンチ", 34, _currentCoords);
+            return target.Damage(ID, "パンチ", 34, Coords);
         }
 
         string ApplyScavenge(IScavengeable target)
@@ -459,7 +461,7 @@ namespace Game
         {
             if (target == null || _selectedInformation == null) return;
 
-            target.Talk(ID, _selectedInformation.Text, Coords);
+            target.Talk(_selectedInformation.Text, "Adventurer", Coords);
         }
 
         void PathfindingToTreasure()
@@ -693,6 +695,12 @@ namespace Game
             _pendingInformation.Enqueue(info);
         }
 
+        void RefreshHoldedInformation()
+        {
+            _holdedInformation.DecreaseRemainingTurn();
+            _holdedInformation.RemoveExpired();
+        }
+
         void AddItemInventory(Item item)
         {
             _inventory.Add(item);
@@ -792,6 +800,11 @@ namespace Game
         void UpdateExploreRecord(Vector2Int coords)
         {
             ExploreRecord.IncreaseCount(coords);
+        }
+
+        void AddAvailableActions(IEnumerable<string> actions)
+        {
+            AvailableActions.AddRange(actions);
         }
 
         void PlayDamageEffect(Vector2Int attackerCoords)

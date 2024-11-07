@@ -24,7 +24,7 @@ namespace Game
             return Blueprint.Interaction[Owner.Coords.y][Owner.Coords.x] == '<';
         }
 
-        public override IEnumerable<string> GetAdditionalChoices()
+        public override IEnumerable<string> GetAdditionalActions()
         {
             yield return "Return To Entrance";
         }

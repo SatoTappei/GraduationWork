@@ -7,7 +7,7 @@ using System.Threading;
 
 namespace Game
 {
-    public class InformationEvaluateAI
+    public class ScoreEvaluateAI
     {
         [System.Serializable]
         class RequestFormat
@@ -18,7 +18,7 @@ namespace Game
 
         AIRequest _ai;
 
-        public InformationEvaluateAI()
+        public ScoreEvaluateAI()
         {
             // キャラクター性を反映していないので、選び方は全員同じ。
             string prompt =

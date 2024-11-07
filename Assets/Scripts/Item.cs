@@ -17,6 +17,5 @@ namespace Game
         }
 
         public BilingualString Name { get; }
-        public string ID => Name.English;
     }
 }

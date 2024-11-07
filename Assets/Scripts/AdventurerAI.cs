@@ -10,7 +10,8 @@ namespace Game
         Adventurer _adventurer;
         RolePlayAI _rolePlayAI;
         GamePlayAI _gamePlayAI;
-        InformationEvaluateAI _informationEvaluateAI;
+        ScoreEvaluateAI _scoreEvaluateAI;
+        TurnEvaluateAI _turnEvaluateAI;
         TalkContentSelectAI _talkContentSelectAI;
 
         bool _isInitialized;
@@ -21,7 +22,8 @@ namespace Game
             _adventurer = GetComponent<Adventurer>();
             _rolePlayAI = new RolePlayAI(_adventurer);
             _gamePlayAI = new GamePlayAI(_adventurer);
-            _informationEvaluateAI = new InformationEvaluateAI();
+            _scoreEvaluateAI = new ScoreEvaluateAI();
+            _turnEvaluateAI = new TurnEvaluateAI();
             _talkContentSelectAI = new TalkContentSelectAI();
         }
 
@@ -76,10 +78,16 @@ namespace Game
             return response;
         }
 
-        // 内容と情報源を基に、AIに情報の信頼度を評価させる。
-        public async UniTask<float> EvaluateInformationAsync(SharedInformation information, CancellationToken token)
+        // 内容と情報源を基に、AIに情報のスコアを評価させる。
+        public async UniTask<float> EvaluateScoreAsync(SharedInformation information, CancellationToken token)
         {
-            return await _informationEvaluateAI.EvaluateAsync(information, token);
+            return await _scoreEvaluateAI.EvaluateAsync(information, token);
+        }
+
+        // 内容を基に、AIに情報の有効ターンを評価させる。
+        public async UniTask<int> EvaluateTurnAsync(SharedInformation information, CancellationToken token)
+        {
+            return await _turnEvaluateAI.EvaluateAsync(information, token);
         }
 
         // 自身の知っている情報のうち、他の冒険者に喋るものをAIに選択させる。

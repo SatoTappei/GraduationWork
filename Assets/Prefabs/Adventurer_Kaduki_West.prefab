@@ -543,7 +543,7 @@ PrefabInstance:
     - target: {fileID: 5316801746351543117, guid: 55b4ef91817a9f846a7e6ac92a8b4b59,
         type: 3}
       propertyPath: _name
-      value: Kaduki
+      value: WestKaduki
       objectReference: {fileID: 0}
     - target: {fileID: 5316801746351543117, guid: 55b4ef91817a9f846a7e6ac92a8b4b59,
         type: 3}

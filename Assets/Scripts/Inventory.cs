@@ -33,12 +33,14 @@ namespace Game
 
         public void Add(Item item)
         {
-            if (_contents.ContainsKey(item.ID))
+            string key = item.Name.Japanese;
+
+            if (!_contents.ContainsKey(key))
             {
-                _contents.Add(item.ID, new Stack<Item>());
+                _contents.Add(key, new Stack<Item>());
             }
 
-            _contents[item.ID].Push(item);
+            _contents[key].Push(item);
         }
 
         public bool Remove(string name)

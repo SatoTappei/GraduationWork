@@ -144,7 +144,7 @@ namespace Game
                     }
                     else
                     {
-                        _information.text += $"{information[i].Text.Japanese}\n";
+                        _information.text += $"{information[i].Text.Japanese} écÇË{information[i].RemainingTurn}É^Å[Éì\n";
                     }
                 }
             }

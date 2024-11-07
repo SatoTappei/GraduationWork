@@ -13,7 +13,15 @@ namespace Game
         public HoldedInformation(params SharedInformation[] information)
         {
             _contents = new List<SharedInformation>();
-            _contents.AddRange(information);
+
+            // デフォルトで知っている情報はスコアと有効ターンも手動で設定する。
+            foreach (SharedInformation info in information)
+            {
+                SharedInformation copy = new SharedInformation(info.Text, info.Source);
+                copy.Score = info.Score;
+                copy.RemainingTurn = info.RemainingTurn;
+                _contents.Add(copy);
+            }
         }
 
         public IReadOnlyList<SharedInformation> Contents => _contents;
@@ -39,9 +47,23 @@ namespace Game
             }
         }
 
-        public void Remove()
+        public void DecreaseRemainingTurn()
         {
-            //
+            for (int i = 0; i < Contents.Count; i++)
+            {
+                Contents[i].RemainingTurn--;
+            }
+        }
+
+        public void RemoveExpired()
+        {
+            for (int i = _contents.Count - 1; i >= 0; i--)
+            {
+                if (_contents[i].RemainingTurn <= 0)
+                {
+                    _contents.RemoveAt(i);
+                }
+            }
         }
 
         static void Sort(List<SharedInformation> list)
