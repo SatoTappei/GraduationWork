@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
+
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -20,6 +22,28 @@ namespace Game
         }
 
         [SerializeField] Data[] _data;
+
+        Dictionary<Vector2Int, BilingualString> _table;
+
+        void Awake()
+        {
+            _table = _data.ToDictionary(k => k.Coords, v => v.Text);
+        }
+
+        public bool TryGetInformation(Vector2Int coords, out SharedInformation info)
+        {
+            if (_table.TryGetValue(coords, out BilingualString text))
+            {
+                // 情報源はキャラクター自身という事にしておく。
+                info = new SharedInformation(text, "Myself");
+                return true;
+            }
+            else
+            {
+                info = null;
+                return false;
+            }
+        }
 
         public void Draw()
         {
