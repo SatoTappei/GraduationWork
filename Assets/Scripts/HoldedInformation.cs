@@ -10,10 +10,13 @@ namespace Game
 
         List<SharedInformation> _contents;
         
-        public HoldedInformation(params SharedInformation[] information)
+        public HoldedInformation()
         {
             _contents = new List<SharedInformation>();
+        }
 
+        public HoldedInformation(params SharedInformation[] information) : this()
+        {
             // デフォルトで知っている情報はスコアと有効ターンも手動で設定する。
             foreach (SharedInformation info in information)
             {

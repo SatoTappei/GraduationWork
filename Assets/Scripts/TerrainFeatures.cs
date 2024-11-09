@@ -22,12 +22,18 @@ namespace Game
         }
 
         [SerializeField] Data[] _data;
+        [SerializeField] bool _isDrawGizmos = true;
 
         Dictionary<Vector2Int, BilingualString> _table;
 
         void Awake()
         {
             _table = _data.ToDictionary(k => k.Coords, v => v.Text);
+        }
+
+        void OnDrawGizmosSelected()
+        {
+            if (_isDrawGizmos) Draw();
         }
 
         public bool TryGetInformation(Vector2Int coords, out SharedInformation info)
@@ -45,7 +51,7 @@ namespace Game
             }
         }
 
-        public void Draw()
+        void Draw()
         {
             DungeonManager dungeonManager = DungeonManager.Find();
 

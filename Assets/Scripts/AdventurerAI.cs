@@ -33,11 +33,11 @@ namespace Game
         }
 
         // キャラクターの設定を考慮してサブゴールを選択するよう、AIにリクエストして結果を返す。
-        public async UniTask<SubGoal[]> SelectSubGoalAsync()
+        public async UniTask<SubGoal[]> SelectSubGoalAsync(CancellationToken token)
         {
-            await WaitInitializeAsync();
+            await WaitInitializeAsync(token);
 
-            IReadOnlyList<string> result = await _rolePlayAI.RequestSubGoalAsync();
+            IReadOnlyList<string> result = await _rolePlayAI.RequestSubGoalAsync(token);
 
             SubGoal[] subGoals = new SubGoal[result.Count];
             for (int i = 0; i < result.Count; i++)
@@ -67,9 +67,7 @@ namespace Game
         // AIに次の行動を選択させる。
         public async UniTask<string> SelectNextActionAsync(CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
-            await WaitInitializeAsync();
+            await WaitInitializeAsync(token);
             string response = await _gamePlayAI.RequestNextActionAsync();
 
 #if UNITY_EDITOR
@@ -96,8 +94,15 @@ namespace Game
             return await _talkContentSelectAI.SelectAsync(information, token);
         }
 
-        async UniTask WaitInitializeAsync()
+        public async UniTask<string> RequestLineAsync(RequestLineType type, CancellationToken token)
         {
+            return await _rolePlayAI.RequestLineAsync(type, token);
+        }
+
+        async UniTask WaitInitializeAsync(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
             await UniTask.WaitUntil(() => _isInitialized);
         }
     }

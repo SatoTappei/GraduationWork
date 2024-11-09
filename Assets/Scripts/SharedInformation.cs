@@ -27,7 +27,7 @@ namespace Game
         public BilingualString Text => _text;
         public string Source => _source;
 
-        // デフォルトで知っている情報以外は基本的にAI側が評価して値を設定する。
+        // 内容と情報源を基に、情報を評価するという流れを想定。
         public float Score { get => _score; set => _score = value; }
         public int RemainingTurn { get => _remainingTurn; set => _remainingTurn = value; }
     }

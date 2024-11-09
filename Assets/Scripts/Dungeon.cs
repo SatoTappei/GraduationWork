@@ -27,6 +27,7 @@ namespace Game
         }
 
         [SerializeField] Prefabs _prefabs;
+        [SerializeField] bool _isDrawGizmos = true;
 
         Cell[,] _grid;
 
@@ -42,6 +43,11 @@ namespace Game
         void Start()
         {
             CreateIfNull();
+        }
+
+        void OnDrawGizmosSelected()
+        {
+            if (_isDrawGizmos) Draw();
         }
 
         void CreateIfNull()
@@ -154,7 +160,7 @@ namespace Game
             }
         }
 
-        public void Draw()
+        void Draw()
         {
             if (_grid == null) return;
             foreach (Cell c in _grid) c.Draw();

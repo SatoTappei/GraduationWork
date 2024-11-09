@@ -95,7 +95,7 @@ namespace Game
             _currentDirection = Vector2Int.up;
             _forwardAxis = transform.FindChildRecursive("ForwardAxis");
             _inventory = new Inventory();
-            _holdedInformation = new HoldedInformation(AdventurerSheet.DecisionSupportContext);
+            _holdedInformation = new HoldedInformation();
             _pendingInformation = new Queue<SharedInformation>();
             _path = new List<Cell>();
 
@@ -128,7 +128,7 @@ namespace Game
             RegisterProfileWindow();
             AddActorOnCell();
             SetPosition(Coords);
-            ShowLine("こんにちは。");
+            ShowLine(RequestLineType.Entry);
             AddGameLog($"{AdventurerSheet.DisplayName}がダンジョンにやってきた。");
 
             CancellationToken token = this.GetCancellationTokenOnDestroy();
@@ -153,7 +153,7 @@ namespace Game
 
             PlayDamageEffect(coords);
             DecreaseHp(value);
-            ShowLine("ダメージを受けた。");
+            ShowLine(RequestLineType.Damage);
             UpdateStatusBar();
 
             if (IsDefeated) return "Defeated";
@@ -182,15 +182,14 @@ namespace Game
 
         async UniTask UpdateAsync(CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
-            _subGoals = await _adventurerAI.SelectSubGoalAsync();
+            _subGoals = await _adventurerAI.SelectSubGoalAsync(token);
             _currentSubGoalIndex = 0;
 
             while (!token.IsCancellationRequested)
             {
                 ElapsedTurn++;
                 RefreshHoldedInformation();
+                AddTerrainFeatureInformation();
                 UpdateProfileWindow();
 
                 switch (await _adventurerAI.SelectNextActionAsync(token))
@@ -245,12 +244,12 @@ namespace Game
             {
                 await RotateToActorDirectionAsync(target, token);
                 PlayAnimation("Attack");
-                ShowLine("攻撃する。");
+                ShowLine(RequestLineType.Attack);
 
                 switch (ApplyDamage(target as IDamageable))
                 {
                     case "Defeated":
-                        ShowLine("殺した。");
+                        ShowLine(RequestLineType.DefeatEnemy);
                         AddGameLog($"{DisplayName}が敵を倒した。");
                         AddActionLog("I attacked the enemy. I defeated the enemy.");
                         DefeatCount++;
@@ -281,14 +280,16 @@ namespace Game
                 {
                     case "Treasure":
                         AddActionLog("I scavenged the surrounding treasure chests. I got the treasure.");
-                        ShowLine("宝を入手。");
+                        ShowLine(RequestLineType.GetTreasureSuccess);
                         TreasureCount++;
                         break;
                     case "Empty":
                         AddActionLog("I scavenged the surrounding boxes. There was nothing in them.");
+                        ShowLine(RequestLineType.GetItemFailure);
                         break;
                     default:
                         AddActionLog($"I scavenged the surrounding boxes. I got the {foundItem}.");
+                        ShowLine(RequestLineType.GetItemSuccess);
                         break;
                 }
             }
@@ -308,7 +309,7 @@ namespace Game
             {
                 await RotateToActorDirectionAsync(target, token);
                 PlayAnimation("Talk");
-                ShowLine("会話する。");
+                ShowLine(RequestLineType.Greeting);
                 PlayTalkEffect();
                 ApplyTalk(target as ITalkable);
                 AddActionLog("I talked to the adventurers around me about what I knew.");
@@ -327,7 +328,7 @@ namespace Game
             if (IsAlive) return false;
 
             PlayDefeatedEffect();
-            ShowLine("死亡した。");
+            ShowLine(RequestLineType.Defeated);
             await WaitForSecondsAsync(AnimationLength, token);
             RemoveActorOnCell();
 
@@ -341,7 +342,7 @@ namespace Game
             if (IsLastSubGoal() && IsEntrancePlacedCell(Coords) && CurrentSubGoal.IsCompleted())
             {
                 PlayAnimation("Jump");
-                ShowLine("目的を達成して脱出。");
+                ShowLine(RequestLineType.Goal);
                 AddGameLog($"{DisplayName}がダンジョンから脱出した。");
 
                 await WaitForSecondsAsync(AnimationLength, token);
@@ -722,9 +723,15 @@ namespace Game
             transform.position = position;
         }
 
-        void ShowLine(string text)
+        void ShowLine(RequestLineType type)
         {
-            _uiManager.ShowLine(_statusBarID, text);
+            ShowLineAsync(type, this.GetCancellationTokenOnDestroy()).Forget();
+        }
+
+        async UniTask ShowLineAsync(RequestLineType type, CancellationToken token)
+        {
+            string line = await _adventurerAI.RequestLineAsync(type, token);
+            _uiManager.ShowLine(_statusBarID, line);
         }
 
         static bool IsDoorPlacedCell(Vector2Int coords)
@@ -805,6 +812,18 @@ namespace Game
         void AddAvailableActions(IEnumerable<string> actions)
         {
             AvailableActions.AddRange(actions);
+        }
+
+        void AddTerrainFeatureInformation()
+        {
+            if (_dungeonManager.TryGetTerrainFeature(Coords, out SharedInformation feature))
+            {
+                // 情報を整理する際に消されにくくするため、AI側が評価する際の最大スコアである1に設定しておく。
+                // 現在いるセルの情報をAIに渡す目的なので、残りターンは1にしておく。
+                feature.Score = 1.0f;
+                feature.RemainingTurn = 1;
+                _holdedInformation.Add(feature);
+            }
         }
 
         void PlayDamageEffect(Vector2Int attackerCoords)

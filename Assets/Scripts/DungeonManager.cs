@@ -6,59 +6,17 @@ namespace Game
 {
     public class DungeonManager : MonoBehaviour
     {
-        enum GizmosMode
-        {
-            Dungeon,
-            TerrainFeatures,
-        }
-
-        [SerializeField] GizmosMode _gizmosMode;
-
+        PlacedActors _placedActors;
         Dungeon _dungeon;
         TerrainFeatures _terrainFeatures;
         AStar _aStar;
-        PlacedActors _placedActors;
 
-        Dungeon Dungeon
+        void Awake()
         {
-            get
-            {
-                if (_dungeon == null) _dungeon = GetComponent<Dungeon>();
-                return _dungeon;
-            }
-        }
-
-        AStar AStar
-        {
-            get
-            {
-                if (_aStar == null) _aStar = new AStar(Dungeon.Grid);
-                return _aStar;
-            }
-        }
-
-        PlacedActors PlacedActors
-        {
-            get
-            {
-                if (_placedActors == null) _placedActors = new PlacedActors();
-                return _placedActors;
-            }
-        }
-
-        public TerrainFeatures TerrainFeatures
-        {
-            get
-            {
-                if (_terrainFeatures == null) _terrainFeatures = GetComponent<TerrainFeatures>();
-                return _terrainFeatures;
-            }
-        }
-
-        void OnDrawGizmosSelected()
-        {
-            if (_gizmosMode == GizmosMode.Dungeon) Dungeon.Draw();
-            if (_gizmosMode == GizmosMode.TerrainFeatures) TerrainFeatures.Draw();
+            _placedActors = new PlacedActors();
+            _dungeon = GetComponent<Dungeon>();
+            _terrainFeatures = GetComponent<TerrainFeatures>();
+            _aStar = new AStar(_dungeon.Grid);
         }
 
         public static DungeonManager Find()
@@ -69,13 +27,13 @@ namespace Game
         public void AddActorOnCell(Vector2Int coords, Actor actor)
         {
             GetCell(coords).AddActor(actor);
-            PlacedActors.Add(actor);
+            _placedActors.Add(actor);
         }
 
         public void RemoveActorOnCell(Vector2Int coords, Actor actor)
         {
             GetCell(coords).RemoveActor(actor);
-            PlacedActors.Remove(actor);
+            _placedActors.Remove(actor);
         }
 
         public void AddAvoidCell(Vector2Int coords)
@@ -95,7 +53,7 @@ namespace Game
 
         public IEnumerable<Cell> GetCells(string id)
         {
-            foreach (Actor a in PlacedActors[id])
+            foreach (Actor a in _placedActors[id])
             {
                 yield return GetCell(a.Coords);
             }
@@ -109,7 +67,7 @@ namespace Game
 
         public Cell GetCell(Vector2Int coords)
         {
-            return Dungeon.Grid[coords.y, coords.x];
+            return _dungeon.Grid[coords.y, coords.x];
         }
 
         public bool Pathfinding(int startX, int startY, int goalX, int goalY, List<Cell> result)
@@ -121,7 +79,12 @@ namespace Game
 
         public bool Pathfinding(Vector2Int start, Vector2Int goal, List<Cell> result)
         {
-            return AStar.Pathfinding(start, goal, result);
+            return _aStar.Pathfinding(start, goal, result);
+        }
+
+        public bool TryGetTerrainFeature(Vector2Int coords, out SharedInformation feature)
+        {
+            return _terrainFeatures.TryGetInformation(coords, out feature);
         }
     }
 }
