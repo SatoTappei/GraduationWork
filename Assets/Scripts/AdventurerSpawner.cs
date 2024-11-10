@@ -6,6 +6,8 @@ namespace Game
 {
     public class AdventurerSpawner : MonoBehaviour
     {
+        [SerializeField] Vector2Int _spawnCoords;
+
         SpreadSheetLoader _spreadSheetLoader;
         AvatarCustomizer _avatarCustomizer;
 
@@ -53,10 +55,24 @@ namespace Game
             for (int i = 0; i < _spawned.Length; i++)
             {
                 if (_spawned[i] != null) continue;
+                if (IsAdventurerExist(_spawnCoords)) continue;
 
                 _spawned[i] = CreateRandomAdventurer();
                 break;
             }
+        }
+
+        // 既に冒険者がいるかチェック。
+        static bool IsAdventurerExist(Vector2Int coords)
+        {
+            if (!DungeonManager.TryFind(out DungeonManager dungeonManager)) return false;
+
+            foreach (Actor actor in dungeonManager.GetActorsOnCell(coords))
+            {
+                if (actor is Adventurer _) return true;
+            }
+
+            return false;
         }
 
         // スプレッドシートからランダムなデータを選択し、冒険者を生成。
@@ -68,8 +84,14 @@ namespace Game
             int random = Random.Range(0, profiles.Count);
             SpreadSheetData profile = profiles[random];
 
-            AvatarCustomizeData data = _avatarCustomizer.GetCustomizedData(profile);
-            return Instantiate(data.Prefab);
+            AvatarCustomizeData avatarData = _avatarCustomizer.GetCustomizedData(profile);
+            
+            // 冒険者側に自身のプロフィールとアバターの情報を渡して初期化する。
+            AdventurerSheet adventurerSheet = new AdventurerSheet(profile, avatarData);
+            Adventurer adventurer = Instantiate(avatarData.Prefab);
+            adventurer.Initialize(adventurerSheet);
+
+            return adventurer;
         }
     }
 }

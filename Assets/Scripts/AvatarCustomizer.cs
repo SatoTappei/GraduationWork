@@ -14,6 +14,8 @@ namespace Game
         public Adventurer Prefab => _prefab;
     }
 
+    // 現状、バリエーションが少ないのでインスペクターに割り当てている。
+    // 必要に応じてAssetBundleなどで指定したものを動的にロードする仕組みにする。
     public class AvatarCustomizer : MonoBehaviour
     {
         [SerializeField] AvatarCustomizeData[] _males;

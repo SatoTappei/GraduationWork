@@ -24,6 +24,12 @@ namespace Game
             return GameObject.FindGameObjectWithTag("DungeonManager").GetComponent<DungeonManager>();
         }
 
+        public static bool TryFind(out DungeonManager result)
+        {
+            result = Find();
+            return result != null;
+        }
+
         public void AddActorOnCell(Vector2Int coords, Actor actor)
         {
             GetCell(coords).AddActor(actor);
@@ -84,7 +90,17 @@ namespace Game
 
         public bool TryGetTerrainFeature(Vector2Int coords, out SharedInformation feature)
         {
-            return _terrainFeatures.TryGetInformation(coords, out feature);
+            if (_terrainFeatures.TryGetInformation(coords, out IReadOnlyList<SharedInformation> result))
+            {
+                // •¡”‚ ‚éê‡‚Íƒ‰ƒ“ƒ_ƒ€‚Å1‚Â‘I‚ÔB
+                feature = result[Random.Range(0, result.Count)];
+                return true;
+            }
+            else
+            {
+                feature = null;
+                return false;
+            }
         }
     }
 }

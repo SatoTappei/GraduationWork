@@ -7,6 +7,7 @@ namespace Game
     public class Barrel : DungeonEntity, IScavengeable
     {
         [SerializeField] float _refillInterval = 10.0f;
+        [SerializeField] ParticleSystem _particle;
 
         WaitForSeconds _waitRefill;
         bool _isEmpty;
@@ -18,6 +19,9 @@ namespace Game
 
         public Item Scavenge()
         {
+            PlaySE();
+            _particle.Play();
+
             if (_isEmpty) return null;
             else _isEmpty = true;
 
@@ -30,6 +34,11 @@ namespace Game
         {
             yield return _waitRefill ??= new WaitForSeconds(_refillInterval);
             _isEmpty = false;
+        }
+
+        void PlaySE()
+        {
+            if (TryGetComponent(out AudioSource source)) source.Play();
         }
     }
 }

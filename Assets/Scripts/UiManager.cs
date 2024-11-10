@@ -22,6 +22,12 @@ namespace Game
             return GameObject.FindGameObjectWithTag("UiManager").GetComponent<UiManager>();
         }
 
+        public static bool TryFind(out UiManager result)
+        {
+            result = Find();
+            return result != null;
+        }
+
         public int RegisterToStatusBar(IStatusBarDisplayStatus status)
         {
             return _statusBar.RegisterStatus(status);

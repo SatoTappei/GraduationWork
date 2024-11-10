@@ -31,5 +31,14 @@ namespace Game
             t = component.GetComponentInParent<T>();
             return t != null;
         }
+
+        /// <summary>
+        /// 子を含めたTryGetComponentメソッド。
+        /// </summary>
+        public static bool TryGetComponentInChildren<T>(this Component component, out T t)
+        {
+            t = component.GetComponentInChildren<T>();
+            return t != null;
+        }
     }
 }

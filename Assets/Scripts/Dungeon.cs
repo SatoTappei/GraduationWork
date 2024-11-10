@@ -13,7 +13,8 @@ namespace Game
             [SerializeField] DungeonEntity _door;
             [SerializeField] DungeonEntity _treasure;
             [SerializeField] DungeonEntity _healingSpot;
-            [SerializeField] DungeonEntity _enemySpawner;
+            [SerializeField] DungeonEntity _blackKadukiSpawner;
+            [SerializeField] DungeonEntity _goblinSpawner;
             [SerializeField] DungeonEntity _barrel;
             [SerializeField] DungeonEntity _container;
 
@@ -21,7 +22,8 @@ namespace Game
             public DungeonEntity Door => _door;
             public DungeonEntity Treasure => _treasure;
             public DungeonEntity HealingSpot => _healingSpot;
-            public DungeonEntity EnemySpawner => _enemySpawner;
+            public DungeonEntity BlackKadukiSpawner => _blackKadukiSpawner;
+            public DungeonEntity GoblinSpawner => _goblinSpawner;
             public DungeonEntity Barrel => _barrel;
             public DungeonEntity Container => _container;
         }
@@ -62,9 +64,10 @@ namespace Game
             BuildDirectionalEntity(Blueprint.Doors, _prefabs.Door);
             BuildDirectionalEntity(Blueprint.Treasures, _prefabs.Treasure);
             BuildNonDirectionalEntity('h', _prefabs.HealingSpot);
-            BuildNonDirectionalEntity('e', _prefabs.EnemySpawner);
             BuildNonDirectionalEntity('B', _prefabs.Barrel);
             BuildNonDirectionalEntity('C', _prefabs.Container);
+            BuildEnemySpawner('b', _prefabs.BlackKadukiSpawner);
+            BuildEnemySpawner('g', _prefabs.GoblinSpawner);
         }
 
         void CreateGrid()
@@ -131,6 +134,11 @@ namespace Game
         static void BuildNonDirectionalEntity(char letter, DungeonEntity prefab)
         {
             Build(Blueprint.Interaction, letter, letter, letter, letter, prefab);
+        }
+
+        static void BuildEnemySpawner(char letter, DungeonEntity prefab)
+        {
+            Build(Blueprint.Enemy, letter, letter, letter, letter, prefab);
         }
 
         static void Build(string[] blueprint, char up, char down, char left, char right, DungeonEntity prefab)

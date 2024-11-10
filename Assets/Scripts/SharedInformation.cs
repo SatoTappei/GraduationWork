@@ -18,11 +18,17 @@ namespace Game
             _source = source;
         }
 
-        public SharedInformation(string japanese, string english, string source)
+        public SharedInformation(BilingualString text, string source, int remainingTurn)
+            : this(text, source)
         {
-            _text = new BilingualString(japanese, english);
-            _source = source;
+            _remainingTurn = remainingTurn;
         }
+
+        public SharedInformation(string japanese, string english, string source) 
+            : this(new BilingualString(japanese, english), source) { }
+
+        public SharedInformation(string japanese, string english, string source, int remainingTurn)
+            : this(new BilingualString(japanese, english), source, remainingTurn) { }
 
         public BilingualString Text => _text;
         public string Source => _source;

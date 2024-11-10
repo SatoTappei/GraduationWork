@@ -22,7 +22,7 @@ namespace Game
             DungeonManager.Find().RemoveActorOnCell(Coords, this);
 
             _particle.Play();
-            if (TryGetComponent(out AudioSource source)) source.Play();
+            PlaySE();
         }
 
         public Item Scavenge()
@@ -38,6 +38,11 @@ namespace Game
         {
             _openChest.SetActive(isOpen);
             _closeChest.SetActive(!isOpen);
+        }
+
+        void PlaySE()
+        {
+            if (TryGetComponent(out AudioSource source)) source.Play();
         }
     }
 }

@@ -20,10 +20,14 @@ namespace Game
         DungeonManager _dungeonManager;
         UiManager _uiManager;
         Animator _animator;
-        AdventurerAI _adventurerAI;
 
         Vector2Int _currentCoords;
         Vector2Int _currentDirection;
+        RolePlayAI _rolePlayAI;
+        GamePlayAI _gamePlayAI;
+        ScoreEvaluateAI _scoreEvaluateAI;
+        TurnEvaluateAI _turnEvaluateAI;
+        TalkContentSelectAI _talkContentSelectAI;
         Transform _forwardAxis;
         Inventory _inventory;
         HoldedInformation _holdedInformation;
@@ -36,6 +40,9 @@ namespace Game
         int _currentSubGoalIndex;
         int _statusBarID;
         int _profileWindowID;
+#if UNITY_EDITOR
+        string _selectedAction;
+#endif
 
         public override Vector2Int Coords => _currentCoords;
         public override Vector2Int Direction => _currentDirection;
@@ -119,27 +126,22 @@ namespace Game
             _dungeonManager = DungeonManager.Find();
             _uiManager = UiManager.Find();
             _animator = GetComponentInChildren<Animator>();
-            _adventurerAI = GetComponent<AdventurerAI>();
         }
 
         protected virtual void Start()
         {
-            RegisterStatusBar();
-            RegisterProfileWindow();
-            AddActorOnCell();
-            SetPosition(Coords);
-            ShowLine(RequestLineType.Entry);
-            AddGameLog($"{AdventurerSheet.DisplayName}がダンジョンにやってきた。");
-
-            CancellationToken token = this.GetCancellationTokenOnDestroy();
-            UpdateHoldedInformationAsync(token).Forget();
-            UpdateAsync(token).Forget();
+            UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
         protected virtual void OnDestroy()
         {
             DeleteStatusBar();
             DeleteProfileWindow();
+        }
+
+        public void Initialize(AdventurerSheet adventurerSheet)
+        {
+            _adventurerSheet = adventurerSheet;
         }
 
         public void Talk(BilingualString text, string source, Vector2Int coords)
@@ -160,29 +162,31 @@ namespace Game
             else return "Hit";
         }
 
-        async UniTask UpdateHoldedInformationAsync(CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-
-            while (!token.IsCancellationRequested)
-            {
-                // 保留中の情報がある場合、評価して既存の情報と比較＆入れ替えを行う。
-                // 自身が保持している情報が更新されたので、他冒険者との会話の際に伝える情報も更新する。
-                if (_pendingInformation.TryDequeue(out SharedInformation info))
-                {
-                    info.Score = await _adventurerAI.EvaluateScoreAsync(info, token);
-                    info.RemainingTurn = await _adventurerAI.EvaluateTurnAsync(info, token);
-                    _holdedInformation.Add(info);
-                    _selectedInformation = await _adventurerAI.SelectInformationAsync(_holdedInformation.Contents, token);
-                }
-
-                await UniTask.Yield(cancellationToken: token);
-            }
-        }
-
         async UniTask UpdateAsync(CancellationToken token)
         {
-            _subGoals = await _adventurerAI.SelectSubGoalAsync(token);
+            // 外部から必要な参照を渡すことを想定。
+            // AwakeでもStartでも任意のタイミングで渡して大丈夫なよう、渡してくれるまで以降の処理を待つ。
+            await WaitInitializeAsync(token);
+
+            // AIクラスはAdventurerSheetが必要。
+            _rolePlayAI = new RolePlayAI(this);
+            _gamePlayAI = new GamePlayAI(this);
+            _scoreEvaluateAI = new ScoreEvaluateAI();
+            _turnEvaluateAI = new TurnEvaluateAI();
+            _talkContentSelectAI = new TalkContentSelectAI();
+
+            PlayEntryEffect();
+            RegisterStatusBar();
+            RegisterProfileWindow();
+            AddActorOnCell();
+            SetNameTag();
+            SetPosition(Coords);
+            ShowLine(RequestLineType.Entry);
+            AddGameLog($"{AdventurerSheet.DisplayName}がダンジョンにやってきた。");
+
+            UpdateHoldedInformationAsync(token).Forget();
+
+            _subGoals = await SelectSubGoalAsync(token);
             _currentSubGoalIndex = 0;
 
             while (!token.IsCancellationRequested)
@@ -192,7 +196,8 @@ namespace Game
                 AddTerrainFeatureInformation();
                 UpdateProfileWindow();
 
-                switch (await _adventurerAI.SelectNextActionAsync(token))
+                string response = await _gamePlayAI.RequestNextActionAsync();
+                switch (response)
                 {
                     case "Move North": await MoveAsync(Vector2Int.up, token); break;
                     case "Move South": await MoveAsync(Vector2Int.down, token); break;
@@ -204,6 +209,10 @@ namespace Game
                     case "Talk Surrounding": await TalkAsync(token); break;
                 }
 
+#if UNITY_EDITOR
+                _selectedAction = response;
+#endif
+
                 if (await DefeatedAsync(token) || await EscapeAsync(token)) break;
 
                 // サブゴールを達成した場合、次のサブゴールを設定。
@@ -211,6 +220,7 @@ namespace Game
                 {
                     _currentSubGoalIndex++;
 
+                    AddGameLog($"{DisplayName}が「{CurrentSubGoal.Text.Japanese}」を達成。");
                     // 利用可能な行動の選択肢がある場合は追加。
                     AddAvailableActions(CurrentSubGoal.GetAdditionalActions());
                 }
@@ -220,6 +230,63 @@ namespace Game
             }
 
             Destroy(gameObject);
+        }
+
+        async UniTask WaitInitializeAsync(CancellationToken token)
+        {
+            await UniTask.WaitUntil(() => _adventurerSheet != null, cancellationToken: token);
+        }
+
+        async UniTask UpdateHoldedInformationAsync(CancellationToken token)
+        {
+            token.ThrowIfCancellationRequested();
+
+            while (!token.IsCancellationRequested)
+            {
+                // 保留中の情報がある場合、評価して既存の情報と比較＆入れ替えを行う。
+                // 自身が保持している情報が更新されたので、他冒険者との会話の際に伝える情報も更新する。
+                if (_pendingInformation.TryDequeue(out SharedInformation info))
+                {
+                    info.Score = await _scoreEvaluateAI.EvaluateAsync(info, token);
+                    info.RemainingTurn = await _turnEvaluateAI.EvaluateAsync(info, token);
+                    _holdedInformation.Add(info);
+                    _selectedInformation = await _talkContentSelectAI.SelectAsync(_holdedInformation.Contents, token);
+                }
+
+                await UniTask.Yield(cancellationToken: token);
+            }
+        }
+
+        // キャラクターの設定を考慮してサブゴールを選択するよう、AIにリクエストして結果を返す。
+        public async UniTask<SubGoal[]> SelectSubGoalAsync(CancellationToken token)
+        {
+            await WaitInitializeAsync(token);
+
+            IReadOnlyList<string> result = await _rolePlayAI.RequestSubGoalAsync(token);
+
+            SubGoal[] subGoals = new SubGoal[result.Count];
+            for (int i = 0; i < result.Count; i++)
+            {
+                subGoals[i] = Convert(result[i]);
+            }
+
+            return subGoals;
+
+            // AIは日本語の文字列で選択したサブゴールを返すので、対応するクラスのインスタンスに変換する。
+            SubGoal Convert(string text)
+            {
+                if (text == GetTreasure.StaticText.Japanese) return new GetTreasure(this);
+                if (text == GetRequestedItem.StaticText.Japanese) return new GetRequestedItem(this);
+                if (text == ExploreDungeon.StaticText.Japanese) return new ExploreDungeon(this);
+                if (text == DefeatWeakEnemy.StaticText.Japanese) return new DefeatWeakEnemy(this);
+                if (text == DefeatStrongEnemy.StaticText.Japanese) return new DefeatStrongEnemy(this);
+                if (text == DefeatAdventurer.StaticText.Japanese) return new DefeatAdventurer(this);
+                if (text == ReturnToEntrance.StaticText.Japanese) return new ReturnToEntrance(this);
+
+                Debug.LogError($"AIが選択したサブゴールに対応するクラスが無い。: {text}");
+
+                return null;
+            }
         }
 
         async UniTask MoveAsync(Vector2Int direction, CancellationToken token)
@@ -281,6 +348,7 @@ namespace Game
                     case "Treasure":
                         AddActionLog("I scavenged the surrounding treasure chests. I got the treasure.");
                         ShowLine(RequestLineType.GetTreasureSuccess);
+                        AddGameLog($"{DisplayName}が宝物を入手。");
                         TreasureCount++;
                         break;
                     case "Empty":
@@ -290,6 +358,7 @@ namespace Game
                     default:
                         AddActionLog($"I scavenged the surrounding boxes. I got the {foundItem}.");
                         ShowLine(RequestLineType.GetItemSuccess);
+                        AddGameLog($"{DisplayName}がアイテムを入手。");
                         break;
                 }
             }
@@ -730,7 +799,7 @@ namespace Game
 
         async UniTask ShowLineAsync(RequestLineType type, CancellationToken token)
         {
-            string line = await _adventurerAI.RequestLineAsync(type, token);
+            string line = await _rolePlayAI.RequestLineAsync(type, token);
             _uiManager.ShowLine(_statusBarID, line);
         }
 
@@ -823,6 +892,22 @@ namespace Game
                 feature.Score = 1.0f;
                 feature.RemainingTurn = 1;
                 _holdedInformation.Add(feature);
+            }
+        }
+
+        void SetNameTag()
+        {
+            if (this.TryGetComponentInChildren(out NameTag nameTag))
+            {
+                nameTag.SetName(DisplayName);
+            }
+        }
+
+        void PlayEntryEffect()
+        {
+            if (TryGetComponent(out EntryEffect effect))
+            {
+                effect.Play();
             }
         }
 

@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Linq;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -11,24 +10,14 @@ namespace Game
 {
     public class TerrainFeatures : MonoBehaviour
     {
-        [System.Serializable]
-        class Data
-        {
-            [SerializeField] Vector2Int _coords;
-            [SerializeField] BilingualString _text;
-
-            public Vector2Int Coords => _coords;
-            public BilingualString Text => _text;
-        }
-
-        [SerializeField] Data[] _data;
+        [SerializeField] TerrainFeaturesData _data;
         [SerializeField] bool _isDrawGizmos = true;
 
-        Dictionary<Vector2Int, BilingualString> _table;
+        Dictionary<Vector2Int, List<SharedInformation>> _table;
 
         void Awake()
         {
-            _table = _data.ToDictionary(k => k.Coords, v => v.Text);
+            ConvertDataToTable();
         }
 
         void OnDrawGizmosSelected()
@@ -36,37 +25,58 @@ namespace Game
             if (_isDrawGizmos) Draw();
         }
 
-        public bool TryGetInformation(Vector2Int coords, out SharedInformation info)
+        public bool TryGetInformation(Vector2Int coords, out IReadOnlyList<SharedInformation> result)
         {
-            if (_table.TryGetValue(coords, out BilingualString text))
+            if (_table.TryGetValue(coords, out List<SharedInformation> list))
             {
-                // 情報源はキャラクター自身という事にしておく。
-                info = new SharedInformation(text, "Myself");
+                // 呼び出し元で中身の値を弄っても影響が出ないよう、コピーして渡す。
+                List<SharedInformation> temp = new List<SharedInformation>();
+                foreach (SharedInformation e in list)
+                {
+                    SharedInformation copy = new SharedInformation(e.Text, e.Source, e.RemainingTurn);
+                    temp.Add(copy);
+                }
+
+                result = temp;
                 return true;
             }
             else
             {
-                info = null;
+                result = null;
                 return false;
+            }
+        }
+
+        void ConvertDataToTable()
+        {
+            _table = new Dictionary<Vector2Int, List<SharedInformation>>();
+
+            foreach (TerrainFeaturesData.Data data in _data.AllData)
+            {
+                _table.TryAdd(data.Coords, new List<SharedInformation>());
+                _table[data.Coords].Add(data.ToSharedInformation());
             }
         }
 
         void Draw()
         {
-            DungeonManager dungeonManager = DungeonManager.Find();
+            if (_table == null) return;
+            if (!DungeonManager.TryFind(out DungeonManager dungeonManager)) return;
 
-            if (!Application.isPlaying || dungeonManager == null || _data == null) return;
-
-            for (int i = 0; i < _data.Length; i++)
+            foreach (var pair in _table)
             {
-                Cell cell = dungeonManager.GetCell(_data[i].Coords);
-
+                Cell cell = dungeonManager.GetCell(pair.Key);
                 Gizmos.color = Color.red;
                 Gizmos.DrawCube(cell.Position, Vector3.one);
 
-                // 位置の上に番号を表示しておく。
+                // セル上に設定した文字列を表示。
                 GUIStyle labelStyle = new GUIStyle() { normal = { textColor = Color.white } };
-                Handles.Label(cell.Position + Vector3.up, i.ToString(), labelStyle);
+                for (int i = 0; i < pair.Value.Count; i++)
+                {
+                    string text = pair.Value[i].Text.Japanese;
+                    Vector3 offset = Vector3.up * (i + 1);
+                    Handles.Label(cell.Position + offset, text, labelStyle);
+                }
             }
         }
     }

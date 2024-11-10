@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class BlackKaduki : Enemy
+    public class Goblin : Enemy
     {
         [SerializeField] AudioClip _punchHitSE;
         [SerializeField] AudioClip _deathSE;
@@ -44,13 +44,13 @@ namespace Game
         public override void Place(Vector2Int coords)
         {
             _dungeonManager.RemoveActorOnCell(_currentCoords, this);
-            
+
             _placeCoords = coords;
             _currentCoords = coords;
             _currentDirection = Vector2Int.up;
-            
+
             _dungeonManager.AddActorOnCell(_currentCoords, this);
-            
+
             Cell cell = _dungeonManager.GetCell(_currentCoords);
             transform.position = cell.Position;
         }
@@ -172,7 +172,7 @@ namespace Game
         // 現在のセルから上下左右移動で移動できるランダムなセルを返す。
         Cell GetSpawnCoordsRandomAroundCell()
         {
-            List<Vector2Int> choices = GetPlaceCoordsAroundCoords().Where(v => 
+            List<Vector2Int> choices = GetPlaceCoordsAroundCoords().Where(v =>
             {
                 return Vector2Int.Distance(v, _currentCoords) < 1.4f;
             }).ToList();
