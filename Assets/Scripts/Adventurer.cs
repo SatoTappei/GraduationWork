@@ -40,6 +40,7 @@ namespace Game
         int _currentSubGoalIndex;
         int _statusBarID;
         int _profileWindowID;
+        int _cameraFocusID;
 #if UNITY_EDITOR
         string _selectedAction;
 #endif
@@ -48,7 +49,6 @@ namespace Game
         public override Vector2Int Direction => _currentDirection;
 
         public List<string> AvailableActions { get; private set; }
-        public Item[] Item { get; private set; }
         public ExploreRecord ExploreRecord { get; private set; }
         public Queue<string> ActionLog { get; private set; }
         public int CurrentHp { get; private set; }
@@ -59,6 +59,7 @@ namespace Game
         public int DefeatCount { get; private set; }
 
         public AdventurerSheet AdventurerSheet => _adventurerSheet;
+        public IReadOnlyInventory ItemInventory => _inventory;
         public Sprite Icon => _adventurerSheet.Icon;
         public string FullName => _adventurerSheet.FullName;
         public string DisplayName => _adventurerSheet.DisplayName;
@@ -117,7 +118,6 @@ namespace Game
                 "Talk Surrounding"
             };
 
-            Item = new Item[3];
             ExploreRecord = new ExploreRecord(Blueprint.Height, Blueprint.Width);
             ActionLog = new Queue<string>();
             CurrentHp = MaxHp;
@@ -136,6 +136,7 @@ namespace Game
         protected virtual void OnDestroy()
         {
             DeleteStatusBar();
+            DeleteCameraFocusTarget();
             DeleteProfileWindow();
         }
 
@@ -177,6 +178,7 @@ namespace Game
 
             PlayEntryEffect();
             RegisterStatusBar();
+            RegisterCameraFocusTarget();
             RegisterProfileWindow();
             AddActorOnCell();
             SetNameTag();
@@ -218,9 +220,8 @@ namespace Game
                 // サブゴールを達成した場合、次のサブゴールを設定。
                 if (CurrentSubGoal.IsCompleted())
                 {
-                    _currentSubGoalIndex++;
-
                     AddGameLog($"{DisplayName}が「{CurrentSubGoal.Text.Japanese}」を達成。");
+                    _currentSubGoalIndex++;
                     // 利用可能な行動の選択肢がある場合は追加。
                     AddAvailableActions(CurrentSubGoal.GetAdditionalActions());
                 }
@@ -893,6 +894,16 @@ namespace Game
                 feature.RemainingTurn = 1;
                 _holdedInformation.Add(feature);
             }
+        }
+
+        void RegisterCameraFocusTarget()
+        {
+            _cameraFocusID = _uiManager.RegisterCameraFocusTarget(gameObject);
+        }
+
+        void DeleteCameraFocusTarget()
+        {
+            _uiManager.DeleteCameraFocusTarget(_cameraFocusID);
         }
 
         void SetNameTag()

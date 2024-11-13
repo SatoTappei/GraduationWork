@@ -14,7 +14,8 @@ namespace Game
             [SerializeField] DungeonEntity _treasure;
             [SerializeField] DungeonEntity _healingSpot;
             [SerializeField] DungeonEntity _blackKadukiSpawner;
-            [SerializeField] DungeonEntity _goblinSpawner;
+            [SerializeField] DungeonEntity _soldierSpawner;
+            [SerializeField] DungeonEntity _golemSpawner;
             [SerializeField] DungeonEntity _barrel;
             [SerializeField] DungeonEntity _container;
 
@@ -23,7 +24,8 @@ namespace Game
             public DungeonEntity Treasure => _treasure;
             public DungeonEntity HealingSpot => _healingSpot;
             public DungeonEntity BlackKadukiSpawner => _blackKadukiSpawner;
-            public DungeonEntity GoblinSpawner => _goblinSpawner;
+            public DungeonEntity SoldierSpawner => _soldierSpawner;
+            public DungeonEntity GolemSpawner => _golemSpawner;
             public DungeonEntity Barrel => _barrel;
             public DungeonEntity Container => _container;
         }
@@ -67,7 +69,8 @@ namespace Game
             BuildNonDirectionalEntity('B', _prefabs.Barrel);
             BuildNonDirectionalEntity('C', _prefabs.Container);
             BuildEnemySpawner('b', _prefabs.BlackKadukiSpawner);
-            BuildEnemySpawner('g', _prefabs.GoblinSpawner);
+            BuildEnemySpawner('s', _prefabs.SoldierSpawner);
+            BuildEnemySpawner('G', _prefabs.GolemSpawner);
         }
 
         void CreateGrid()

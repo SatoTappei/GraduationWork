@@ -31,6 +31,17 @@ namespace Game
             Rotate();
         }
 
+        public static bool TryFind(out FreeMovableCamera result)
+        {
+            result = GameObject.FindGameObjectWithTag("FreeMovableCamera").GetComponent<FreeMovableCamera>();
+            return result != null;
+        }
+
+        public void SetPosition(Vector3 position)
+        {
+            _follow.transform.position = position;
+        }
+
         // 移動はFollowに指定したオブジェクトを動かす。
         void Move()
         {

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Game
@@ -50,11 +51,12 @@ namespace Game
 
         IEnumerator KeepOpenAsync()
         {
-            // ‘±ŠÔB
-            const float Duration = 1.5f;
+            // –`Œ¯Ò‚ªˆá‚¤ƒZƒ‹‚ÉˆÚ“®‚·‚é‚Ü‚Å‘Ò‚ÂB
+            do
+            {
+                yield return _keepOpen ??= new WaitForSeconds(1.5f); // 1~2•bŠÔŠu‚Å’²‚×‚ê‚Î\•ªB
 
-            _keepOpen ??= new WaitForSeconds(Duration);
-            yield return _keepOpen;
+            } while (DungeonManager.Find().GetActorsOnCell(Coords).Any(x => x is Adventurer));
         }
 
         static float Easing(float x)

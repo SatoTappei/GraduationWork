@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class Goblin : Enemy
+    public class Soldier : Enemy
     {
         [SerializeField] AudioClip _punchHitSE;
         [SerializeField] AudioClip _deathSE;
@@ -174,6 +174,9 @@ namespace Game
         {
             List<Vector2Int> choices = GetPlaceCoordsAroundCoords().Where(v =>
             {
+                Cell cell = _dungeonManager.GetCell(v);
+                if (cell.IsImpassable()) return false;
+
                 return Vector2Int.Distance(v, _currentCoords) < 1.4f;
             }).ToList();
 

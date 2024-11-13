@@ -20,10 +20,9 @@ namespace Game
 
         public override bool IsCompleted()
         {
-            foreach (Item item in Owner.Item)
+            foreach (InventoryItem item in Owner.ItemInventory.GetAllInventoryItem())
             {
-                if (item == null) continue;
-                if (item.Name.Japanese == "依頼されたアイテム") return true;
+                if (item.Name == "依頼されたアイテム") return true;
             }
 
             return false;

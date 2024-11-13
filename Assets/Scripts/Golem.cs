@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class BlackKaduki : Enemy
+    public class Golem : Enemy
     {
         [SerializeField] AudioClip _punchHitSE;
         [SerializeField] AudioClip _deathSE;
@@ -44,13 +44,13 @@ namespace Game
         public override void Place(Vector2Int coords)
         {
             _dungeonManager.RemoveActorOnCell(_currentCoords, this);
-            
+
             _placeCoords = coords;
             _currentCoords = coords;
             _currentDirection = Vector2Int.up;
-            
+
             _dungeonManager.AddActorOnCell(_currentCoords, this);
-            
+
             Cell cell = _dungeonManager.GetCell(_currentCoords);
             transform.position = cell.Position;
         }
@@ -158,7 +158,7 @@ namespace Game
             Quaternion goalRotation;
             if (goalDirection == Vector3.zero) goalRotation = Quaternion.identity;
             else goalRotation = Quaternion.LookRotation(goalDirection);
-            for (float t = 0; t <= 1; t += Time.deltaTime * 1.0f)
+            for (float t = 0; t <= 1; t += Time.deltaTime * 0.5f)
             {
                 axis.rotation = Quaternion.Lerp(startRotation, goalRotation, t * 4);
                 transform.position = Vector3.Lerp(startPosition, goalPosition, t);
@@ -166,13 +166,14 @@ namespace Game
                 await UniTask.Yield();
             }
 
-            _animator.Play("Idle");
+            // アニメーション終了を待つ。
+            await UniTask.WaitForSeconds(2.0f);
         }
 
         // 現在のセルから上下左右移動で移動できるランダムなセルを返す。
         Cell GetSpawnCoordsRandomAroundCell()
         {
-            List<Vector2Int> choices = GetPlaceCoordsAroundCoords().Where(v => 
+            List<Vector2Int> choices = GetPlaceCoordsAroundCoords().Where(v =>
             {
                 Cell cell = _dungeonManager.GetCell(v);
                 if (cell.IsImpassable()) return false;

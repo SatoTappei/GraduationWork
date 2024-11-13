@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 252617834455132730}
   - component: {fileID: -5320676702014013020}
   m_Layer: 0
-  m_Name: DungeonEntity_EnemySpawner_Goblin
+  m_Name: DungeonEntity_EnemySpawner_Golem
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -96,5 +96,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 31bb5a796c076e9429ac99192098dc1d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _prefab: {fileID: -7144006658269552177, guid: 6ce97b182c1021b48869ba38a76f55b5,
+  _prefab: {fileID: -7584165830789892057, guid: 814c3f5386f117d448a8d65dea938d04,
     type: 3}

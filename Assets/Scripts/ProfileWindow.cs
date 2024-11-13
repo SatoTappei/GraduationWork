@@ -27,7 +27,7 @@ namespace Game
                 return i;
             }
 
-            Debug.LogWarning($"未使用のプロフィールウィンドウがない。");
+            Debug.LogWarning($"未使用の{nameof(ProfileWindow)}がない。");
 
             return -1;
         }
@@ -55,14 +55,14 @@ namespace Game
                 }
             }
 
-            Debug.LogWarning($"既に削除済みのプロフィールウィンドウ。: {id}");
+            Debug.LogWarning($"既に削除済みの{nameof(ProfileWindow)}。: {id}");
         }
 
         bool IsInArray(int index)
         {
             if (0 <= index && index < _used.Length) return true;
 
-            Debug.LogWarning($"IDに対応するプロフィールウィンドウが存在しない。: {index}");
+            Debug.LogWarning($"IDに対応する{nameof(ProfileWindow)}が存在しない。: {index}");
             return false;
         }
     }

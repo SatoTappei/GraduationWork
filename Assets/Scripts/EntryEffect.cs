@@ -10,13 +10,7 @@ namespace Game
 
         public void Play()
         {
-            Animator animator = GetComponentInChildren<Animator>();
             AudioSource audioSource = GetComponent<AudioSource>();
-
-            if (animator != null)
-            {
-                animator.Play("Entry");
-            }
 
             if (audioSource != null && _entrySE != null)
             {

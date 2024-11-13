@@ -6,15 +6,17 @@ namespace Game
 {
     public class UiManager : MonoBehaviour
     {
-        StatusBar _statusBar;
         GameLog _gameLog;
+        StatusBar _statusBar;
         ProfileWindow _profileWindow;
+        CameraFocus _cameraFocus;
         
         void Awake()
         {
-            _statusBar = GetComponent<StatusBar>();
             _gameLog = GetComponent<GameLog>();
+            _statusBar = GetComponent<StatusBar>();
             _profileWindow = GetComponent<ProfileWindow>();
+            _cameraFocus = GetComponent<CameraFocus>();
         }
 
         public static UiManager Find()
@@ -66,6 +68,16 @@ namespace Game
         public void DeleteProfileWindowStatus(int id)
         {
             _profileWindow.DeleteStatus(id);
+        }
+
+        public int RegisterCameraFocusTarget(GameObject target)
+        {
+            return _cameraFocus.RegisterTarget(target);
+        }
+
+        public void DeleteCameraFocusTarget(int id)
+        {
+            _cameraFocus.DeleteTarget(id);
         }
     }
 }
