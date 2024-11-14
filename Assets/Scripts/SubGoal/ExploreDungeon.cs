@@ -15,13 +15,13 @@ namespace Game
             StaticText = new BilingualString(j, e);
         }
 
-        public ExploreDungeon(Adventurer owner) : base(owner) { }
+        public ExploreDungeon(IReadOnlyAdventurerContext context) : base(context) { }
 
         public override BilingualString Text => StaticText;
 
         public override bool IsCompleted()
         {
-            return Owner.ElapsedTurn >= 30;
+            return Context.ElapsedTurn >= 30;
         }
     }
 }

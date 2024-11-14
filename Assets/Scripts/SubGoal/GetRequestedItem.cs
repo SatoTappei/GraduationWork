@@ -14,13 +14,13 @@ namespace Game
             StaticText = new BilingualString(j, e);
         }
 
-        public GetRequestedItem(Adventurer owner) : base(owner) { }
+        public GetRequestedItem(IReadOnlyAdventurerContext context) : base(context) { }
 
         public override BilingualString Text => StaticText;
 
         public override bool IsCompleted()
         {
-            foreach (InventoryItem item in Owner.ItemInventory.GetAllInventoryItem())
+            foreach (ItemInventory.Entry item in Context.Item)
             {
                 if (item.Name == "ˆË—Š‚³‚ê‚½ƒAƒCƒeƒ€") return true;
             }

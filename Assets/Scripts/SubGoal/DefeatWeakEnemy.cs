@@ -15,13 +15,13 @@ namespace Game
             StaticText = new BilingualString(j, e);
         }
 
-        public DefeatWeakEnemy(Adventurer owner) : base(owner) { }
+        public DefeatWeakEnemy(IReadOnlyAdventurerContext context) : base(context) { }
 
         public override BilingualString Text => StaticText;
 
         public override bool IsCompleted()
         {
-            return Owner.DefeatCount >= 3;
+            return Context.DefeatCount >= 3;
         }
     }
 }

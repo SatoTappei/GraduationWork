@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 
@@ -9,6 +8,11 @@ namespace Game
 {
     public class TurnEvaluateAI
     {
+        public TurnEvaluateAI(IReadOnlyAdventurerContext _)
+        {
+            // そもそもAIを使っていないのでコンストラクタの引数を使わない。
+        }
+
         public async UniTask<int> EvaluateAsync(SharedInformation information, CancellationToken token)
         {
             token.ThrowIfCancellationRequested();

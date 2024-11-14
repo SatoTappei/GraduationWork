@@ -15,13 +15,13 @@ namespace Game
             StaticText = new BilingualString(j, e);
         }
 
-        public GetTreasure(Adventurer owner) : base(owner) { }
+        public GetTreasure(IReadOnlyAdventurerContext context) : base(context) { }
 
         public override BilingualString Text => StaticText;
 
         public override bool IsCompleted()
         {
-            return Owner.TreasureCount >= 1;
+            return Context.TreasureCount >= 1;
         }
     }
 }

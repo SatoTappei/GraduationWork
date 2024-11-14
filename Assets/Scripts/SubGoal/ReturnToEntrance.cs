@@ -15,13 +15,13 @@ namespace Game
             StaticText = new BilingualString(j, e);
         }
 
-        public ReturnToEntrance(Adventurer owner) : base(owner) { }
+        public ReturnToEntrance(IReadOnlyAdventurerContext context) : base(context) { }
 
         public override BilingualString Text => StaticText;
 
         public override bool IsCompleted()
         {
-            return Blueprint.Interaction[Owner.Coords.y][Owner.Coords.x] == '<';
+            return Blueprint.Interaction[Context.Coords.y][Context.Coords.x] == '<';
         }
 
         public override IEnumerable<string> GetAdditionalActions()

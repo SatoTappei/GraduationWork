@@ -26,12 +26,12 @@ namespace Game
     {
         AIRequest _ai;
 
-        public RolePlayAI(IRolePlayAIResource resource)
+        public RolePlayAI(IReadOnlyAdventurerContext context)
         {
             // キャラクターとして振る舞うAIは台詞や背景などをUIに表示するので日本語。
-            string age = resource.AdventurerSheet.Age;
-            string job = resource.AdventurerSheet.Job;
-            string background = resource.AdventurerSheet.Background;
+            string age = context.AdventurerSheet.Age;
+            string job = context.AdventurerSheet.Job;
+            string background = context.AdventurerSheet.Background;
             string prompt =
                 $"# 指示内容\n" +
                 $"- 以下のキャラクターになりきって各質問に答えてください。\n" +

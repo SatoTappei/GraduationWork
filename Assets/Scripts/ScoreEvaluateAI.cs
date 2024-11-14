@@ -18,9 +18,10 @@ namespace Game
 
         AIRequest _ai;
 
-        public ScoreEvaluateAI()
+        public ScoreEvaluateAI(IReadOnlyAdventurerContext _)
         {
             // キャラクター性を反映していないので、選び方は全員同じ。
+            // 必要に応じてコンストラクタの引数からキャラクターの設定を取得し、反映するよう書き換える。
             string prompt =
                 $"# Instructions\n" +
                 $"- You are a player in a game of dungeon exploration.\n" +

@@ -6,12 +6,12 @@ namespace Game
 {
     public abstract class SubGoal
     {
-        public SubGoal(Adventurer owner)
+        public SubGoal(IReadOnlyAdventurerContext context)
         {
-            Owner = owner;
+            Context = context;
         }
 
-        protected Adventurer Owner { get; }
+        protected IReadOnlyAdventurerContext Context { get; }
         public abstract BilingualString Text { get; }
 
         public abstract bool IsCompleted();

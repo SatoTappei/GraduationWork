@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace Game
@@ -34,17 +35,17 @@ namespace Game
             public string West;
         }
 
-        IGamePlayAIResource _resource;
+        IReadOnlyAdventurerContext _context;
         AIRequest _ai;
         DungeonManager _dungeonManager;
 
-        public GamePlayAI(IGamePlayAIResource resource)
+        public GamePlayAI(IReadOnlyAdventurerContext context)
         {
-            _resource = resource;
+            _context = context;
 
-            string personality = resource.AdventurerSheet.Personality;
-            string motivation = resource.AdventurerSheet.Motivation;
-            string weaknesses = resource.AdventurerSheet.Weaknesses;
+            string personality = context.AdventurerSheet.Personality;
+            string motivation = context.AdventurerSheet.Motivation;
+            string weaknesses = context.AdventurerSheet.Weaknesses;
             string prompt =
                 $"# Instructions\n" +
                 $"- Your character’s attributes are as follows. Consider these settings carefully when deciding the next action.\n" +
@@ -62,22 +63,24 @@ namespace Game
             _dungeonManager = DungeonManager.Find();
         }
 
-        public async UniTask<string> RequestNextActionAsync()
+        public async UniTask<string> RequestNextActionAsync(CancellationToken token)
         {
+            token.ThrowIfCancellationRequested();
+
             RequestFormat format = new RequestFormat();
-            format.CurrentCoords = _resource.Coords;
-            format.CurrentLocation = _dungeonManager.GetCell(_resource.Coords).Location.ToString();
+            format.CurrentCoords = _context.Coords;
+            format.CurrentLocation = _dungeonManager.GetCell(_context.Coords).Location.ToString();
             format.Surroundings.North = GetCellInfo(Vector2Int.up);
             format.Surroundings.South = GetCellInfo(Vector2Int.down);
             format.Surroundings.East = GetCellInfo(Vector2Int.right);
             format.Surroundings.West = GetCellInfo(Vector2Int.left);
-            format.ActionLog = _resource.ActionLog.ToArray();
-            format.DecisionSupportContext = _resource.Information
+            format.ActionLog = _context.ActionLog.ToArray();
+            format.DecisionSupportContext = _context.Information
                 .Where(info => info != null)
                 .Select(info => info.Text.English)
                 .ToArray();
-            format.AvailableActions = _resource.AvailableActions.ToArray();
-            format.Goal = _resource.CurrentSubGoal.Text.English;
+            format.AvailableActions = _context.AvailableActions.ToArray();
+            format.Goal = _context.CurrentSubGoal.Text.English;
 
             try
             {
@@ -85,15 +88,15 @@ namespace Game
             }
             catch (UnityWebRequestException e)
             {
-                // 現在の仕様ではAvailableActionsの中から選ばなかった場合、再度リクエストするので適当な値を返しておく。
-                return e.Message;
+                // AvailableActionsの中から選ばなかった場合、再度リクエストするので適当な値を返しておく。
+                return "";
             }
         }
 
         string GetCellInfo(Vector2Int direction)
         {
-            Vector2Int coords = _resource.Coords + direction;
-            return GetCellInfo(coords, _resource.ExploreRecord);
+            Vector2Int coords = _context.Coords + direction;
+            return GetCellInfo(coords, _context.ExploreRecord);
         }
 
         string GetCellInfo(Vector2Int coords, IReadOnlyExploreRecord record)

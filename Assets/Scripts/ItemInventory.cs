@@ -4,32 +4,34 @@ using UnityEngine;
 
 namespace Game
 {
-    public interface IReadOnlyInventory
+    public interface IReadOnlyItemInventory
     {
-        public IEnumerable<InventoryItem> GetAllInventoryItem();
+        public IEnumerable<ItemInventory.Entry> Entries { get; }
     }
 
-    // Inventoryクラスで管理しているアイテムの各項目の情報を返すために使用。
-    public struct InventoryItem
+    public class ItemInventory : IReadOnlyItemInventory
     {
-        public InventoryItem(string name, int count)
+        // Inventoryクラスで管理しているアイテムの各項目の情報を返すために使用。
+        public struct Entry
         {
-            Name = name;
-            Count = count;
+            public Entry(string name, int count)
+            {
+                Name = name;
+                Count = count;
+            }
+
+            public string Name { get; }
+            public int Count { get; }
         }
 
-        public string Name { get; }
-        public int Count { get; }
-    }
-
-    public class Inventory : IReadOnlyInventory
-    {
         Dictionary<string, Stack<Item>> _contents;
 
-        public Inventory()
+        public ItemInventory()
         {
             _contents = new Dictionary<string, Stack<Item>>();
         }
+
+        public IEnumerable<Entry> Entries => GetEntries();
 
         public void Add(Item item)
         {
@@ -53,11 +55,11 @@ namespace Game
             else return false;
         }
 
-        public IEnumerable<InventoryItem> GetAllInventoryItem()
+        IEnumerable<Entry> GetEntries()
         {
             foreach (KeyValuePair<string, Stack<Item>> content in _contents)
             {
-                yield return new InventoryItem(content.Key, content.Value.Count);
+                yield return new Entry(content.Key, content.Value.Count);
             }
         }
     }

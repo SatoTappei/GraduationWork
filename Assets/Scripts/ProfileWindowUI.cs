@@ -33,14 +33,14 @@ namespace Game
             SetJob(status.Job);
             SetBackground(status.Background);
             SetGoal(status.Goal);
-            SetItem(status.ItemInventory);
+            SetItem(status.Item);
             SetInfomation(status.Information);
         }
 
         public void UpdateStatus(IProfileWindowDisplayStatus status)
         {
             SetGoal(status.Goal);
-            SetItem(status.ItemInventory);
+            SetItem(status.Item);
             SetInfomation(status.Information);
         }
 
@@ -86,14 +86,14 @@ namespace Game
             else _goal.text = goal;
         }
 
-        void SetItem(IReadOnlyInventory itemInventory)
+        void SetItem(IEnumerable<ItemInventory.Entry> item)
         {
             // 持ち物欄は最大3つ表示可能なデザインになっている。
             const int Max = 3;
 
             _item.text = string.Empty;
 
-            if (itemInventory == null)
+            if (item == null)
             {
                 for (int i = 0; i < Max; i++)
                 {
@@ -102,13 +102,12 @@ namespace Game
             }
             else
             {
-                IEnumerable<InventoryItem> allItem = itemInventory.GetAllInventoryItem();
-                foreach (InventoryItem item in allItem)
+                foreach (ItemInventory.Entry entry in item)
                 {
-                    _item.text += $"{item.Name}\n";
+                    _item.text += $"{entry.Name}\n";
                 }
 
-                int emptyCount = Max - allItem.Count();
+                int emptyCount = Max - item.Count();
                 for (int i = 0; i < emptyCount; i++)
                 {
                     _item.text += "--\n";

@@ -7,12 +7,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public abstract class Adventurer : Character, 
-        IStatusBarDisplayStatus, 
-        IProfileWindowDisplayStatus, 
-        ITalkable, 
-        IGamePlayAIResource, 
-        IRolePlayAIResource
+    public abstract class Adventurer : Character, IReadOnlyAdventurerContext
     {
         [SerializeField] AdventurerSheet _adventurerSheet;
         [SerializeField] Vector2Int _spawnCoords;
@@ -29,13 +24,14 @@ namespace Game
         TurnEvaluateAI _turnEvaluateAI;
         TalkContentSelectAI _talkContentSelectAI;
         Transform _forwardAxis;
-        Inventory _inventory;
+        ItemInventory _inventory;
         HoldedInformation _holdedInformation;
         Queue<SharedInformation> _pendingInformation;
         SharedInformation _selectedInformation;
-        List<Cell> _path;
-        string _pathTarget;
-        int _currentPathIndex;
+        Path _path;
+        ExploreRecord _exploreRecord;
+        List<string> _availableActions;
+        Queue<string> _actionLog;
         SubGoal[] _subGoals;
         int _currentSubGoalIndex;
         int _statusBarID;
@@ -48,9 +44,6 @@ namespace Game
         public override Vector2Int Coords => _currentCoords;
         public override Vector2Int Direction => _currentDirection;
 
-        public List<string> AvailableActions { get; private set; }
-        public ExploreRecord ExploreRecord { get; private set; }
-        public Queue<string> ActionLog { get; private set; }
         public int CurrentHp { get; private set; }
         public int CurrentEmotion { get; private set; }
         public int ElapsedTurn { get; private set; }
@@ -59,7 +52,6 @@ namespace Game
         public int DefeatCount { get; private set; }
 
         public AdventurerSheet AdventurerSheet => _adventurerSheet;
-        public IReadOnlyInventory ItemInventory => _inventory;
         public Sprite Icon => _adventurerSheet.Icon;
         public string FullName => _adventurerSheet.FullName;
         public string DisplayName => _adventurerSheet.DisplayName;
@@ -89,25 +81,24 @@ namespace Game
                 else return CurrentSubGoal.Text.Japanese;
             }
         }
-        IReadOnlyInventory IProfileWindowDisplayStatus.ItemInventory => _inventory;
-        IReadOnlyList<SharedInformation> IProfileWindowDisplayStatus.Information => _holdedInformation.Contents;
 
-        IReadOnlyExploreRecord IGamePlayAIResource.ExploreRecord => ExploreRecord;
-        IReadOnlyCollection<string> IGamePlayAIResource.ActionLog => ActionLog;
-        IReadOnlyList<SharedInformation> IGamePlayAIResource.Information => _holdedInformation.Contents;
-        IReadOnlyList<string> IGamePlayAIResource.AvailableActions => AvailableActions;
+        public IEnumerable<ItemInventory.Entry> Item => _inventory.Entries;
+        public IReadOnlyList<SharedInformation> Information => _holdedInformation.Contents;
+        public IReadOnlyExploreRecord ExploreRecord => _exploreRecord;
+        public IReadOnlyCollection<string> ActionLog => _actionLog;
+        public IReadOnlyList<string> AvailableActions => _availableActions;
 
         protected virtual void Awake()
         {
             _currentCoords = _spawnCoords;
             _currentDirection = Vector2Int.up;
             _forwardAxis = transform.FindChildRecursive("ForwardAxis");
-            _inventory = new Inventory();
+            _inventory = new ItemInventory();
             _holdedInformation = new HoldedInformation();
             _pendingInformation = new Queue<SharedInformation>();
-            _path = new List<Cell>();
+            _path = new Path();
 
-            AvailableActions = new List<string>()
+            _availableActions = new List<string>()
             {
                 "Move North",
                 "Move South",
@@ -118,8 +109,8 @@ namespace Game
                 "Talk Surrounding"
             };
 
-            ExploreRecord = new ExploreRecord(Blueprint.Height, Blueprint.Width);
-            ActionLog = new Queue<string>();
+            _exploreRecord = new ExploreRecord(Blueprint.Height, Blueprint.Width);
+            _actionLog = new Queue<string>();
             CurrentHp = MaxHp;
             CurrentEmotion = MaxEmotion;
 
@@ -172,8 +163,8 @@ namespace Game
             // AIクラスはAdventurerSheetが必要。
             _rolePlayAI = new RolePlayAI(this);
             _gamePlayAI = new GamePlayAI(this);
-            _scoreEvaluateAI = new ScoreEvaluateAI();
-            _turnEvaluateAI = new TurnEvaluateAI();
+            _scoreEvaluateAI = new ScoreEvaluateAI(this);
+            _turnEvaluateAI = new TurnEvaluateAI(this);
             _talkContentSelectAI = new TalkContentSelectAI();
 
             PlayEntryEffect();
@@ -198,7 +189,7 @@ namespace Game
                 AddTerrainFeatureInformation();
                 UpdateProfileWindow();
 
-                string response = await _gamePlayAI.RequestNextActionAsync();
+                string response = await _gamePlayAI.RequestNextActionAsync(token);
                 switch (response)
                 {
                     case "Move North": await MoveAsync(Vector2Int.up, token); break;
@@ -381,7 +372,7 @@ namespace Game
                 PlayAnimation("Talk");
                 ShowLine(RequestLineType.Greeting);
                 PlayTalkEffect();
-                ApplyTalk(target as ITalkable);
+                ApplyTalk(target as Adventurer);
                 AddActionLog("I talked to the adventurers around me about what I knew.");
                 await WaitForSecondsAsync(PlayTime, token);
             }
@@ -437,12 +428,12 @@ namespace Game
         void PathfindingToNeighbourCell(Vector2Int direction)
         {
             Cell cell = GetCell(GetNeighbourCoords(direction));
-            CreatePathManually(direction.ToString(), cell);
+            _path.CreateManually(direction.ToString(), cell);
         }
 
         void PathfindingIfTargetChanged(string target)
         {
-            if (_pathTarget == target) return;
+            if (_path.Target == target) return;
 
             switch (target)
             {
@@ -471,7 +462,7 @@ namespace Game
                 await (TranslateAsync(token), RotateToNextCellDirectionAsync(token));
                 
                 PlayAnimation("Idle");
-                UpdateNextCell();
+                _path.HeadingNext();
                 AddActionLog($"Successfully moved to the {directionName}.");
                 UpdateExploreRecord(Coords);
             }
@@ -479,7 +470,7 @@ namespace Game
             {
                 await RotateToNextCellDirectionAsync(token);
 
-                UpdateNextCell();
+                _path.HeadingNext();
                 AddActionLog($"Failed to move to the {directionName}. Cannot move in this direction.");
             }
         }
@@ -501,7 +492,7 @@ namespace Game
 
         bool TryGetTalkTarget(out Actor target)
         {
-            return TryGetTarget<ITalkable>(out target);
+            return TryGetTarget<Adventurer>(out target);
         }
 
         string ApplyDamage(IDamageable target)
@@ -528,7 +519,7 @@ namespace Game
             }
         }
 
-        void ApplyTalk(ITalkable target)
+        void ApplyTalk(Adventurer target)
         {
             if (target == null || _selectedInformation == null) return;
 
@@ -539,18 +530,18 @@ namespace Game
         {
             Actor treasure = GetAnyCell("Treasure").GetActors().Where(a => a.ID == "Treasure").FirstOrDefault();
             // 宝箱のマスへは経路探索が出来ないので、正面の位置までの経路探索。
-            Pathfinding("Treasure", treasure.Coords + treasure.Direction);
+            _path.Finding("Treasure", Coords, treasure.Coords + treasure.Direction);
         }
 
         void PathfindingToEntrance()
         {
             Cell cell = GetAnyCell("Entrance");
-            Pathfinding("Entrance", cell.Coords);
+            _path.Finding("Entrance", Coords, cell.Coords);
         }
 
         void SetDirectionToNextCell()
         {
-            _currentDirection = _path[_currentPathIndex].Coords - Coords;
+            _currentDirection = _path.Current.Coords - Coords;
         }
 
         void OpenForwardDoor()
@@ -564,7 +555,7 @@ namespace Game
 
         bool IsNextCellPassable()
         {
-            return _path[_currentPathIndex].IsPassable();
+            return _path.Current.IsPassable();
         }
 
         async UniTask TranslateAsync(CancellationToken token)
@@ -620,13 +611,7 @@ namespace Game
 
         void SetCoordsToNextCell()
         {
-            _currentCoords = _path[_currentPathIndex].Coords;
-        }
-
-        void UpdateNextCell()
-        {
-            _currentPathIndex++;
-            _currentPathIndex = Mathf.Min(_currentPathIndex, _path.Count - 1);
+            _currentCoords = _path.Current.Coords;
         }
 
         string GetDirectionName()
@@ -646,7 +631,7 @@ namespace Game
 
         Vector3 GetNextCellPosition()
         {
-            return _path[_currentPathIndex].Position;
+            return _path.Current.Position;
         }
 
         Quaternion GetRotation()
@@ -825,21 +810,6 @@ namespace Game
             return Coords + new Vector2Int(x, y);
         }
 
-        void Pathfinding(string target, Vector2Int targetCoords)
-        {
-            _dungeonManager.Pathfinding(Coords, targetCoords, _path);
-            _pathTarget = target;
-            _currentPathIndex = 0;
-        }
-
-        void CreatePathManually(string target, params Cell[] cells)
-        {
-            _path.Clear();
-            _path.AddRange(cells);
-            _pathTarget = target;
-            _currentPathIndex = 0;
-        }
-
         void IncreaseHp(int value)
         {
             DecreaseHp(-value);
@@ -853,10 +823,10 @@ namespace Game
 
         void AddActionLog(string text)
         {
-            ActionLog.Enqueue($"Turn{ElapsedTurn}: {text}");
+            _actionLog.Enqueue($"Turn{ElapsedTurn}: {text}");
 
             // 次の行動を選択するAIにリクエストすることを考慮して、適当に手動で設定。
-            if (ActionLog.Count > 10) ActionLog.Dequeue();
+            if (_actionLog.Count > 10) _actionLog.Dequeue();
         }
 
         void AddGameLog(string text)
@@ -876,12 +846,12 @@ namespace Game
 
         void UpdateExploreRecord(Vector2Int coords)
         {
-            ExploreRecord.IncreaseCount(coords);
+            _exploreRecord.IncreaseCount(coords);
         }
 
         void AddAvailableActions(IEnumerable<string> actions)
         {
-            AvailableActions.AddRange(actions);
+            _availableActions.AddRange(actions);
         }
 
         void AddTerrainFeatureInformation()
