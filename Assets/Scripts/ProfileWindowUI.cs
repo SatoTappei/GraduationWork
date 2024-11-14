@@ -32,14 +32,14 @@ namespace Game
             SetName(status.FullName);
             SetJob(status.Job);
             SetBackground(status.Background);
-            SetGoal(status.Goal);
+            SetGoal(status.CurrentSubGoal);
             SetItem(status.Item);
             SetInfomation(status.Information);
         }
 
         public void UpdateStatus(IProfileWindowDisplayStatus status)
         {
-            SetGoal(status.Goal);
+            SetGoal(status.CurrentSubGoal);
             SetItem(status.Item);
             SetInfomation(status.Information);
         }
@@ -49,7 +49,7 @@ namespace Game
             SetName("--");
             SetJob("--");
             SetBackground("--");
-            SetGoal("--");
+            SetGoal(null);
             SetItem(null);
             SetInfomation(null);
         }
@@ -80,10 +80,10 @@ namespace Game
             _background.text = background;
         }
 
-        void SetGoal(string goal)
+        void SetGoal(SubGoal goal)
         {
             if (goal == default) _goal.text = "--";
-            else _goal.text = goal;
+            else _goal.text = goal.Text.Japanese;
         }
 
         void SetItem(IEnumerable<ItemInventory.Entry> item)

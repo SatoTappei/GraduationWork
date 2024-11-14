@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace Game
 {
-    public class Path
+    public class MovementPath
     {
         DungeonManager _dungeonManager;
         List<Cell> _path;
         string _target;
         int _currentIndex;
 
-        public Path()
+        public MovementPath()
         {
             _dungeonManager = DungeonManager.Find();
             _path = new List<Cell>();

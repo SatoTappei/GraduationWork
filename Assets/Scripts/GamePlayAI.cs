@@ -86,10 +86,10 @@ namespace Game
             {
                 return await _ai.RequestAsync(JsonUtility.ToJson(format));
             }
-            catch (UnityWebRequestException e)
+            catch (UnityWebRequestException)
             {
-                // AvailableActionsの中から選ばなかった場合、再度リクエストするので適当な値を返しておく。
-                return "";
+                // 「何もしない」を返して再度リクエストしてもらう。
+                return "Idle";
             }
         }
 

@@ -28,12 +28,11 @@ namespace Game
         HoldedInformation _holdedInformation;
         Queue<SharedInformation> _pendingInformation;
         SharedInformation _selectedInformation;
-        Path _path;
+        MovementPath _movementPath;
+        SubGoalPath _subGoalPath;
         ExploreRecord _exploreRecord;
         List<string> _availableActions;
         Queue<string> _actionLog;
-        SubGoal[] _subGoals;
-        int _currentSubGoalIndex;
         int _statusBarID;
         int _profileWindowID;
         int _cameraFocusID;
@@ -59,29 +58,9 @@ namespace Game
         public string Background => _adventurerSheet.Background;
         public int MaxHp => 100;
         public int MaxEmotion => 100;
-        public SubGoal CurrentSubGoal
-        {
-            get
-            {
-                if (_subGoals == null) return null;
-                if (_currentSubGoalIndex < 0 || _subGoals.Length <= _currentSubGoalIndex) return null;
-                if (_subGoals[_currentSubGoalIndex] == null) return null;
-
-                return _subGoals[_currentSubGoalIndex];
-            }
-        }
+        public SubGoal CurrentSubGoal => _subGoalPath.Current;
         public bool IsDefeated => CurrentHp <= 0;
         public bool IsAlive => !IsDefeated;
-
-        string IProfileWindowDisplayStatus.Goal
-        {
-            get
-            {
-                if (CurrentSubGoal == null) return string.Empty;
-                else return CurrentSubGoal.Text.Japanese;
-            }
-        }
-
         public IEnumerable<ItemInventory.Entry> Item => _inventory.Entries;
         public IReadOnlyList<SharedInformation> Information => _holdedInformation.Contents;
         public IReadOnlyExploreRecord ExploreRecord => _exploreRecord;
@@ -96,7 +75,7 @@ namespace Game
             _inventory = new ItemInventory();
             _holdedInformation = new HoldedInformation();
             _pendingInformation = new Queue<SharedInformation>();
-            _path = new Path();
+            _movementPath = new MovementPath();
 
             _availableActions = new List<string>()
             {
@@ -160,12 +139,15 @@ namespace Game
             // AwakeでもStartでも任意のタイミングで渡して大丈夫なよう、渡してくれるまで以降の処理を待つ。
             await WaitInitializeAsync(token);
 
-            // AIクラスはAdventurerSheetが必要。
+            // IReadOnlyAdventurerContextをコンストラクタの引数に取る各機能のクラスは、
+            // このクラスの値を初期化時に参照するため、それ以外の初期化が終わった後にnewする。
+            // 互いに依存しないので初期化の順番は入れ替えても大丈夫。
             _rolePlayAI = new RolePlayAI(this);
             _gamePlayAI = new GamePlayAI(this);
             _scoreEvaluateAI = new ScoreEvaluateAI(this);
             _turnEvaluateAI = new TurnEvaluateAI(this);
             _talkContentSelectAI = new TalkContentSelectAI();
+            _subGoalPath = new SubGoalPath(this);
 
             PlayEntryEffect();
             RegisterStatusBar();
@@ -179,8 +161,7 @@ namespace Game
 
             UpdateHoldedInformationAsync(token).Forget();
 
-            _subGoals = await SelectSubGoalAsync(token);
-            _currentSubGoalIndex = 0;
+            await _subGoalPath.PlanningAsync(token);
 
             while (!token.IsCancellationRequested)
             {
@@ -212,7 +193,7 @@ namespace Game
                 if (CurrentSubGoal.IsCompleted())
                 {
                     AddGameLog($"{DisplayName}が「{CurrentSubGoal.Text.Japanese}」を達成。");
-                    _currentSubGoalIndex++;
+                    _subGoalPath.HeadingNext();
                     // 利用可能な行動の選択肢がある場合は追加。
                     AddAvailableActions(CurrentSubGoal.GetAdditionalActions());
                 }
@@ -246,38 +227,6 @@ namespace Game
                 }
 
                 await UniTask.Yield(cancellationToken: token);
-            }
-        }
-
-        // キャラクターの設定を考慮してサブゴールを選択するよう、AIにリクエストして結果を返す。
-        public async UniTask<SubGoal[]> SelectSubGoalAsync(CancellationToken token)
-        {
-            await WaitInitializeAsync(token);
-
-            IReadOnlyList<string> result = await _rolePlayAI.RequestSubGoalAsync(token);
-
-            SubGoal[] subGoals = new SubGoal[result.Count];
-            for (int i = 0; i < result.Count; i++)
-            {
-                subGoals[i] = Convert(result[i]);
-            }
-
-            return subGoals;
-
-            // AIは日本語の文字列で選択したサブゴールを返すので、対応するクラスのインスタンスに変換する。
-            SubGoal Convert(string text)
-            {
-                if (text == GetTreasure.StaticText.Japanese) return new GetTreasure(this);
-                if (text == GetRequestedItem.StaticText.Japanese) return new GetRequestedItem(this);
-                if (text == ExploreDungeon.StaticText.Japanese) return new ExploreDungeon(this);
-                if (text == DefeatWeakEnemy.StaticText.Japanese) return new DefeatWeakEnemy(this);
-                if (text == DefeatStrongEnemy.StaticText.Japanese) return new DefeatStrongEnemy(this);
-                if (text == DefeatAdventurer.StaticText.Japanese) return new DefeatAdventurer(this);
-                if (text == ReturnToEntrance.StaticText.Japanese) return new ReturnToEntrance(this);
-
-                Debug.LogError($"AIが選択したサブゴールに対応するクラスが無い。: {text}");
-
-                return null;
             }
         }
 
@@ -417,7 +366,7 @@ namespace Game
 
         bool IsLastSubGoal()
         {
-            return _currentSubGoalIndex == _subGoals.Length - 1;
+            return _subGoalPath.IsLastSubGoal;
         }
 
         bool IsEntrancePlacedCell(Vector2Int coords)
@@ -428,12 +377,12 @@ namespace Game
         void PathfindingToNeighbourCell(Vector2Int direction)
         {
             Cell cell = GetCell(GetNeighbourCoords(direction));
-            _path.CreateManually(direction.ToString(), cell);
+            _movementPath.CreateManually(direction.ToString(), cell);
         }
 
         void PathfindingIfTargetChanged(string target)
         {
-            if (_path.Target == target) return;
+            if (_movementPath.Target == target) return;
 
             switch (target)
             {
@@ -462,7 +411,7 @@ namespace Game
                 await (TranslateAsync(token), RotateToNextCellDirectionAsync(token));
                 
                 PlayAnimation("Idle");
-                _path.HeadingNext();
+                _movementPath.HeadingNext();
                 AddActionLog($"Successfully moved to the {directionName}.");
                 UpdateExploreRecord(Coords);
             }
@@ -470,7 +419,7 @@ namespace Game
             {
                 await RotateToNextCellDirectionAsync(token);
 
-                _path.HeadingNext();
+                _movementPath.HeadingNext();
                 AddActionLog($"Failed to move to the {directionName}. Cannot move in this direction.");
             }
         }
@@ -530,18 +479,18 @@ namespace Game
         {
             Actor treasure = GetAnyCell("Treasure").GetActors().Where(a => a.ID == "Treasure").FirstOrDefault();
             // 宝箱のマスへは経路探索が出来ないので、正面の位置までの経路探索。
-            _path.Finding("Treasure", Coords, treasure.Coords + treasure.Direction);
+            _movementPath.Finding("Treasure", Coords, treasure.Coords + treasure.Direction);
         }
 
         void PathfindingToEntrance()
         {
             Cell cell = GetAnyCell("Entrance");
-            _path.Finding("Entrance", Coords, cell.Coords);
+            _movementPath.Finding("Entrance", Coords, cell.Coords);
         }
 
         void SetDirectionToNextCell()
         {
-            _currentDirection = _path.Current.Coords - Coords;
+            _currentDirection = _movementPath.Current.Coords - Coords;
         }
 
         void OpenForwardDoor()
@@ -555,7 +504,7 @@ namespace Game
 
         bool IsNextCellPassable()
         {
-            return _path.Current.IsPassable();
+            return _movementPath.Current.IsPassable();
         }
 
         async UniTask TranslateAsync(CancellationToken token)
@@ -611,7 +560,7 @@ namespace Game
 
         void SetCoordsToNextCell()
         {
-            _currentCoords = _path.Current.Coords;
+            _currentCoords = _movementPath.Current.Coords;
         }
 
         string GetDirectionName()
@@ -631,7 +580,7 @@ namespace Game
 
         Vector3 GetNextCellPosition()
         {
-            return _path.Current.Position;
+            return _movementPath.Current.Position;
         }
 
         Quaternion GetRotation()

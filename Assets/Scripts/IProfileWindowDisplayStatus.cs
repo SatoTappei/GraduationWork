@@ -9,7 +9,7 @@ namespace Game
         public string FullName { get; }
         public string Job { get; }
         public string Background { get; }
-        public string Goal { get; }
+        public SubGoal CurrentSubGoal { get; }
         public IEnumerable<ItemInventory.Entry> Item { get; }
         public IReadOnlyList<SharedInformation> Information { get; }
     }
