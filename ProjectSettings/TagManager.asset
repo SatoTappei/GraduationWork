@@ -8,6 +8,7 @@ TagManager:
   - UiManager
   - FreeMovableCamera
   - CommentDisplayer
+  - AdventurerSpawner
   layers:
   - Default
   - TransparentFX
