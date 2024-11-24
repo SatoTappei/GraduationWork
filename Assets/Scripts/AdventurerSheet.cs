@@ -23,7 +23,7 @@ namespace Game
         }
 
         // スプレッドシートから、冒険者データを読み込んだ場合。
-        public AdventurerSheet(SpreadSheetData profile, AvatarCustomizeData avatarData)
+        public AdventurerSheet(AdventurerSpreadSheetData profile, AvatarCustomizeData avatarData)
             : this(profile.FullName, profile.DisplayName, profile.Sex, profile.Age, profile.Job,
                   profile.Personality, profile.Motivation, profile.Weaknesses, profile.Background, avatarData.Icon) { }
 

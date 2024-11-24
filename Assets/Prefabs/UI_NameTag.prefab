@@ -212,4 +212,3 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _follow: {fileID: 0}
   _offset: {x: 0, y: 36, z: 0}
-  _name: 

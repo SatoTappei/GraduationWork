@@ -1,101 +1,25 @@
 using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using UnityEngine;
 
 namespace Game
 {
-    public abstract class Adventurer : Character, IReadOnlyAdventurerContext
+    public class Adventurer : Character
     {
-        [SerializeField] AdventurerSheet _adventurerSheet;
-        [SerializeField] Vector2Int _spawnCoords;
-
-        DungeonManager _dungeonManager;
-        UiManager _uiManager;
-        Animator _animator;
-
-        Vector2Int _currentCoords;
-        Vector2Int _currentDirection;
-        RolePlayAI _rolePlayAI;
-        GamePlayAI _gamePlayAI;
-        ScoreEvaluateAI _scoreEvaluateAI;
-        TurnEvaluateAI _turnEvaluateAI;
-        TalkContentSelectAI _talkContentSelectAI;
-        Transform _forwardAxis;
-        ItemInventory _inventory;
-        HoldedInformation _holdedInformation;
-        Queue<SharedInformation> _pendingInformation;
-        SharedInformation _selectedInformation;
-        MovementPath _movementPath;
-        SubGoalPath _subGoalPath;
-        ExploreRecord _exploreRecord;
-        List<string> _availableActions;
-        Queue<string> _actionLog;
-        int _statusBarID;
-        int _profileWindowID;
-        int _cameraFocusID;
+        Blackboard _blackboard;
+        bool _isInitialized;
 #if UNITY_EDITOR
         string _selectedAction;
 #endif
 
-        public override Vector2Int Coords => _currentCoords;
-        public override Vector2Int Direction => _currentDirection;
-
-        public int CurrentHp { get; private set; }
-        public int CurrentEmotion { get; private set; }
-        public int ElapsedTurn { get; private set; }
-        public int TreasureCount { get; private set; }
-        public int ItemCount { get; private set; }
-        public int DefeatCount { get; private set; }
-
-        public AdventurerSheet AdventurerSheet => _adventurerSheet;
-        public Sprite Icon => _adventurerSheet.Icon;
-        public string FullName => _adventurerSheet.FullName;
-        public string DisplayName => _adventurerSheet.DisplayName;
-        public string Job => _adventurerSheet.Job;
-        public string Background => _adventurerSheet.Background;
-        public int MaxHp => 100;
-        public int MaxEmotion => 100;
-        public SubGoal CurrentSubGoal => _subGoalPath.Current;
-        public bool IsDefeated => CurrentHp <= 0;
-        public bool IsAlive => !IsDefeated;
-        public IEnumerable<ItemInventory.Entry> Item => _inventory.Entries;
-        public IReadOnlyList<SharedInformation> Information => _holdedInformation.Contents;
-        public IReadOnlyExploreRecord ExploreRecord => _exploreRecord;
-        public IReadOnlyCollection<string> ActionLog => _actionLog;
-        public IReadOnlyList<string> AvailableActions => _availableActions;
+        public override Vector2Int Coords => _blackboard.Coords;
+        public override Vector2Int Direction => _blackboard.Direction;
 
         protected virtual void Awake()
         {
-            _currentCoords = _spawnCoords;
-            _currentDirection = Vector2Int.up;
-            _forwardAxis = transform.FindChildRecursive("ForwardAxis");
-            _inventory = new ItemInventory();
-            _holdedInformation = new HoldedInformation();
-            _pendingInformation = new Queue<SharedInformation>();
-            _movementPath = new MovementPath();
-
-            _availableActions = new List<string>()
-            {
-                "Move North",
-                "Move South",
-                "Move East",
-                "Move West",
-                "Attack Surrounding",
-                "Scavenge Surrounding",
-                "Talk Surrounding"
-            };
-
-            _exploreRecord = new ExploreRecord(Blueprint.Height, Blueprint.Width);
-            _actionLog = new Queue<string>();
-            CurrentHp = MaxHp;
-            CurrentEmotion = MaxEmotion;
-
-            _dungeonManager = DungeonManager.Find();
-            _uiManager = UiManager.Find();
-            _animator = GetComponentInChildren<Animator>();
+            _blackboard = GetComponent<Blackboard>();
         }
 
         protected virtual void Start()
@@ -103,771 +27,140 @@ namespace Game
             UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
-        protected virtual void OnDestroy()
+        void Update()
         {
-            DeleteStatusBar();
-            DeleteCameraFocusTarget();
-            DeleteProfileWindow();
+            if (Input.GetKeyDown(KeyCode.Space)) Damage("debug", "debug", 50, Vector2Int.zero);
         }
 
+        // ã‚¹ãƒ—ãƒ¬ãƒƒãƒ‰ã‚·ãƒ¼ãƒˆã‹ã‚‰èª­ã¿è¾¼ã‚“ã ãƒ‡ãƒ¼ã‚¿ã‚’æ¸¡ã™ã€‚
+        // ã‚‚ã—ãã¯ãƒ‡ãƒ¼ã‚¿ã‚’ã‚·ãƒªã‚¢ãƒ©ã‚¤ã‚ºã—ã¦ã‚¤ãƒ³ã‚¹ãƒšã‚¯ã‚¿ãƒ¼ã‹ã‚‰è§¦ã‚Œã‚‹ã‚ˆã†ã«ã—ã¦ã‚‚è‰¯ã„ã€‚
         public void Initialize(AdventurerSheet adventurerSheet)
         {
-            _adventurerSheet = adventurerSheet;
+            _blackboard.AdventurerSheet = adventurerSheet;
+            _blackboard.MaxHp = 100; // è‡ªç”±ã«è¨­å®šå¯èƒ½ã€‚
+            _blackboard.CurrentHp = 100;
+            _blackboard.MaxEmotion = 100; // è‡ªç”±ã«è¨­å®šå¯èƒ½ã€‚
+            _blackboard.CurrentEmotion = 50; // ç”Ÿæˆæ™‚ã€è‡ªèº«ã¸ã®ã‚³ãƒ¡ãƒ³ãƒˆã§ä¸Šä¸‹ã™ã‚‹ã€‚
+            _blackboard.Coords = new Vector2Int(11, 8); // ãƒ€ãƒ³ã‚¸ãƒ§ãƒ³ã®å…¥ã‚Šå£ãŒå›ºå®šã§1ç®‡æ‰€ã€‚
+            _blackboard.Direction = Vector2Int.up; // ä¸Šä»¥å¤–ã®å‘ãã®å ´åˆã€å›è»¢ã•ã›ã‚‹å‡¦ç†ãŒå¿…è¦ã€‚
+
+            _isInitialized = true;
         }
 
         public void Talk(BilingualString text, string source, Vector2Int coords)
         {
-            AddPendingInformation(text, source);
+            if (_isInitialized && TryGetComponent(out InformationStock information))
+            {
+                information.AddPending(text, source);
+            }
         }
 
         public sealed override string Damage(string id, string weapon, int value, Vector2Int coords)
         {
-            if (IsDefeated) return "Corpse";
-
-            PlayDamageEffect(coords);
-            DecreaseHp(value);
-            ShowLine(RequestLineType.Damage);
-            UpdateStatusBar();
-
-            if (IsDefeated) return "Defeated";
-            else return "Hit";
+            if (_isInitialized && TryGetComponent(out DamageApply damage))
+            {
+                return damage.Damage(id, weapon, value, coords);
+            }
+            else return "Miss";
         }
 
         async UniTask UpdateAsync(CancellationToken token)
         {
-            // ŠO•”‚©‚ç•K—v‚ÈQÆ‚ğ“n‚·‚±‚Æ‚ğ‘z’èB
-            // Awake‚Å‚àStart‚Å‚à”CˆÓ‚Ìƒ^ƒCƒ~ƒ“ƒO‚Å“n‚µ‚Ä‘åä•v‚È‚æ‚¤A“n‚µ‚Ä‚­‚ê‚é‚Ü‚ÅˆÈ~‚Ìˆ—‚ğ‘Ò‚ÂB
-            await WaitInitializeAsync(token);
+            // åˆæœŸåŒ–ãŒå®Œäº†ã™ã‚‹ã¾ã§å¾…ã¤ã€‚
+            await UniTask.WaitUntil(() => _isInitialized, cancellationToken: token);
 
-            // IReadOnlyAdventurerContext‚ğƒRƒ“ƒXƒgƒ‰ƒNƒ^‚Ìˆø”‚Éæ‚éŠe‹@”\‚ÌƒNƒ‰ƒX‚ÍA
-            // ‚±‚ÌƒNƒ‰ƒX‚Ì’l‚ğ‰Šú‰»‚ÉQÆ‚·‚é‚½‚ßA‚»‚êˆÈŠO‚Ì‰Šú‰»‚ªI‚í‚Á‚½Œã‚Énew‚·‚éB
-            // Œİ‚¢‚ÉˆË‘¶‚µ‚È‚¢‚Ì‚Å‰Šú‰»‚Ì‡”Ô‚Í“ü‚ê‘Ö‚¦‚Ä‚à‘åä•vB
-            _rolePlayAI = new RolePlayAI(this);
-            _gamePlayAI = new GamePlayAI(this);
-            _scoreEvaluateAI = new ScoreEvaluateAI(this);
-            _turnEvaluateAI = new TurnEvaluateAI(this);
-            _talkContentSelectAI = new TalkContentSelectAI();
-            _subGoalPath = new SubGoalPath(this);
+            // åˆæœŸåŒ–æ™‚ã«é»’æ¿ã«æ›¸ãè¾¼ã¾ã‚Œã‚‹å€¤ã‚’ã€Awakeã‚„Startã®ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§å‚ç…§ã™ã‚‹ã‚³ãƒ³ãƒãƒ¼ãƒãƒ³ãƒˆç¾¤ã‚’è¿½åŠ ã€‚
+            gameObject.AddComponent<RolePlayAI>();
+            gameObject.AddComponent<GamePlayAI>();
+            gameObject.AddComponent<ScoreEvaluateAI>();
+            gameObject.AddComponent<TurnEvaluateAI>();
+            gameObject.AddComponent<TalkThemeSelectAI>();
+            gameObject.AddComponent<CommentReactionAI>();
 
-            PlayEntryEffect();
-            RegisterStatusBar();
-            RegisterCameraFocusTarget();
-            RegisterProfileWindow();
-            AddActorOnCell();
-            SetNameTag();
-            SetPosition(Coords);
-            ShowLine(RequestLineType.Entry);
-            AddGameLog($"{AdventurerSheet.DisplayName}‚ªƒ_ƒ“ƒWƒ‡ƒ“‚É‚â‚Á‚Ä‚«‚½B");
+            // ç”Ÿæˆã—ãŸã‚»ãƒ«ä¸Šã«è‡ªèº«ã‚’ç§»å‹•ã¨è¿½åŠ ã€‚
+            DungeonManager dungeonManager = DungeonManager.Find();
+            dungeonManager.AddActorOnCell(Coords, this);
+            transform.position = dungeonManager.GetCell(Coords).Position;
 
-            UpdateHoldedInformationAsync(token).Forget();
+            // UIã«åæ˜ ã€‚
+            if (TryGetComponent(out StatusBarApply statusBar)) statusBar.Register();
+            if (TryGetComponent(out ProfileWindowApply profileWindow)) profileWindow.Register();
+            if (TryGetComponent(out CameraFocusTargetApply cameraFocusTarget)) cameraFocusTarget.Register();
+            if (this.TryGetComponentInChildren(out NameTag nameTag)) nameTag.SetName(_blackboard.DisplayName);
 
-            await _subGoalPath.PlanningAsync(token);
+            // ç™»å ´æ™‚ã®æ¼”å‡ºã€‚å°è©ã‚’è¡¨ç¤ºã•ã›ã‚‹ã®ã§ã€UIã«è‡ªèº«ã‚’åæ˜ ã—ãŸå¾Œã«å‘¼ã¶ã€‚
+            if (TryGetComponent(out EntryToDungeon entry)) entry.Entry();
 
+            // ã‚³ãƒ¡ãƒ³ãƒˆã‚’æµã—ã€ãã®å†…å®¹ã«å¯¾ã—ã¦åå¿œã™ã‚‹ã€‚
+            if (TryGetComponent(out CommentApply commentApply)) commentApply.Reaction();
+
+            // ã‚µãƒ–ã‚´ãƒ¼ãƒ«ã‚’æ±ºã‚ã‚‹ã€‚
+            TryGetComponent(out SubGoalPath subGoalPath);
+            await subGoalPath.PlanningAsync(token);
+
+            TryGetComponent(out GamePlayAI gamePlayAI);
+            TryGetComponent(out InformationStock informationStock);
+            TryGetComponent(out MovementToDirection moveToDirection);
+            TryGetComponent(out MovementToTarget moveToTarget);
+            TryGetComponent(out AttackToSurroundings attack);
+            TryGetComponent(out ScavengeToSurroundings scavenge);
+            TryGetComponent(out TalkToSurroundings talk);
+            TryGetComponent(out Defeated defeated);
+            TryGetComponent(out EscapeFromDungeon escape);
             while (!token.IsCancellationRequested)
             {
-                ElapsedTurn++;
-                RefreshHoldedInformation();
-                AddTerrainFeatureInformation();
-                UpdateProfileWindow();
+                // ã‚¿ãƒ¼ãƒ³æ•°ã‚’æ›´æ–°ã€‚
+                _blackboard.ElapsedTurn++;
 
-                string response = await _gamePlayAI.RequestNextActionAsync(token);
-                switch (response)
+                // ç¾åœ¨ã„ã‚‹ã‚»ãƒ«ã«ã¤ã„ã¦ã€åœ°å½¢ã®ç‰¹å¾´ã«é–¢ã™ã‚‹æƒ…å ±ãŒã‚ã‚‹å ´åˆã€
+                // AIãŒæ¬¡ã®è¡Œå‹•ã‚’é¸æŠã™ã‚‹éš›ã«ã€è€ƒæ…®ã™ã‚‹æƒ…å ±ã®å€™è£œã¨ã—ã¦è¿½åŠ ã™ã‚‹ã€‚
+                if (dungeonManager.TryGetTerrainFeature(Coords, out SharedInformation feature))
                 {
-                    case "Move North": await MoveAsync(Vector2Int.up, token); break;
-                    case "Move South": await MoveAsync(Vector2Int.down, token); break;
-                    case "Move East": await MoveAsync(Vector2Int.right, token); break;
-                    case "Move West": await MoveAsync(Vector2Int.left, token); break;
-                    case "Return To Entrance": await MoveAsync("Entrance", token); break;
-                    case "Attack Surrounding": await AttackAsync(token); break;
-                    case "Scavenge Surrounding": await ScavengeAsync(token); break;
-                    case "Talk Surrounding": await TalkAsync(token); break;
+                    informationStock.AddPending(feature);
                 }
 
+                // ä¿æŒã—ã¦ã„ã‚‹æƒ…å ±ã‚’æ›´æ–°ã€‚
+                // æ–°ã—ã„æƒ…å ±ã‚’çŸ¥ã£ãŸå ´åˆã€ã“ã®ã‚¿ã‚¤ãƒŸãƒ³ã‚°ã§ä¿æŒã—ã¦ã„ã‚‹æƒ…å ±ã«è¿½åŠ ã•ã‚Œã‚‹ã€‚
+                await informationStock.RefreshAsync(token);
+
+                // æƒ…å ±ã‚’æ›´æ–°ã—ãŸã®ã§UIã«åæ˜ ã€‚
+                if (profileWindow != null) profileWindow.Apply();
+
+                // AIãŒæ¬¡ã®è¡Œå‹•ã‚’é¸æŠã—ã€å®Ÿè¡Œã€‚
+                string choice = await gamePlayAI.RequestNextActionAsync(token);
 #if UNITY_EDITOR
-                _selectedAction = response;
+                _selectedAction = choice;
 #endif
+                if (choice == "Idle") await UniTask.Yield(cancellationToken: token);
+                else if (choice == "Move North") await moveToDirection.MoveAsync(Vector2Int.up, token);
+                else if (choice == "Move South") await moveToDirection.MoveAsync(Vector2Int.down, token);
+                else if (choice == "Move East") await moveToDirection.MoveAsync(Vector2Int.right, token);
+                else if (choice == "Move West") await moveToDirection.MoveAsync(Vector2Int.left, token);
+                else if (choice == "Return To Entrance") await moveToTarget.MoveAsync("Entrance", token);
+                else if (choice == "Attack Surrounding") await attack.AttackAsync<Enemy>(token);
+                else if (choice == "Scavenge Surrounding") await scavenge.ScavengeAsync(token);
+                else if (choice == "Talk Surrounding") await talk.TalkAsync(token);
 
-                if (await DefeatedAsync(token) || await EscapeAsync(token)) break;
+                // æ’ƒç ´ã•ã‚ŒãŸã‚‚ã—ãã¯è„±å‡ºã—ãŸå ´åˆã€‚
+                if (await defeated.DefeatedAsync(token) || await escape.EscapeAsync(token)) break;
 
-                // ƒTƒuƒS[ƒ‹‚ğ’B¬‚µ‚½ê‡AŸ‚ÌƒTƒuƒS[ƒ‹‚ğİ’èB
-                if (CurrentSubGoal.IsCompleted())
+                // ã‚µãƒ–ã‚´ãƒ¼ãƒ«ã‚’é”æˆã—ãŸå ´åˆã€æ¬¡ã®ã‚µãƒ–ã‚´ãƒ¼ãƒ«ã‚’è¨­å®šã€‚
+                if (subGoalPath.Current.IsCompleted())
                 {
-                    AddGameLog($"{DisplayName}‚ªu{CurrentSubGoal.Text.Japanese}v‚ğ’B¬B");
-                    _subGoalPath.HeadingNext();
-                    // —˜—p‰Â”\‚Ès“®‚Ì‘I‘ğˆ‚ª‚ ‚éê‡‚Í’Ç‰ÁB
-                    AddAvailableActions(CurrentSubGoal.GetAdditionalActions());
+                    subGoalPath.HeadingNext();
+
+                    // åˆ©ç”¨å¯èƒ½ãªè¡Œå‹•ã®é¸æŠè‚¢ãŒã‚ã‚‹å ´åˆã¯è¿½åŠ ã€‚
+                    TryGetComponent(out AvailableActions availableActions);
+                    availableActions.Add(subGoalPath.Current.GetAdditionalActions());
+
+                    // ã‚µãƒ–ã‚´ãƒ¼ãƒ«ã‚’é”æˆã—ãŸéš›ã®æ¼”å‡ºã€‚
+                    if (TryGetComponent(out SubGoalEffect subGoalEffect)) subGoalEffect.Play();
                 }
 
-                // OnUpdateAsync‚ª“¯Šú“I‚Ìê‡A–³ŒÀƒ‹[ƒv‚ÉŠ×‚é‚Ì‚Å1ƒtƒŒ[ƒ€‘Ò‚ÂB
-                await UniTask.Yield();
+                await UniTask.Yield(cancellationToken: token);
             }
 
             Destroy(gameObject);
-        }
-
-        async UniTask WaitInitializeAsync(CancellationToken token)
-        {
-            await UniTask.WaitUntil(() => _adventurerSheet != null, cancellationToken: token);
-        }
-
-        async UniTask UpdateHoldedInformationAsync(CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-
-            while (!token.IsCancellationRequested)
-            {
-                // •Û—¯’†‚Ìî•ñ‚ª‚ ‚éê‡A•]‰¿‚µ‚ÄŠù‘¶‚Ìî•ñ‚Æ”äŠr•“ü‚ê‘Ö‚¦‚ğs‚¤B
-                // ©g‚ª•Û‚µ‚Ä‚¢‚éî•ñ‚ªXV‚³‚ê‚½‚Ì‚ÅA‘¼–`Œ¯Ò‚Æ‚Ì‰ï˜b‚ÌÛ‚É“`‚¦‚éî•ñ‚àXV‚·‚éB
-                if (_pendingInformation.TryDequeue(out SharedInformation info))
-                {
-                    info.Score = await _scoreEvaluateAI.EvaluateAsync(info, token);
-                    info.RemainingTurn = await _turnEvaluateAI.EvaluateAsync(info, token);
-                    _holdedInformation.Add(info);
-                    _selectedInformation = await _talkContentSelectAI.SelectAsync(_holdedInformation.Contents, token);
-                }
-
-                await UniTask.Yield(cancellationToken: token);
-            }
-        }
-
-        async UniTask MoveAsync(Vector2Int direction, CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-            PathfindingToNeighbourCell(direction);
-            await MoveNextCellAsync(token);
-        }
-
-        async UniTask MoveAsync(string target, CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-            PathfindingIfTargetChanged(target);
-            await MoveNextCellAsync(token);
-        }
-
-        async UniTask AttackAsync(CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-
-            if (TryGetAttackTarget(out Actor target))
-            {
-                await RotateToActorDirectionAsync(target, token);
-                PlayAnimation("Attack");
-                ShowLine(RequestLineType.Attack);
-
-                switch (ApplyDamage(target as IDamageable))
-                {
-                    case "Defeated":
-                        ShowLine(RequestLineType.DefeatEnemy);
-                        AddGameLog($"{DisplayName}‚ª“G‚ğ“|‚µ‚½B");
-                        AddActionLog("I attacked the enemy. I defeated the enemy.");
-                        DefeatCount++;
-                        break;
-                    case "Hit":
-                        AddActionLog("I attacked the enemy. The enemy is still alive.");
-                        break;
-                    case "Corpse":
-                        AddActionLog("I tried to attack it, but it was already dead.");
-                        break;
-                }
-            }
-            else
-            {
-                AddActionLog("There are no enemies around to attack.");
-            }
-        }
-
-        async UniTask ScavengeAsync(CancellationToken token)
-        {
-            if (TryGetScavengeTarget(out Actor target))
-            {
-                await RotateToActorDirectionAsync(target, token);
-                PlayAnimation("Scav");
-
-                string foundItem = ApplyScavenge(target as IScavengeable);
-                switch (foundItem)
-                {
-                    case "Treasure":
-                        AddActionLog("I scavenged the surrounding treasure chests. I got the treasure.");
-                        ShowLine(RequestLineType.GetTreasureSuccess);
-                        AddGameLog($"{DisplayName}‚ª•ó•¨‚ğ“üèB");
-                        TreasureCount++;
-                        break;
-                    case "Empty":
-                        AddActionLog("I scavenged the surrounding boxes. There was nothing in them.");
-                        ShowLine(RequestLineType.GetItemFailure);
-                        break;
-                    default:
-                        AddActionLog($"I scavenged the surrounding boxes. I got the {foundItem}.");
-                        ShowLine(RequestLineType.GetItemSuccess);
-                        AddGameLog($"{DisplayName}‚ªƒAƒCƒeƒ€‚ğ“üèB");
-                        break;
-                }
-            }
-            else
-            {
-                AddActionLog("There are no areas around that can be scavenged.");
-            }
-        }
-
-        async UniTask TalkAsync(CancellationToken token)
-        {
-            const float PlayTime = 7.0f;
-
-            token.ThrowIfCancellationRequested();
-
-            if (TryGetTalkTarget(out Actor target))
-            {
-                await RotateToActorDirectionAsync(target, token);
-                PlayAnimation("Talk");
-                ShowLine(RequestLineType.Greeting);
-                PlayTalkEffect();
-                ApplyTalk(target as Adventurer);
-                AddActionLog("I talked to the adventurers around me about what I knew.");
-                await WaitForSecondsAsync(PlayTime, token);
-            }
-            else
-            {
-                AddActionLog("I tried to talk with other adventurers, but there was no one around.");
-            }
-        }
-
-        async UniTask<bool> DefeatedAsync(CancellationToken token)
-        {
-            const float AnimationLength = 2.5f;
-
-            if (IsAlive) return false;
-
-            PlayDefeatedEffect();
-            ShowLine(RequestLineType.Defeated);
-            await WaitForSecondsAsync(AnimationLength, token);
-            RemoveActorOnCell();
-
-            return true;
-        }
-
-        async UniTask<bool> EscapeAsync(CancellationToken token)
-        {
-            const float AnimationLength = 1.0f * 2;
-
-            if (IsLastSubGoal() && IsEntrancePlacedCell(Coords) && CurrentSubGoal.IsCompleted())
-            {
-                PlayAnimation("Jump");
-                ShowLine(RequestLineType.Goal);
-                AddGameLog($"{DisplayName}‚ªƒ_ƒ“ƒWƒ‡ƒ“‚©‚ç’Eo‚µ‚½B");
-
-                await WaitForSecondsAsync(AnimationLength, token);
-                RemoveActorOnCell();
-
-                return true;
-            }
-
-            return false;
-        }
-
-        bool IsLastSubGoal()
-        {
-            return _subGoalPath.IsLastSubGoal;
-        }
-
-        bool IsEntrancePlacedCell(Vector2Int coords)
-        {
-            return Blueprint.Interaction[coords.y][coords.x] == '<';
-        }
-
-        void PathfindingToNeighbourCell(Vector2Int direction)
-        {
-            Cell cell = GetCell(GetNeighbourCoords(direction));
-            _movementPath.CreateManually(direction.ToString(), cell);
-        }
-
-        void PathfindingIfTargetChanged(string target)
-        {
-            if (_movementPath.Target == target) return;
-
-            switch (target)
-            {
-                case "Treasure": PathfindingToTreasure(); break;
-                case "Entrance": PathfindingToEntrance(); break;
-                default: Debug.LogWarning($"‘Î‰‚·‚é–Ú•W‚ª‘¶İ‚µ‚È‚¢‚½‚ßŒo˜H’Tõ‚ªo—ˆ‚È‚¢B: {target}"); break;
-            }
-        }
-
-        async UniTask MoveNextCellAsync(CancellationToken token)
-        {
-            token.ThrowIfCancellationRequested();
-
-            SetDirectionToNextCell();
-            OpenForwardDoor();
-
-            string directionName = GetDirectionName();
-
-            if (IsNextCellPassable())
-            {
-                PlayAnimation("Walk");
-                RemoveActorOnCell();
-                SetCoordsToNextCell();
-                AddActorOnCell();
-                
-                await (TranslateAsync(token), RotateToNextCellDirectionAsync(token));
-                
-                PlayAnimation("Idle");
-                _movementPath.HeadingNext();
-                AddActionLog($"Successfully moved to the {directionName}.");
-                UpdateExploreRecord(Coords);
-            }
-            else
-            {
-                await RotateToNextCellDirectionAsync(token);
-
-                _movementPath.HeadingNext();
-                AddActionLog($"Failed to move to the {directionName}. Cannot move in this direction.");
-            }
-        }
-
-        bool TryGetAttackTarget(out Actor target)
-        {
-            return TryGetTarget<IDamageable>(out target);
-        }
-
-        bool TryGetScavengeTarget(out Actor target)
-        {
-            // •ó” ‚ğ—Dæ‚µ‚Ä‹™‚éB
-            if (TryGetTarget("Treasure", out target)) return true;
-            if (TryGetTarget<IScavengeable>(out target)) return true;
-
-            target = null;
-            return false;
-        }
-
-        bool TryGetTalkTarget(out Actor target)
-        {
-            return TryGetTarget<Adventurer>(out target);
-        }
-
-        string ApplyDamage(IDamageable target)
-        {
-            if (target == null) return string.Empty;
-
-            // ‚Ü‚¾•Ší‚ÆUŒ‚—Í‚Ìƒf[ƒ^‚ğì‚Á‚Ä‚¢‚È‚¢B
-            return target.Damage(ID, "ƒpƒ“ƒ`", 34, Coords);
-        }
-
-        string ApplyScavenge(IScavengeable target)
-        {
-            if (target == null) return string.Empty;
-
-            Item result = target.Scavenge();
-            if (result != null)
-            {
-                AddItemInventory(result);
-                return result.Name.English;
-            }
-            else
-            {
-                return "Empty";
-            }
-        }
-
-        void ApplyTalk(Adventurer target)
-        {
-            if (target == null || _selectedInformation == null) return;
-
-            target.Talk(_selectedInformation.Text, "Adventurer", Coords);
-        }
-
-        void PathfindingToTreasure()
-        {
-            Actor treasure = GetAnyCell("Treasure").GetActors().Where(a => a.ID == "Treasure").FirstOrDefault();
-            // •ó” ‚Ìƒ}ƒX‚Ö‚ÍŒo˜H’Tõ‚ªo—ˆ‚È‚¢‚Ì‚ÅA³–Ê‚ÌˆÊ’u‚Ü‚Å‚ÌŒo˜H’TõB
-            _movementPath.Finding("Treasure", Coords, treasure.Coords + treasure.Direction);
-        }
-
-        void PathfindingToEntrance()
-        {
-            Cell cell = GetAnyCell("Entrance");
-            _movementPath.Finding("Entrance", Coords, cell.Coords);
-        }
-
-        void SetDirectionToNextCell()
-        {
-            _currentDirection = _movementPath.Current.Coords - Coords;
-        }
-
-        void OpenForwardDoor()
-        {
-            Vector2Int forwardCoords = GetNeighbourCoords(Direction);
-            if (IsDoorPlacedCell(forwardCoords) && TryGetDoorOnCell(forwardCoords, out DungeonEntity door))
-            {
-                door.Interact(this);
-            }
-        }
-
-        bool IsNextCellPassable()
-        {
-            return _movementPath.Current.IsPassable();
-        }
-
-        async UniTask TranslateAsync(CancellationToken token)
-        {
-            const float Speed = 1.0f;
-
-            token.ThrowIfCancellationRequested();
-
-            Vector3 start = GetPosition();
-            Vector3 goal = GetNextCellPosition();
-            for (float t = 0; t <= 1; t += Time.deltaTime * Speed)
-            {
-                SetPosition(Vector3.Lerp(start, goal, t));
-                await UniTask.Yield(cancellationToken: token);
-            }
-
-            SetPosition(goal);
-        }
-
-        async UniTask RotateToActorDirectionAsync(Actor actor, CancellationToken token)
-        {
-            await RotateAsync(GetRotationToTarget(actor.Coords), token);
-        }
-
-        async UniTask RotateToNextCellDirectionAsync(CancellationToken token)
-        {
-            await RotateAsync(GetRotationToNextCell(), token);
-        }
-
-        async UniTask RotateAsync(Quaternion goal, CancellationToken token)
-        {
-            const float Speed = 4.0f;
-
-            token.ThrowIfCancellationRequested();
-
-            Quaternion start = GetRotation();
-            for (float t = 0; t <= 1; t += Time.deltaTime * Speed)
-            {
-                SetRotation(Quaternion.Lerp(start, goal, t));
-                await UniTask.Yield(cancellationToken: token);
-            }
-        }
-
-        void AddActorOnCell()
-        {
-            _dungeonManager.AddActorOnCell(Coords, this);
-        }
-
-        void RemoveActorOnCell()
-        {
-            _dungeonManager.RemoveActorOnCell(Coords, this);
-        }
-
-        void SetCoordsToNextCell()
-        {
-            _currentCoords = _movementPath.Current.Coords;
-        }
-
-        string GetDirectionName()
-        {
-            if (Direction == Vector2Int.up) return "north";
-            if (Direction == Vector2Int.down) return "south";
-            if (Direction == Vector2Int.left) return "west";
-            if (Direction == Vector2Int.right) return "east";
-
-            return string.Empty;
-        }
-
-        Vector3 GetPosition()
-        {
-            return transform.position;
-        }
-
-        Vector3 GetNextCellPosition()
-        {
-            return _movementPath.Current.Position;
-        }
-
-        Quaternion GetRotation()
-        {
-            return _forwardAxis.rotation;
-        }
-
-        void SetRotation(Quaternion rotation)
-        {
-            _forwardAxis.rotation = rotation;
-        }
-
-        Quaternion GetRotationToNextCell()
-        {
-            return CalculateRotation(GetPosition(), GetNextCellPosition());
-        }
-
-        Quaternion GetRotationToTarget(Vector2Int targetCoords)
-        {
-            Cell a = GetCell(Coords);
-            Cell b = GetCell(targetCoords);
-            return CalculateRotation(a.Position, b.Position);
-        }
-
-        static Quaternion CalculateRotation(Vector3 a, Vector3 b)
-        {
-            Vector3 dir = (b - a).normalized;
-            if (dir == Vector3.zero) return Quaternion.identity;
-            else return Quaternion.LookRotation(dir);
-        }
-
-        bool TryGetTarget<T>(out Actor target)
-        {
-            foreach (Actor actor in GetNeighboursActors())
-            {
-                if (actor is T _)
-                {
-                    target = actor;
-                    return true;
-                }
-            }
-
-            target = null;
-            return false;
-        }
-
-        bool TryGetTarget(string id, out Actor target)
-        {
-            foreach (Actor actor in GetNeighboursActors())
-            {
-                if (actor.ID == id)
-                {
-                    target = actor;
-                    return true;
-                }
-            }
-
-            target = null;
-            return false;
-        }
-
-        IEnumerable<Actor> GetNeighboursActors()
-        {
-            for (int i = -1; i <= 1; i++)
-            {
-                for (int k = -1; k <= 1; k++)
-                {
-                    // ã‰º¶‰E‚Ì4•ûŒü‚Ì‚İB
-                    if ((i == 0 && k == 0) || Mathf.Abs(i * k) > 0) continue;
-
-                    Cell cell = GetCell(GetNeighbourCoords(new Vector2Int(k, i)));
-                    if (cell.GetActors().Count > 0)
-                    {
-                        foreach (Actor actor in cell.GetActors()) yield return actor;
-                    }
-                }
-            }
-        }
-
-        void RegisterStatusBar()
-        {
-            _statusBarID = _uiManager.RegisterToStatusBar(this);
-        }
-
-        void RegisterProfileWindow()
-        {
-            _profileWindowID = _uiManager.RegisterToProfileWindow(this);
-        }
-
-        void UpdateStatusBar()
-        {
-            _uiManager.UpdateStatusBarStatus(_statusBarID, this);
-        }
-
-        void UpdateProfileWindow()
-        {
-            _uiManager.UpdateProfileWindowStatus(_profileWindowID, this);
-        }
-
-        void DeleteStatusBar()
-        {
-            if (_uiManager == null) return;
-
-            _uiManager.DeleteStatusBarStatus(_statusBarID);
-        }
-
-        void DeleteProfileWindow()
-        {
-            if (_uiManager == null) return;
-
-            _uiManager.DeleteProfileWindowStatus(_profileWindowID);
-        }
-
-        void AddPendingInformation(BilingualString text, string source)
-        {
-            SharedInformation info = new SharedInformation(text, source);
-            _pendingInformation.Enqueue(info);
-        }
-
-        void RefreshHoldedInformation()
-        {
-            _holdedInformation.DecreaseRemainingTurn();
-            _holdedInformation.RemoveExpired();
-        }
-
-        void AddItemInventory(Item item)
-        {
-            _inventory.Add(item);
-        }
-
-        Cell GetAnyCell(string id)
-        {
-            return _dungeonManager.GetCells(id).FirstOrDefault();
-        }
-
-        void SetPosition(Vector2Int coords)
-        {
-            Cell cell = _dungeonManager.GetCell(coords);
-            SetPosition(cell.Position);
-        }
-
-        void SetPosition(Vector3 position)
-        {
-            transform.position = position;
-        }
-
-        void ShowLine(RequestLineType type)
-        {
-            ShowLineAsync(type, this.GetCancellationTokenOnDestroy()).Forget();
-        }
-
-        async UniTask ShowLineAsync(RequestLineType type, CancellationToken token)
-        {
-            string line = await _rolePlayAI.RequestLineAsync(type, token);
-            _uiManager.ShowLine(_statusBarID, line);
-        }
-
-        static bool IsDoorPlacedCell(Vector2Int coords)
-        {
-            // ƒ_ƒ“ƒWƒ‡ƒ“¶¬AƒhƒA‚ğ¶¬‚·‚éƒZƒ‹‚Í ã(8),‰º(2),¶(4),‰E(6) ‚ÅŒü‚«‚ğw’è‚µ‚Ä‚¢‚éB
-            return "2468".Contains(Blueprint.Doors[coords.y][coords.x]);
-        }
-
-        bool TryGetDoorOnCell(Vector2Int coords, out DungeonEntity door)
-        {
-            Actor actor = GetCell(coords).GetActors().Where(c => c.ID == "Door").FirstOrDefault();
-            door = actor as DungeonEntity;
-            return door != null;
-        }
-
-        Vector2Int GetNeighbourCoords(Vector2Int direction)
-        {
-            // —×Ú‚µ‚Ä‚¢‚È‚¢ƒZƒ‹‚É‚ÍˆÚ“®‚µ‚È‚¢‚æ‚¤‚É‚·‚éB
-            int x = System.Math.Sign(direction.x);
-            int y = System.Math.Sign(direction.y);
-            return Coords + new Vector2Int(x, y);
-        }
-
-        void IncreaseHp(int value)
-        {
-            DecreaseHp(-value);
-        }
-
-        void DecreaseHp(int value)
-        {
-            CurrentHp -= value;
-            CurrentHp = Mathf.Max(0, CurrentHp);
-        }
-
-        void AddActionLog(string text)
-        {
-            _actionLog.Enqueue($"Turn{ElapsedTurn}: {text}");
-
-            // Ÿ‚Ìs“®‚ğ‘I‘ğ‚·‚éAI‚ÉƒŠƒNƒGƒXƒg‚·‚é‚±‚Æ‚ğl—¶‚µ‚ÄA“K“–‚Éè“®‚Åİ’èB
-            if (_actionLog.Count > 10) _actionLog.Dequeue();
-        }
-
-        void AddGameLog(string text)
-        {
-            _uiManager.AddLog(text);
-        }
-
-        void PlayAnimation(string name)
-        {
-            _animator.Play(name);
-        }
-
-        Cell GetCell(Vector2Int coords)
-        {
-            return _dungeonManager.GetCell(coords);
-        }
-
-        void UpdateExploreRecord(Vector2Int coords)
-        {
-            _exploreRecord.IncreaseCount(coords);
-        }
-
-        void AddAvailableActions(IEnumerable<string> actions)
-        {
-            _availableActions.AddRange(actions);
-        }
-
-        void AddTerrainFeatureInformation()
-        {
-            if (_dungeonManager.TryGetTerrainFeature(Coords, out SharedInformation feature))
-            {
-                // î•ñ‚ğ®—‚·‚éÛ‚ÉÁ‚³‚ê‚É‚­‚­‚·‚é‚½‚ßAAI‘¤‚ª•]‰¿‚·‚éÛ‚ÌÅ‘åƒXƒRƒA‚Å‚ ‚é1‚Éİ’è‚µ‚Ä‚¨‚­B
-                // Œ»İ‚¢‚éƒZƒ‹‚Ìî•ñ‚ğAI‚É“n‚·–Ú“I‚È‚Ì‚ÅAc‚èƒ^[ƒ“‚Í1‚É‚µ‚Ä‚¨‚­B
-                feature.Score = 1.0f;
-                feature.RemainingTurn = 1;
-                _holdedInformation.Add(feature);
-            }
-        }
-
-        void RegisterCameraFocusTarget()
-        {
-            _cameraFocusID = _uiManager.RegisterCameraFocusTarget(gameObject);
-        }
-
-        void DeleteCameraFocusTarget()
-        {
-            _uiManager.DeleteCameraFocusTarget(_cameraFocusID);
-        }
-
-        void SetNameTag()
-        {
-            if (this.TryGetComponentInChildren(out NameTag nameTag))
-            {
-                nameTag.SetName(DisplayName);
-            }
-        }
-
-        void PlayEntryEffect()
-        {
-            if (TryGetComponent(out EntryEffect effect))
-            {
-                effect.Play();
-            }
-        }
-
-        void PlayDamageEffect(Vector2Int attackerCoords)
-        {
-            if (TryGetComponent(out DamageEffect effect))
-            {
-                effect.Play(Coords, attackerCoords);
-            }
-        }
-
-        void PlayDefeatedEffect()
-        {
-            if (TryGetComponent(out DefeatedEffect effect))
-            {
-                effect.Play();
-            }
-        }
-
-        void PlayTalkEffect()
-        {
-            if (TryGetComponent(out TalkEffect effect))
-            {
-                effect.Play();
-            }
-        }
-
-        async UniTask WaitForSecondsAsync(float duration, CancellationToken token)
-        {
-            await UniTask.WaitForSeconds(duration, cancellationToken: token);
         }
     }
 }

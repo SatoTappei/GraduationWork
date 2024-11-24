@@ -21,7 +21,7 @@ namespace Game
         [SerializeField] AvatarCustomizeData[] _males;
         [SerializeField] AvatarCustomizeData[] _females;
 
-        public AvatarCustomizeData GetCustomizedData(SpreadSheetData profile)
+        public AvatarCustomizeData GetCustomizedData(AdventurerSpreadSheetData profile)
         {
             // とりあえず性別でのみ判定する。
             // 後々、AI側にキャラクターの見た目の選択肢を提示して、その中から選ぶような処理を追加する。

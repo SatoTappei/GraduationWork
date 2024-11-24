@@ -8,7 +8,7 @@ namespace Game
     {
         [SerializeField] Vector2Int _spawnCoords;
 
-        SpreadSheetLoader _spreadSheetLoader;
+        AdventurerSpreadSheetLoader _adventurerLoader;
         AvatarCustomizer _avatarCustomizer;
 
         Adventurer[] _spawned;
@@ -16,11 +16,11 @@ namespace Game
 
         void Awake()
         {
-            _spreadSheetLoader = GetComponent<SpreadSheetLoader>();
+            _adventurerLoader = GetComponent<AdventurerSpreadSheetLoader>();
             _avatarCustomizer = GetComponent<AvatarCustomizer>();
 
             // 冒険者の最大数、UIのデザインも変更する必要があり面倒なので、とりあえず4で固定。
-            _spawned = new Adventurer[4];
+            _spawned = new Adventurer[1];
         }
 
         void Start()
@@ -78,15 +78,15 @@ namespace Game
         // スプレッドシートからランダムなデータを選択し、冒険者を生成。
         Adventurer CreateRandomAdventurer()
         {
-            if (_spreadSheetLoader.IsLoading) return null;
+            if (_adventurerLoader.IsLoading) return null;
 
-            IReadOnlyList<SpreadSheetData> profiles = _spreadSheetLoader.Profiles;
+            IReadOnlyList<AdventurerSpreadSheetData> profiles = _adventurerLoader.Profiles;
             int random = Random.Range(0, profiles.Count);
-            SpreadSheetData profile = profiles[random];
+            AdventurerSpreadSheetData profile = profiles[random];
 
             AvatarCustomizeData avatarData = _avatarCustomizer.GetCustomizedData(profile);
             
-            // 冒険者側に自身のプロフィールとアバターの情報を渡して初期化する。
+            // 冒険者側に自身のプロフィールとコメント、アバターの情報を渡して初期化する。
             AdventurerSheet adventurerSheet = new AdventurerSheet(profile, avatarData);
             Adventurer adventurer = Instantiate(avatarData.Prefab);
             adventurer.Initialize(adventurerSheet);

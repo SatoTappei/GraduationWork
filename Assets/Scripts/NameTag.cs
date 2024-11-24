@@ -9,7 +9,6 @@ namespace Game
     {
         [SerializeField] Transform _follow;
         [SerializeField] Vector3 _offset;
-        [SerializeField] string _name;
 
         Text _text;
         RectTransform _textTransform;
@@ -18,12 +17,6 @@ namespace Game
         {
             _text = GetComponentInChildren<Text>();
             _textTransform = _text.transform as RectTransform;
-        }
-
-        void Start()
-        {
-            SetName(_name);
-            UpdatePosition();
         }
 
         void Update()
