@@ -28,7 +28,8 @@ namespace Game
             AIRequest ai = CreateAI();
             string prompt =
                 $"# 指示内容\n" +
-                $"- 自身のキャラクターの設定を基に、台詞「{GetCommentText(comment)}」に対する返答を考えてください。\n" +
+                $"- 自身のキャラクターの設定を基に、次の台詞に対する返答を考えてください。\n" +
+                $"- 「{GetCommentText(comment)}」\n" +
                 $"- 短い一言で台詞をお願いします。\n" +
                 $"'''\n" +
                 $"# 出力形式\n" +

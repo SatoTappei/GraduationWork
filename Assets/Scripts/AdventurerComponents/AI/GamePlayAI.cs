@@ -91,15 +91,7 @@ namespace Game
             format.AvailableActions = _availableActions.Actions.ToArray();
             format.Goal = _subGoalPath.Current.Text.English;
 
-            try
-            {
-                return await _ai.RequestAsync(JsonUtility.ToJson(format));
-            }
-            catch (UnityWebRequestException)
-            {
-                // 「何もしない」を返して再度リクエストしてもらう。
-                return "Idle";
-            }
+            return await _ai.RequestAsync(JsonUtility.ToJson(format));
         }
 
         string GetCellInfo(Vector2Int coords)
@@ -118,9 +110,16 @@ namespace Game
                 {
                     info = "Enemy";
                 }
-                else if (actor.ID == "Treasure")
+                else if (actor is Treasure treasure)
                 {
-                    info = "There is a treasure chest. You can get it when you scavenge out the contents.";
+                    if (treasure.IsEmpty)
+                    {
+                        info = "There is a treasure chest. But Is Empty.";
+                    }
+                    else
+                    {
+                        info = "There is a treasure chest. You can get it when you scavenge out the contents.";
+                    }
                 }
                 else if (actor.ID == "Door")
                 {

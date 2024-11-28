@@ -89,9 +89,11 @@ namespace Game
             List<string> result = response.Split().Where(s => int.TryParse(s, out int _)).ToList();
 
             // AIの出力方法が正常な場合、AIが選択した3つの番号のみが配列に格納されている。
+            // それ以外の出力をした場合、宝箱入手 -> 探索 -> 出口へ戻る の順でサブゴールを指定。
             if (result.Count != 3)
             {
                 Debug.LogError($"適切な数のサブゴールが設定されていない。: {string.Join(",", result)}");
+                result = new List<string> { "0", "2", "6" };
             }
 
             // 対応するサブゴールのクラスに変換。
@@ -106,6 +108,15 @@ namespace Game
                 else if (result[i] == "5") path[i] = gameObject.AddComponent<DefeatAdventurer>();
                 else if (result[i] == "6") path[i] = gameObject.AddComponent<ReturnToEntrance>();
                 else Debug.LogError($"AIが選択したサブゴールに対応するクラスが無い。: {result[i]}");
+            }
+
+            // AIが選択した番号に対応するサブゴールが無かった場合。
+            for (int i = 0; i < path.Length; i++)
+            {
+                if (path[i] != null) continue;
+
+                if (i == path.Length - 1) path[i] = gameObject.AddComponent<ReturnToEntrance>();
+                else path[i] = gameObject.AddComponent<ExploreDungeon>();
             }
 
             _path = path;

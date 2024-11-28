@@ -7,16 +7,15 @@ namespace Game
     public class DamageEffect : MonoBehaviour
     {
         [SerializeField] AudioClip _damageSE;
+        [SerializeField] ParticleSystem _particle;
 
         AudioSource _audioSource;
-        ParticleSystem _particle;
         Transform _fbx;
         bool _isKnockback;
 
         void Awake()
         {
             _audioSource = GetComponent<AudioSource>();
-            _particle = transform.FindChildRecursive("Particle_Damage").GetComponent<ParticleSystem>();
             _fbx = transform.FindChildRecursive("FBX");
         }
 

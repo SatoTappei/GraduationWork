@@ -7,14 +7,14 @@ public class コンポーネントあるかチェック : MonoBehaviour
 {
     void Start()
     {
-        { if (!TryGetComponent(out AttackToSurroundings _)) Debug.Log("ないよ"); }
+        { if (!TryGetComponent(out AttackToSurrounding _)) Debug.Log("ないよ"); }
         { if (!TryGetComponent(out Defeated _)) Debug.Log("ないよ"); }
         { if (!TryGetComponent(out EntryToDungeon _)) Debug.Log("ないよ"); }
         { if (!TryGetComponent(out EscapeFromDungeon _)) Debug.Log("ないよ"); }
         { if (!TryGetComponent(out MovementToDirection _)) Debug.Log("ないよ"); }
         { if (!TryGetComponent(out MovementToTarget _)) Debug.Log("ないよ"); }
-        { if (!TryGetComponent(out ScavengeToSurroundings _)) Debug.Log("ないよ"); }
-        { if (!TryGetComponent(out TalkToSurroundings _)) Debug.Log("ないよ"); }
+        { if (!TryGetComponent(out ScavengeToSurrounding _)) Debug.Log("ないよ"); }
+        { if (!TryGetComponent(out TalkToSurrounding _)) Debug.Log("ないよ"); }
 
         { if (!TryGetComponent(out ActionLog _)) Debug.Log("ないよ"); }
         { if (!TryGetComponent(out AvailableActions _)) Debug.Log("ないよ"); }
@@ -32,5 +32,7 @@ public class コンポーネントあるかチェック : MonoBehaviour
         { if (!TryGetComponent(out SubGoalEffect _)) Debug.Log("ないよ"); }
         { if (!TryGetComponent(out SubGoalPath _)) Debug.Log("ないよ"); }
         { if (!TryGetComponent(out CommentApply _)) Debug.Log("ないよ"); }
+        { if (!TryGetComponent(out StatusBuffApply _)) Debug.Log("ないよ"); }
+        { if (!TryGetComponent(out StatusBuffEffect _)) Debug.Log("ないよ"); }
     }
 }

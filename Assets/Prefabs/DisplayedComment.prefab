@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 1081464975128252044}
   - component: {fileID: 6713634312165635183}
   - component: {fileID: 3929624490066477908}
-  - component: {fileID: 5720713904400440356}
   - component: {fileID: 6962904436868271295}
+  - component: {fileID: 5720713904400440356}
   m_Layer: 0
   m_Name: DisplayedComment
   m_TagString: Untagged
@@ -81,21 +81,6 @@ MonoBehaviour:
     m_VerticalOverflow: 1
     m_LineSpacing: 1
   m_Text: "\u30B3\u30E1\u30F3\u30C8\u304C\u6D41\u308C\u308B\u3002"
---- !u!114 &5720713904400440356
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4173540797501206242}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a85ed4a8a1bd5c24881b9b2945c5da91, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _startPositionX: 1100
-  _endPositionX: -880
-  _speed: 500
 --- !u!114 &6962904436868271295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,3 +96,16 @@ MonoBehaviour:
   m_EffectColor: {r: 0, g: 0, b: 0, a: 0.5}
   m_EffectDistance: {x: 3, y: -3}
   m_UseGraphicAlpha: 1
+--- !u!114 &5720713904400440356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4173540797501206242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a85ed4a8a1bd5c24881b9b2945c5da91, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _speed: 500

@@ -9,6 +9,8 @@ namespace Game
         public AdventurerSheet AdventurerSheet { get; set; }
         public Vector2Int Coords { get; set; }
         public Vector2Int Direction { get; set; }
+        public float AttackMagnification { get; set; }
+        public float SpeedMagnification {  get; set; }
         public int MaxHp {get; set; }
         public int CurrentHp { get; set; }
         public int MaxEmotion { get; set; }

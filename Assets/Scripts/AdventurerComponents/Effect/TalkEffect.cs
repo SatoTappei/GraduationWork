@@ -6,12 +6,7 @@ namespace Game
 {
     public class TalkEffect : MonoBehaviour
     {
-        ParticleSystem _particle;
-
-        void Awake()
-        {
-            _particle = transform.FindChildRecursive("Particle_Talk").GetComponent<ParticleSystem>();
-        }
+        [SerializeField] ParticleSystem _particle;
 
         public void Play()
         {
