@@ -14,14 +14,6 @@ namespace Game
             _blackboard = GetComponent<Blackboard>();
         }
 
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Buff(1.1f, 1.3f);
-            }
-        }
-
         public void Buff(float attack, float speed)
         {
             StartCoroutine(BuffAsync(attack, speed));

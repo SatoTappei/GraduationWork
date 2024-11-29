@@ -24,14 +24,6 @@ namespace Game
             UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Damage("", "", 100000, Vector2Int.zero);
-            }
-        }
-
         public void Initialize(Vector2Int coords)
         {
             _blackboard.MaxHp = 100;               // 自由に設定可能。
@@ -63,7 +55,7 @@ namespace Game
             transform.position = dungeonManager.GetCell(Coords).Position;
 
             // 湧いた際の演出。
-            if (TryGetComponent(out SpawnEffect spawnEffect)) spawnEffect.Play();
+            if (TryGetComponent(out EnemySpawnEffect spawnEffect)) spawnEffect.Play();
 
             TryGetComponent(out EnemyAI enemyAI);
             TryGetComponent(out EnemyMovement movement);

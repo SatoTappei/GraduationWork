@@ -13,7 +13,7 @@ namespace Game
 #if UNITY_EDITOR
         string _selectedAction;
 #endif
-
+        public AdventurerSheet _AdventurerSheet => _blackboard.AdventurerSheet;
         public override Vector2Int Coords => _blackboard.Coords;
         public override Vector2Int Direction => _blackboard.Direction;
 

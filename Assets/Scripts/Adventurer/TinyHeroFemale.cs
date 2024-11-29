@@ -2,10 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SpawnEffect : MonoBehaviour
+namespace Game
 {
-    public void Play()
+    public class TinyHeroFemale : Adventurer
     {
-        //
     }
 }

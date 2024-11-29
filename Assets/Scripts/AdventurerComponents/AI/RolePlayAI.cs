@@ -25,15 +25,16 @@ namespace Game
     // Awakeのタイミングで黒板の値を参照するので、黒板の初期化が完了次第このスクリプトをAddComponentする。
     public class RolePlayAI : MonoBehaviour
     {
+        Blackboard _blackboard;
         AIRequest _ai;
 
         void Awake()
         {
             // キャラクターとして振る舞うAIは台詞や背景などをUIに表示するので日本語。
-            Blackboard blackboard = GetComponent<Blackboard>();
-            string age = blackboard.AdventurerSheet.Age;
-            string job = blackboard.AdventurerSheet.Job;
-            string background = blackboard.AdventurerSheet.Background;
+            _blackboard = GetComponent<Blackboard>();
+            string age = _blackboard.AdventurerSheet.Age;
+            string job = _blackboard.AdventurerSheet.Job;
+            string background = _blackboard.AdventurerSheet.Background;
             string prompt =
                 $"# 指示内容\n" +
                 $"- 以下のキャラクターになりきって各質問に答えてください。\n" +
@@ -55,6 +56,7 @@ namespace Game
                 $"# 指示内容\n" +
                 $"- 自身のキャラクターの設定を基に、{instruction.content}を考えてください。\n" +
                 $"- 短い一言で台詞をお願いします。\n" +
+                $"- {GetLineEmotion()}\n" +
                 $"'''\n" +
                 $"# 出力形式\n" +
                 $"- 台詞のみをそのまま出力してください。\n" +
@@ -86,6 +88,23 @@ namespace Game
             if (type == RequestLineType.Greeting) return ("他の人に声をかける際の挨拶", "ねぇねぇ");
 
             return default;
+        }
+
+        string GetLineEmotion()
+        {
+            // 心情の値によって台詞の感情が変化する。閾値は適当に設定。
+            if (_blackboard.CurrentEmotion < _blackboard.MaxEmotion / 10 * 7)
+            {
+                return "普段より少しテンション高めでお願いします。";
+            }
+            else if (_blackboard.CurrentEmotion < _blackboard.MaxEmotion / 10 * 3)
+            {
+                return "普段よりテンション低めでお願いします。";
+            }
+            else
+            {
+                return "普段のテンションでお願いします。";
+            }
         }
     }
 }

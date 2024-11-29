@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Game
@@ -12,7 +13,7 @@ namespace Game
         AvatarCustomizer _avatarCustomizer;
 
         Adventurer[] _spawned;
-        WaitForSeconds _interval;
+        WaitForSeconds _waitInterval;
 
         public IReadOnlyList<Adventurer> Spawned => _spawned;
 
@@ -28,17 +29,6 @@ namespace Game
         void Start()
         {
             StartCoroutine(UpdateAsync());
-        }
-
-        void OnGUI()
-        {
-            GUIStyle style = GUI.skin.GetStyle("button");
-            style.fontSize = 25;
-
-            if (GUI.Button(new Rect(0, 0, 300, 70), "冒険者を生成"))
-            {
-                Spawn();
-            }
         }
 
         public static AdventurerSpawner Find()
@@ -58,7 +48,7 @@ namespace Game
             while (true)
             {
                 Spawn();
-                yield return _interval ??= new WaitForSeconds(1.0f); // 適当な秒数。
+                yield return _waitInterval ??= new WaitForSeconds(1.0f); // 適当な秒数。
             }
         }
 
@@ -93,10 +83,19 @@ namespace Game
         {
             if (_adventurerLoader.IsLoading) return null;
 
-            IReadOnlyList<AdventurerSpreadSheetData> profiles = _adventurerLoader.Profiles;
-            int random = Random.Range(0, profiles.Count);
-            AdventurerSpreadSheetData profile = profiles[random];
+            // 生成済みの冒険者の名前。
+            IEnumerable<string> spawnedNames = 
+                _spawned
+                .Where(a => a != null)
+                .Select(a => a._AdventurerSheet.FullName);
 
+            // 生成していない冒険者のデータのみを抽出。
+            IReadOnlyList<AdventurerSpreadSheetData> candidate = 
+                _adventurerLoader.Profiles
+                .Where(p => !spawnedNames.Contains(p.FullName))
+                .ToArray();
+
+            AdventurerSpreadSheetData profile = candidate[Random.Range(0, candidate.Count)];
             AvatarCustomizeData avatarData = _avatarCustomizer.GetCustomizedData(profile);
             
             // 冒険者側に自身のプロフィールとコメント、アバターの情報を渡して初期化する。

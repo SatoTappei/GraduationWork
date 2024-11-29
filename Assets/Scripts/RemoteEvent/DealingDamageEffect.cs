@@ -54,17 +54,17 @@ namespace Game
             _explosionParticle.Play();
             _shellRenderer.enabled = false;
 
-            yield return new WaitForSeconds(1.0f);
-
-            // 演出を再生して退場。
-            _smokeParticle.Play();
-            foreach (MeshRenderer r in _tankRenderers) r.enabled = false;
-
             if (target != null)
             {
                 // ダメージ量を適当に設定。
                 target.Damage(nameof(DealingDamageEffect), nameof(DealingDamageEffect), 33, default);
             }
+
+            yield return new WaitForSeconds(1.0f);
+
+            // 演出を再生して退場。
+            _smokeParticle.Play();
+            foreach (MeshRenderer r in _tankRenderers) r.enabled = false;
 
             // 退場時の演出が終わるまで待つ。演出の長さに合わせて時間を指定。
             yield return _waitExitEffect ??= new WaitForSeconds(1.5f);

@@ -12,7 +12,6 @@ namespace Game
         [SerializeField] ParticleSystem _kirakiraParticle;
         [SerializeField] ParticleSystem _smokeParticle;
 
-        DungeonManager _dungeonManager;
         AudioSource _audioSource;
         WaitForSeconds _waitOpenEffect;
         WaitForSeconds _waitScavengeInterval;
@@ -22,7 +21,6 @@ namespace Game
 
         void Awake()
         {
-            _dungeonManager = DungeonManager.Find();
             _audioSource = GetComponent<AudioSource>();
         }
 
@@ -32,7 +30,7 @@ namespace Game
             _coins.enabled = true;
             _closeChest.enabled = true;
 
-            _dungeonManager.AddAvoidCell(Coords);
+            DungeonManager.Find().AddAvoidCell(Coords);
         }
 
         public Item Scavenge()
@@ -51,7 +49,6 @@ namespace Game
         IEnumerator OpenAsync()
         {
             _isOpen = true;
-            _dungeonManager.RemoveAvoidCell(Coords);
 
             _openChest.enabled = true;
             _coins.enabled = true;
@@ -75,7 +72,6 @@ namespace Game
             _smokeParticle.Play();
 
             _isOpen = false;
-            _dungeonManager.AddAvoidCell(Coords);
         }
     }
 }

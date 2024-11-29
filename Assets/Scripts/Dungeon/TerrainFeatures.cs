@@ -69,6 +69,7 @@ namespace Game
                 Gizmos.color = Color.red;
                 Gizmos.DrawCube(cell.Position, Vector3.one);
 
+#if UNITY_EDITOR
                 // ÉZÉãè„Ç…ê›íËÇµÇΩï∂éöóÒÇï\é¶ÅB
                 GUIStyle labelStyle = new GUIStyle() { normal = { textColor = Color.white } };
                 for (int i = 0; i < pair.Value.Count; i++)
@@ -77,6 +78,7 @@ namespace Game
                     Vector3 offset = Vector3.up * (i + 1);
                     Handles.Label(cell.Position + offset, text, labelStyle);
                 }
+#endif
             }
         }
     }
