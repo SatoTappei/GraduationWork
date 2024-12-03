@@ -10,10 +10,11 @@ namespace Game
     {
         Blackboard _blackboard;
         bool _isInitialized;
+        bool _isAbort;
 #if UNITY_EDITOR
         string _selectedAction;
 #endif
-        public AdventurerSheet _AdventurerSheet => _blackboard.AdventurerSheet;
+        public AdventurerSheet AdventurerSheet => _blackboard.AdventurerSheet;
         public override Vector2Int Coords => _blackboard.Coords;
         public override Vector2Int Direction => _blackboard.Direction;
 
@@ -42,11 +43,16 @@ namespace Game
             _isInitialized = true;
         }
 
+        public void Abort()
+        {
+            _isAbort = true;
+        }
+
         public void Talk(BilingualString text, string source, Vector2Int coords)
         {
-            if (_isInitialized && TryGetComponent(out InformationStock information))
+            if (_isInitialized && TryGetComponent(out TalkApply talk))
             {
-                information.AddPending(text, source);
+                talk.Talk(text, source);
             }
         }
 
@@ -81,7 +87,7 @@ namespace Game
             gameObject.AddComponent<CommentReactionAI>();
 
             // 生成したセル上に自身を移動と追加。
-            DungeonManager dungeonManager = DungeonManager.Find();
+            DungeonManager.TryFind(out DungeonManager dungeonManager);
             dungeonManager.AddActorOnCell(Coords, this);
             transform.position = dungeonManager.GetCell(Coords).Position;
 
@@ -148,8 +154,26 @@ namespace Game
                 // 足元に罠等がある場合に起動。
                 if (foot != null) foot.Activate();
 
-                // 撃破されたもしくは脱出した場合。
-                if (await defeated.DefeatedAsync(token) || await escape.EscapeAsync(token)) break;
+                // 撃破された場合。
+                if (await defeated.DefeatedAsync(token))
+                {
+                    GameManager.ReportAdventureResult(this, "Defeated");
+                    break;
+                }
+
+                // 脱出した場合。
+                if (await escape.EscapeAsync(token))
+                {
+                    GameManager.ReportAdventureResult(this, "Escape");
+                    break;
+                }
+
+                // 時間切れなどで外部から強制的に冒険を終了させる場合。
+                if (_isAbort)
+                {
+                    GameManager.ReportAdventureResult(this, "Abort");
+                    break;
+                }
 
                 // サブゴールを達成した場合、次のサブゴールを設定。
                 if (subGoalPath.Current.IsCompleted())

@@ -21,7 +21,7 @@ namespace Game
         void Awake()
         {
             _blackboard = GetComponent<Blackboard>();
-            _uiManager = UiManager.Find();
+            UiManager.TryFind(out _uiManager);
         }
 
         public void Register()

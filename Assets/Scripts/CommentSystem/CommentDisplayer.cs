@@ -20,14 +20,9 @@ namespace Game
             _commentPlacer = new CommentPlacer();
         }
 
-        public static CommentDisplayer Find()
-        {
-            return GameObject.FindGameObjectWithTag("CommentDisplayer").GetComponent<CommentDisplayer>();
-        }
-
         public static bool TryFind(out CommentDisplayer commentDisplayer)
         {
-            commentDisplayer = Find();
+            commentDisplayer = GameObject.FindGameObjectWithTag("CommentDisplayer").GetComponent<CommentDisplayer>();
             return commentDisplayer != null;
         }
 

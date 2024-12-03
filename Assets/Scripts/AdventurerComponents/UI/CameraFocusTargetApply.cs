@@ -11,7 +11,7 @@ namespace Game
 
         void Awake()
         {
-            _uiManager = UiManager.Find();
+            UiManager.TryFind(out _uiManager);
         }
 
         public void Register()

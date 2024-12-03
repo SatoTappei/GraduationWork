@@ -42,14 +42,14 @@ namespace Game
         {
             _path.Clear();
 
-            DungeonManager dm = DungeonManager.Find();
-            dm.Pathfinding(a, b, _path);
+            DungeonManager.TryFind(out DungeonManager dungeonManager);
+            dungeonManager.Pathfinding(a, b, _path);
         }
 
         // 非同期で経路を全探索してエラーが出ないかチェック。
         IEnumerator ErrorCheckTest()
         {
-            DungeonManager dm = DungeonManager.Find();
+            DungeonManager.TryFind(out DungeonManager dungeonManager);
 
             for (int i = 0; i < Blueprint.Height; i++)
             {
@@ -63,9 +63,9 @@ namespace Game
                             _goal = new Vector2Int(n, m);
                             _path.Clear();
 
-                            dm.Pathfinding(_start, _goal, _path);
+                            dungeonManager.Pathfinding(_start, _goal, _path);
                             yield return null;
-                            dm.Pathfinding(_goal, _start, _path);
+                            dungeonManager.Pathfinding(_goal, _start, _path);
                             yield return null;
                         }
                     }
@@ -79,7 +79,7 @@ namespace Game
             System.Diagnostics.Stopwatch sw = new System.Diagnostics.Stopwatch();
             sw.Start();
 
-            DungeonManager dm = DungeonManager.Find();
+            DungeonManager.TryFind(out DungeonManager dungeonManager);
 
             for (int i = 0; i < Blueprint.Height; i++)
             {
@@ -93,7 +93,7 @@ namespace Game
                             _goal = new Vector2Int(n, m);
                             _path.Clear();
 
-                            dm.Pathfinding(_start, _goal, _path);
+                            dungeonManager.Pathfinding(_start, _goal, _path);
                         }
                     }
                 }
@@ -107,12 +107,12 @@ namespace Game
         {
             if (_path == null) return;
 
-            DungeonManager dm = DungeonManager.Find();
+            DungeonManager.TryFind(out DungeonManager dungeonManager);
             Vector3 cubeSize = new Vector3(0.5f, 33.0f, 0.5f);
             Gizmos.color = Color.magenta;
-            Gizmos.DrawCube(dm.GetCell(_start).Position, cubeSize);
+            Gizmos.DrawCube(dungeonManager.GetCell(_start).Position, cubeSize);
             Gizmos.color = Color.yellow;
-            Gizmos.DrawCube(dm.GetCell(_goal).Position, cubeSize);
+            Gizmos.DrawCube(dungeonManager.GetCell(_goal).Position, cubeSize);
 
             Gizmos.color = Color.blue;
             foreach (Cell c in _path)

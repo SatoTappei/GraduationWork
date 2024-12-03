@@ -26,7 +26,7 @@ namespace Game
             _subGoalPath = GetComponent<SubGoalPath>();
             _itemInventory = GetComponent<ItemInventory>();
             _informationStock = GetComponent<InformationStock>();
-            _uiManager = UiManager.Find();
+            UiManager.TryFind(out _uiManager);
         }
 
         public void Register()

@@ -11,8 +11,8 @@ namespace Game
 
         void Awake()
         {
-            _adventurerSpawner = AdventurerSpawner.Find();
-            _uiManager = UiManager.Find();
+            AdventurerSpawner.TryFind(out _adventurerSpawner);
+            UiManager.TryFind(out _uiManager);
         }
 
         public void Execute()

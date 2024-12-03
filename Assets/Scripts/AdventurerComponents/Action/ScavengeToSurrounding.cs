@@ -16,7 +16,7 @@ namespace Game
         {
             _blackboard = GetComponent<Blackboard>();
             _animator = GetComponentInChildren<Animator>();
-            _dungeonManager = DungeonManager.Find();
+            DungeonManager.TryFind(out _dungeonManager);
         }
 
         public async UniTask ScavengeAsync(CancellationToken token)

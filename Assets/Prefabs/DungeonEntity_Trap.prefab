@@ -45,7 +45,7 @@ AudioSource:
   m_Enabled: 1
   serializedVersion: 4
   OutputAudioMixerGroup: {fileID: 0}
-  m_audioClip: {fileID: 8300000, guid: 6c3c04feb337f224aabaa7fff48c9ed7, type: 3}
+  m_audioClip: {fileID: 0}
   m_PlayOnAwake: 0
   m_Volume: 1
   m_Pitch: 1
@@ -155,6 +155,8 @@ MonoBehaviour:
   - {fileID: 2941394437155765963}
   - {fileID: 2942223702050110383}
   - {fileID: 2941402858223887695}
+  _smokeEffectSE: {fileID: 8300000, guid: cadeb3818a9768f44a6d8b9c1a1b84d1, type: 3}
+  _trapSE: {fileID: 8300000, guid: 6c3c04feb337f224aabaa7fff48c9ed7, type: 3}
 --- !u!1001 &818728717457984745
 PrefabInstance:
   m_ObjectHideFlags: 0

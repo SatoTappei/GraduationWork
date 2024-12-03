@@ -55,7 +55,7 @@ namespace Game
             _availableActions = GetComponent<AvailableActions>();
             _subGoalPath = GetComponent<SubGoalPath>();
             _exploreRecord = GetComponent<ExploreRecord>();
-            _dungeonManager = DungeonManager.Find();
+            DungeonManager.TryFind(out _dungeonManager);
 
             string personality = _blackboard.AdventurerSheet.Personality;
             string motivation = _blackboard.AdventurerSheet.Motivation;
@@ -108,7 +108,7 @@ namespace Game
                 }
                 else if (actor is Enemy _)
                 {
-                    info = "Enemy";
+                    info = "There is an enemy, and we must attack it.";
                 }
                 else if (actor is Treasure treasure)
                 {

@@ -19,14 +19,9 @@ namespace Game
             _cameraFocus = GetComponent<CameraFocus>();
         }
 
-        public static UiManager Find()
-        {
-            return GameObject.FindGameObjectWithTag("UiManager").GetComponent<UiManager>();
-        }
-
         public static bool TryFind(out UiManager result)
         {
-            result = Find();
+            result = GameObject.FindGameObjectWithTag("UiManager").GetComponent<UiManager>();
             return result != null;
         }
 

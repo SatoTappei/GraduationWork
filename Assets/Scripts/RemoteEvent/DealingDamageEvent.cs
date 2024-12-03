@@ -18,9 +18,9 @@ namespace Game
         void Awake()
         {
             _effectpool = GetComponent<DealingDamageEffectPool>();
-            _adventurerSpawner = AdventurerSpawner.Find();
-            _dungeonManager = DungeonManager.Find();
-            _uiManager = UiManager.Find();
+            AdventurerSpawner.TryFind(out _adventurerSpawner);
+            DungeonManager.TryFind(out _dungeonManager);
+            UiManager.TryFind(out _uiManager);
         }
 
         void OnDrawGizmosSelected()

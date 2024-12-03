@@ -21,6 +21,7 @@ namespace Game
 
             if (animator != null)
             {
+                animator.applyRootMotion = true;
                 animator.Play("Death");
             }
 
@@ -32,6 +33,11 @@ namespace Game
 
             // 死亡アニメーションの再生終了後にパーティクルを出して画面から消える。時間は適当に指定。
             await UniTask.WaitForSeconds(1.5f, cancellationToken: token);
+
+            if (animator != null)
+            {
+                animator.applyRootMotion = false;
+            }
 
             if (_particle != null)
             {

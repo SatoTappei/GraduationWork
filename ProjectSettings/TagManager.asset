@@ -9,6 +9,7 @@ TagManager:
   - FreeMovableCamera
   - CommentDisplayer
   - AdventurerSpawner
+  - GameManager
   layers:
   - Default
   - TransparentFX

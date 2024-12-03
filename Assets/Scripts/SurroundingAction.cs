@@ -11,7 +11,7 @@ namespace Game
         public bool TryGetTarget<T>(out Actor target)
         {
             Actor blackboard = GetComponent<Actor>();
-            DungeonManager dungeonManager = DungeonManager.Find();
+            DungeonManager.TryFind(out DungeonManager dungeonManager);
 
             for (int i = -1; i <= 1; i++)
             {

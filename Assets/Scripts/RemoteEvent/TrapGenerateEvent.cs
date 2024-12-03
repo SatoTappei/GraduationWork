@@ -18,8 +18,8 @@ namespace Game
         void Awake()
         {
             _trapPool = GetComponent<TrapPool>();
-            _dungeonManager = DungeonManager.Find();
-            _uiManager = UiManager.Find();
+            DungeonManager.TryFind(out _dungeonManager);
+            UiManager.TryFind(out _uiManager);
             _placedCoords = new HashSet<Vector2Int>();
 
             // 先頭の座標から順に配置してもランダムに配置されるよう、並び替える。

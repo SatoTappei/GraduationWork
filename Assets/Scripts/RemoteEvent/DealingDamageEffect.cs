@@ -15,6 +15,7 @@ namespace Game
         [SerializeField] ParticleSystem _trailParticle;
         [SerializeField] AudioClip _fireSE;
         [SerializeField] AudioClip _shellExplosionSE;
+        [SerializeField] AudioClip _smokeEffectSE;
         [SerializeField] MeshRenderer[] _tankRenderers;
         [SerializeField] MeshRenderer _shellRenderer;
 
@@ -38,6 +39,7 @@ namespace Game
 
         IEnumerator FireAsync(Adventurer target)
         {
+            PlaySE(_smokeEffectSE);
             _smokeParticle.Play();
 
             Vector3 targetPosition = target.transform.position;

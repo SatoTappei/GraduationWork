@@ -38,14 +38,16 @@ namespace Game
             if (TryGetComponent(out LineApply line)) line.ShowLine(RequestLineType.Goal);
 
             // ゲーム進行ログに表示。
-            UiManager.Find().AddLog($"{_blackboard.DisplayName}がダンジョンから脱出した。");
+            UiManager.TryFind(out UiManager uiManager);
+            uiManager.AddLog($"{_blackboard.DisplayName}がダンジョンから脱出した。");
 
             // 演出の終了を待つ。
             await UniTask.WaitForSeconds(AnimationLength, cancellationToken: token);
 
             // セルから削除。
             TryGetComponent(out Adventurer adventurer);
-            DungeonManager.Find().RemoveActorOnCell(adventurer.Coords, adventurer);
+            DungeonManager.TryFind(out DungeonManager dungeonManager);
+            dungeonManager.RemoveActorOnCell(adventurer.Coords, adventurer);
 
             return true;
         }

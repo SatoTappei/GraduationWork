@@ -1,6 +1,8 @@
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 namespace Game
@@ -9,60 +11,59 @@ namespace Game
     {
         [SerializeField] Vector2Int _spawnCoords;
 
-        AdventurerSpreadSheetLoader _adventurerLoader;
         AvatarCustomizer _avatarCustomizer;
-
+        IReadOnlyList<AdventurerSpreadSheetData> _profiles;
         Adventurer[] _spawned;
-        WaitForSeconds _waitInterval;
 
         public IReadOnlyList<Adventurer> Spawned => _spawned;
 
         void Awake()
         {
-            _adventurerLoader = GetComponent<AdventurerSpreadSheetLoader>();
             _avatarCustomizer = GetComponent<AvatarCustomizer>();
 
             // 冒険者の最大数、UIのデザインも変更する必要があり面倒なので、とりあえず4で固定。
             _spawned = new Adventurer[4];
         }
 
-        void Start()
-        {
-            StartCoroutine(UpdateAsync());
-        }
-
-        public static AdventurerSpawner Find()
-        {
-            return GameObject.FindGameObjectWithTag("AdventurerSpawner").GetComponent<AdventurerSpawner>();
-        }
-
         public static bool TryFind(out AdventurerSpawner result)
         {
-            result = Find();
+            result = GameObject.FindGameObjectWithTag("AdventurerSpawner").GetComponent<AdventurerSpawner>();
             return result != null;
         }
 
-        // 一定間隔で冒険者を生成する。
-        IEnumerator UpdateAsync()
+        // 人数を指定し、一定間隔で冒険者を生成する。実際に生成した数を返す。
+        public async UniTask<int> SpawnAsync(int count, CancellationToken token)
         {
-            while (true)
+            // 冒険者のプロフィールを読み込む。
+            _profiles = await AdventurerSpreadSheetLoader.GetDataAsync(token);
+
+            // 読み込んだプロフィールの数が、引数で指定した数より少ない場合がある。
+            int spawnedCount = Mathf.Min(_profiles.Count, count);
+
+            for (int i = 0; i < spawnedCount;)
             {
-                Spawn();
-                yield return _waitInterval ??= new WaitForSeconds(1.0f); // 適当な秒数。
+                if (TrySpawn()) i++;
+                await UniTask.WaitForSeconds(1.0f, cancellationToken: token); // 適当な秒数。
             }
+
+            return spawnedCount;
         }
 
-        // シーン上に存在する冒険者が最大数未満の場合は生成する。
-        void Spawn()
+        // 生成する座標に冒険者がいないかつ、シーン上に存在する冒険者が最大数未満の場合は生成する。
+        bool TrySpawn()
         {
+            if (IsAdventurerExist(_spawnCoords)) return false;
+
             for (int i = 0; i < _spawned.Length; i++)
             {
                 if (_spawned[i] != null) continue;
-                if (IsAdventurerExist(_spawnCoords)) continue;
 
                 _spawned[i] = CreateRandomAdventurer();
-                break;
+
+                if (_spawned[i] != null) return true;
             }
+
+            return false;
         }
 
         // 既に冒険者がいるかチェック。
@@ -81,19 +82,19 @@ namespace Game
         // スプレッドシートからランダムなデータを選択し、冒険者を生成。
         Adventurer CreateRandomAdventurer()
         {
-            if (_adventurerLoader.IsLoading) return null;
-
             // 生成済みの冒険者の名前。
             IEnumerable<string> spawnedNames = 
                 _spawned
                 .Where(a => a != null)
-                .Select(a => a._AdventurerSheet.FullName);
+                .Select(a => a.AdventurerSheet.FullName);
 
             // 生成していない冒険者のデータのみを抽出。
             IReadOnlyList<AdventurerSpreadSheetData> candidate = 
-                _adventurerLoader.Profiles
+                _profiles
                 .Where(p => !spawnedNames.Contains(p.FullName))
                 .ToArray();
+
+            if (candidate.Count == 0) return null;
 
             AdventurerSpreadSheetData profile = candidate[Random.Range(0, candidate.Count)];
             AvatarCustomizeData avatarData = _avatarCustomizer.GetCustomizedData(profile);

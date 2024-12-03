@@ -32,7 +32,8 @@ namespace Game
 
             // ƒZƒ‹‚©‚çíœB
             TryGetComponent(out Adventurer adventurer);
-            DungeonManager.Find().RemoveActorOnCell(adventurer.Coords, adventurer);
+            DungeonManager.TryFind(out DungeonManager dungeonManager);
+            dungeonManager.RemoveActorOnCell(adventurer.Coords, adventurer);
 
             return true;
         }

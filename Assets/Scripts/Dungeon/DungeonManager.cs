@@ -19,14 +19,9 @@ namespace Game
             _aStar = new AStar(_dungeon.Grid);
         }
 
-        public static DungeonManager Find()
-        {
-            return GameObject.FindGameObjectWithTag("DungeonManager").GetComponent<DungeonManager>();
-        }
-
         public static bool TryFind(out DungeonManager result)
         {
-            result = Find();
+            result = GameObject.FindGameObjectWithTag("DungeonManager").GetComponent<DungeonManager>();
             return result != null;
         }
 

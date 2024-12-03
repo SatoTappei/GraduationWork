@@ -12,7 +12,7 @@ namespace Game
         void Awake()
         {
             _adventurer = GetComponent<Adventurer>();
-            _dungeonManager = DungeonManager.Find();
+            DungeonManager.TryFind(out _dungeonManager);
         }
 
         public void Activate()

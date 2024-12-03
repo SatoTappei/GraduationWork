@@ -7,6 +7,8 @@ namespace Game
     {
         [SerializeField] ParticleSystem _smokeParticle;
         [SerializeField] MeshRenderer[] _trapRenderers;
+        [SerializeField] AudioClip _smokeEffectSE;
+        [SerializeField] AudioClip _trapSE;
 
         WaitForSeconds _waitTrapAnimation;
         WaitForSeconds _waitExitEffect;
@@ -18,6 +20,7 @@ namespace Game
 
             this.TryGetComponentInChildren(out Animator animator);
             animator.Play("Close Trap");
+            PlaySE(_smokeEffectSE);
         }
 
         public override void Interact(Actor user)
@@ -29,9 +32,7 @@ namespace Game
         {
             this.TryGetComponentInChildren(out Animator animator);
             animator.Play("Open Trap");
-
-            TryGetComponent(out AudioSource audio);
-            audio.Play();
+            PlaySE(_trapSE);
 
             if (user != null && user.TryGetComponent(out IDamageable damage))
             {
@@ -49,11 +50,18 @@ namespace Game
             // 退場時の演出が終わるまで待つ。演出の長さに合わせて時間を指定。
             yield return _waitExitEffect ??= new WaitForSeconds(1.5f);
 
-            DungeonManager dungeonManager = DungeonManager.Find();
+            DungeonManager.TryFind(out DungeonManager dungeonManager);
             dungeonManager.RemoveActorOnCell(Coords, this);
 
             // プールに戻す。
             gameObject.SetActive(false);
+        }
+
+        void PlaySE(AudioClip clip)
+        {
+            TryGetComponent(out AudioSource audio);
+            audio.clip = clip;
+            audio.Play();
         }
     }
 }

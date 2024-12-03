@@ -15,7 +15,7 @@ namespace Game
 
         void Awake()
         {
-            _dungeonManager = DungeonManager.Find();
+            DungeonManager.TryFind(out _dungeonManager);
             _adventurer = GetComponent<Adventurer>();
             _blackboard = GetComponent<Blackboard>();
             _animator = GetComponentInChildren<Animator>();
@@ -29,7 +29,7 @@ namespace Game
             const string Weapon = "パンチ";
 
             token.ThrowIfCancellationRequested();
-
+            
             // 攻撃の結果によって行動ログに追加する内容が異なる。
             string actionLogText = string.Empty;
 
@@ -72,6 +72,9 @@ namespace Game
                     // まだない
                 }
                 else Debug.LogWarning($"攻撃結果に対応する処理が無い。: {attackResult}");
+
+                // 攻撃のアニメーションの再生終了を待つ。
+                await UniTask.WaitForSeconds(2.0f, cancellationToken: token);
             }
             else
             {

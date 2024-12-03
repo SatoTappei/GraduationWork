@@ -13,7 +13,7 @@ namespace Game
 
         void Awake()
         {
-            _dungeonManager = DungeonManager.Find();
+            DungeonManager.TryFind(out _dungeonManager);
             _path = new List<Cell>();
         }
 

@@ -25,7 +25,7 @@ namespace Game
 
         public void Place(Vector2Int coords, Vector2Int direction)
         {
-            DungeonManager dungeonManager = DungeonManager.Find();
+            DungeonManager.TryFind(out DungeonManager dungeonManager);
             dungeonManager.RemoveActorOnCell(Coords, this);
 
             transform.position = new Vector3(coords.x, 0, coords.y);            

@@ -19,7 +19,7 @@ namespace Game
 
         void Awake()
         {
-            _dungeonManager = DungeonManager.Find();
+            DungeonManager.TryFind(out _dungeonManager);
             _enemy = GetComponent<Enemy>();
             _animator = GetComponentInChildren<Animator>();
         }

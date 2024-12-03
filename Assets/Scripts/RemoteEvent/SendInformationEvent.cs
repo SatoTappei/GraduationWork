@@ -24,8 +24,8 @@ namespace Game
                 $"- ‰pŒê‚É–|–ó‚µ‚½•¶Í‚Ì‚İ‚ğ‚»‚Ì‚Ü‚Üo—Í‚µ‚Ä‚­‚¾‚³‚¢B\n";
             _ai = AIRequestFactory.Create(prompt);
 
-            _adventurerSpawner = AdventurerSpawner.Find();
-            _uiManager = UiManager.Find();
+            AdventurerSpawner.TryFind(out _adventurerSpawner);
+            UiManager.TryFind(out _uiManager);
         }
 
         public void Execute(string text)

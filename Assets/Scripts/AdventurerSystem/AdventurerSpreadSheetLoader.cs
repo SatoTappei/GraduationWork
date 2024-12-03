@@ -8,26 +8,9 @@ using UnityEngine.Networking;
 
 namespace Game
 {
-    public class AdventurerSpreadSheetLoader : MonoBehaviour
+    public static class AdventurerSpreadSheetLoader
     {
-        List<AdventurerSpreadSheetData> _profiles;
-        // スプレッドシートからデータを読み込んで、パース処理が完了するまで待つ。
-        bool _isLoading = true;
-
-        public IReadOnlyList<AdventurerSpreadSheetData> Profiles => _profiles;
-        public bool IsLoading => _isLoading;
-
-        void Awake()
-        {
-            _profiles = new List<AdventurerSpreadSheetData>();
-        }
-
-        void Start()
-        {
-            GetDataAsync(this.GetCancellationTokenOnDestroy()).Forget();
-        }
-
-        async UniTask GetDataAsync(CancellationToken token)
+        public static async UniTask<IReadOnlyList<AdventurerSpreadSheetData>> GetDataAsync(CancellationToken token)
         {
             const string FileID = "1hQSCky3xafLS3p75MMYjUovEfKLtOvIh9U4HdDNUElk";
             const string SheetName = "シート1";
@@ -40,10 +23,14 @@ namespace Game
 
             if (IsSuccess(request.result))
             {
-                Parse(request.downloadHandler.text);
+                return Parse(request.downloadHandler.text);
             }
+            else
+            {
+                Debug.LogError("スプレッドシートから冒険者のプロフィールを読み込めなかった。");
 
-            _isLoading = false;
+                return null;
+            }
         }
 
         static bool IsSuccess(UnityWebRequest.Result result)
@@ -53,8 +40,10 @@ namespace Game
             else return true;
         }
 
-        void Parse(string downloadText)
+        static IReadOnlyList<AdventurerSpreadSheetData> Parse(string downloadText)
         {
+            List<AdventurerSpreadSheetData> profiles = new List<AdventurerSpreadSheetData>();
+
             // 1行目はラベルなのでスキップ。
             foreach (string row in downloadText.Split("\n").Skip(1))
             {
@@ -72,8 +61,10 @@ namespace Game
 
                 if (profile.IsFieldEmpty()) continue;
 
-                _profiles.Add(profile);
+                profiles.Add(profile);
             }
+
+            return profiles;
         }
     }
 }

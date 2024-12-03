@@ -151,6 +151,7 @@ MonoBehaviour:
   _trailParticle: {fileID: 3196442362735137003}
   _fireSE: {fileID: 8300000, guid: bf9d785d6a8a7594b94d17368adf6a6c, type: 3}
   _shellExplosionSE: {fileID: 8300000, guid: 63a674f91a9e78b4d90b569c558dd64e, type: 3}
+  _smokeEffectSE: {fileID: 8300000, guid: cadeb3818a9768f44a6d8b9c1a1b84d1, type: 3}
   _tankRenderers:
   - {fileID: 5656765263093786824}
   - {fileID: 5656765263093786174}

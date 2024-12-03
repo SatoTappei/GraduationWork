@@ -37,7 +37,7 @@ namespace Game
 
         void Awake()
         {
-            _dungeonManager = DungeonManager.Find();
+            DungeonManager.TryFind(out _dungeonManager);
             _adventurer = GetComponent<Adventurer>();
             _blackboard = GetComponent<Blackboard>();
             _movementPath = GetComponent<MovementPath>();

@@ -12,7 +12,7 @@ namespace Game
         void Awake()
         {
             _blackboard = GetComponent<EnemyBlackboard>();
-            _dungeonManager = DungeonManager.Find();
+            DungeonManager.TryFind(out  _dungeonManager);
         }
 
         public string ChoiceNextAction()

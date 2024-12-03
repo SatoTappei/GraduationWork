@@ -30,7 +30,8 @@ namespace Game
             _coins.enabled = true;
             _closeChest.enabled = true;
 
-            DungeonManager.Find().AddAvoidCell(Coords);
+            DungeonManager.TryFind(out DungeonManager dungeonManager);
+            dungeonManager.AddAvoidCell(Coords);
         }
 
         public Item Scavenge()

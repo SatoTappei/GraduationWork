@@ -24,7 +24,7 @@ namespace Game
             IReadOnlyCollection<CommentSpreadSheetData> comment = commentDisplayer.Display(blackboard.FullName);
 
             // 自身へのコメントが無い場合。
-            if (comment.Count == 0) return;
+            if (comment == null || comment.Count == 0) return;
 
             if (!TryGetComponent(out CommentReactionAI ai)) return;
 
