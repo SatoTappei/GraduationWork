@@ -51,6 +51,7 @@ GameObject:
   - component: {fileID: -684663236930695111}
   - component: {fileID: -2120452643082629455}
   - component: {fileID: 3493954462358360160}
+  - component: {fileID: -6086971446906293687}
   m_Layer: 0
   m_Name: Enemy_BlackKaduki
   m_TagString: Untagged
@@ -291,6 +292,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particle: {fileID: 8554313976681482867}
+--- !u!114 &-6086971446906293687
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5999171470868063323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9de0d5a44cab52a4183bf34ab7f40414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _damageSE: {fileID: 8300000, guid: 11ace16e3191e694b87d3a8fa81372a6, type: 3}
+  _particle: {fileID: 4326990364042661036}
 --- !u!1 &8285566123134406917
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,6 +492,12 @@ PrefabInstance:
 --- !u!4 &1780002746834115318 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3642490415169702295, guid: 06e81e9ebd7c4d842af2f15f45ad0f22,
+    type: 3}
+  m_PrefabInstance: {fileID: 3044273552194851681}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &4326990364042661036 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1599869017428713421, guid: 06e81e9ebd7c4d842af2f15f45ad0f22,
     type: 3}
   m_PrefabInstance: {fileID: 3044273552194851681}
   m_PrefabAsset: {fileID: 0}

@@ -10,7 +10,6 @@ namespace Game
     {
         Blackboard _blackboard;
         bool _isInitialized;
-        bool _isAbort;
 #if UNITY_EDITOR
         string _selectedAction;
 #endif
@@ -28,6 +27,11 @@ namespace Game
             UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
+        void OnDestroy()
+        {
+            _isInitialized = false;
+        }
+
         // スプレッドシートから読み込んだデータを渡す。
         // もしくはデータをシリアライズしてインスペクターから触れるようにしても良い。
         public void Initialize(AdventurerSheet adventurerSheet)
@@ -41,11 +45,6 @@ namespace Game
             _blackboard.Direction = Vector2Int.up;      // 上以外の向きの場合、回転させる処理が必要。
 
             _isInitialized = true;
-        }
-
-        public void Abort()
-        {
-            _isAbort = true;
         }
 
         public void Talk(BilingualString text, string source, Vector2Int coords)
@@ -165,13 +164,6 @@ namespace Game
                 if (await escape.EscapeAsync(token))
                 {
                     GameManager.ReportAdventureResult(this, "Escape");
-                    break;
-                }
-
-                // 時間切れなどで外部から強制的に冒険を終了させる場合。
-                if (_isAbort)
-                {
-                    GameManager.ReportAdventureResult(this, "Abort");
                     break;
                 }
 

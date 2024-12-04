@@ -54,6 +54,7 @@ GameObject:
   - component: {fileID: 5936980147642376256}
   - component: {fileID: 2409555040360609025}
   - component: {fileID: 4061618339390969125}
+  - component: {fileID: 8674127258179986259}
   m_Layer: 0
   m_Name: Enemy_Golem
   m_TagString: Untagged
@@ -296,6 +297,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particle: {fileID: 9178366295490038290}
+--- !u!114 &8674127258179986259
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5476495503916814673}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9de0d5a44cab52a4183bf34ab7f40414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _damageSE: {fileID: 8300000, guid: 11ace16e3191e694b87d3a8fa81372a6, type: 3}
+  _particle: {fileID: 7433436250611813637}
 --- !u!1 &8026023626189533807
 GameObject:
   m_ObjectHideFlags: 0
@@ -696,6 +711,12 @@ PrefabInstance:
 --- !u!4 &4870510213812443999 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3642490415169702295, guid: 06e81e9ebd7c4d842af2f15f45ad0f22,
+    type: 3}
+  m_PrefabInstance: {fileID: 8150176703902601928}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &7433436250611813637 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1599869017428713421, guid: 06e81e9ebd7c4d842af2f15f45ad0f22,
     type: 3}
   m_PrefabInstance: {fileID: 8150176703902601928}
   m_PrefabAsset: {fileID: 0}

@@ -86,6 +86,7 @@ GameObject:
   - component: {fileID: 5077377063395248268}
   - component: {fileID: 6298724937017387133}
   - component: {fileID: 6970003105242515802}
+  - component: {fileID: -3883593885984791040}
   m_Layer: 0
   m_Name: Enemy_Soldier
   m_TagString: Untagged
@@ -327,6 +328,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particle: {fileID: 4882497012105738881}
+--- !u!114 &-3883593885984791040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5384281480596151567}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9de0d5a44cab52a4183bf34ab7f40414, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _damageSE: {fileID: 8300000, guid: 11ace16e3191e694b87d3a8fa81372a6, type: 3}
+  _particle: {fileID: 6239073779849078926}
 --- !u!1001 &3892452186875785117
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -570,6 +585,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 06e81e9ebd7c4d842af2f15f45ad0f22, type: 3}
+--- !u!198 &6239073779849078926 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 1599869017428713421, guid: 06e81e9ebd7c4d842af2f15f45ad0f22,
+    type: 3}
+  m_PrefabInstance: {fileID: 4658486657340045123}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8226666211871751892 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3642490415169702295, guid: 06e81e9ebd7c4d842af2f15f45ad0f22,
