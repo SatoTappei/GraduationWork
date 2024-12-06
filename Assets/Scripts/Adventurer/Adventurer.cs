@@ -9,13 +9,13 @@ namespace Game
     public class Adventurer : Character
     {
         Blackboard _blackboard;
-        bool _isInitialized;
-#if UNITY_EDITOR
         string _selectedAction;
-#endif
+        bool _isInitialized;
+        
         public AdventurerSheet AdventurerSheet => _blackboard.AdventurerSheet;
         public override Vector2Int Coords => _blackboard.Coords;
         public override Vector2Int Direction => _blackboard.Direction;
+        public string SelectedAction => _selectedAction;
 
         protected virtual void Awake()
         {
@@ -41,6 +41,8 @@ namespace Game
             _blackboard.CurrentHp = 100;                // 自由に設定可能。
             _blackboard.MaxEmotion = 100;               // 自由に設定可能。
             _blackboard.CurrentEmotion = 50;            // 生成時、自身へのコメントで上下する。
+            _blackboard.MaxFatigue = 100;               // 自由に設定可能。
+            _blackboard.CurrentFatigue = 0;             // ターン経過で増加していく。
             _blackboard.Coords = new Vector2Int(11, 8); // ダンジョンの入り口が固定で1箇所。
             _blackboard.Direction = Vector2Int.up;      // 上以外の向きの場合、回転させる処理が必要。
 
@@ -106,6 +108,7 @@ namespace Game
             TryGetComponent(out SubGoalPath subGoalPath);
             await subGoalPath.PlanningAsync(token);
 
+            TryGetComponent(out FatigueDamageApply fatigueDamage);
             TryGetComponent(out GamePlayAI gamePlayAI);
             TryGetComponent(out InformationStock informationStock);
             TryGetComponent(out MovementToDirection moveToDirection);
@@ -120,6 +123,16 @@ namespace Game
             {
                 // ターン数を更新。
                 _blackboard.ElapsedTurn++;
+
+                // 疲労を増加。
+                _blackboard.CurrentFatigue++;
+
+                // 疲労が最大の場合、毎ターン体力が減り続ける。
+                if (_blackboard.IsFatigueMax)
+                {
+                    fatigueDamage.Damage();
+                    if (statusBar != null) statusBar.Apply();
+                }
 
                 // 現在いるセルについて、地形の特徴に関する情報がある場合、
                 // AIが次の行動を選択する際に、考慮する情報の候補として追加する。
@@ -136,19 +149,16 @@ namespace Game
                 if (profileWindow != null) profileWindow.Apply();
 
                 // AIが次の行動を選択し、実行。
-                string choice = await gamePlayAI.RequestNextActionAsync(token);
-#if UNITY_EDITOR
-                _selectedAction = choice;
-#endif
-                if (choice == "Idle") await UniTask.Yield(cancellationToken: token);
-                else if (choice == "Move North") await moveToDirection.MoveAsync(Vector2Int.up, token);
-                else if (choice == "Move South") await moveToDirection.MoveAsync(Vector2Int.down, token);
-                else if (choice == "Move East") await moveToDirection.MoveAsync(Vector2Int.right, token);
-                else if (choice == "Move West") await moveToDirection.MoveAsync(Vector2Int.left, token);
-                else if (choice == "Return To Entrance") await moveToTarget.MoveAsync("Entrance", token);
-                else if (choice == "Attack Surrounding") await attack.AttackAsync<Enemy>(token);
-                else if (choice == "Scavenge Surrounding") await scavenge.ScavengeAsync(token);
-                else if (choice == "Talk Surrounding") await talk.TalkAsync(token);
+                _selectedAction = await gamePlayAI.RequestNextActionAsync(token);
+                if (_selectedAction == "Idle") await UniTask.Yield(cancellationToken: token);
+                if (_selectedAction == "Move North") await moveToDirection.MoveAsync(Vector2Int.up, token);
+                if (_selectedAction == "Move South") await moveToDirection.MoveAsync(Vector2Int.down, token);
+                if (_selectedAction == "Move East") await moveToDirection.MoveAsync(Vector2Int.right, token);
+                if (_selectedAction == "Move West") await moveToDirection.MoveAsync(Vector2Int.left, token);
+                if (_selectedAction == "Return To Entrance") await moveToTarget.MoveAsync("Entrance", token);
+                if (_selectedAction == "Attack Surrounding") await attack.AttackAsync<Enemy>(token);
+                if (_selectedAction == "Scavenge Surrounding") await scavenge.ScavengeAsync(token);
+                if (_selectedAction == "Talk Surrounding") await talk.TalkAsync(token);
 
                 // 足元に罠等がある場合に起動。
                 if (foot != null) foot.Activate();

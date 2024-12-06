@@ -15,12 +15,15 @@ namespace Game
         public int CurrentHp { get; set; }
         public int MaxEmotion { get; set; }
         public int CurrentEmotion { get; set; }
+        public int MaxFatigue { get; set; }
+        public int CurrentFatigue { get; set; }
         public int TreasureCount { get; set; }
         public int DefeatCount { get; set; }
         public int ElapsedTurn { get; set; }
 
         public bool IsDefeated => CurrentHp <= 0;
         public bool IsAlive => !IsDefeated;
+        public bool IsFatigueMax => CurrentFatigue >= MaxFatigue;
 
         public Sprite Icon => AdventurerSheet.Icon;
         public string FullName => AdventurerSheet.FullName;

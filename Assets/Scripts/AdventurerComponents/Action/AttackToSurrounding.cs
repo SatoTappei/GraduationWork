@@ -29,7 +29,7 @@ namespace Game
             const string Weapon = "パンチ";
 
             token.ThrowIfCancellationRequested();
-            
+
             // 攻撃の結果によって行動ログに追加する内容が異なる。
             string actionLogText = string.Empty;
 

@@ -13,6 +13,7 @@ namespace Game
         [SerializeField] Text _background;
         [SerializeField] Text _goal;
         [SerializeField] Text _item;
+        [SerializeField] Text _effect;
         [SerializeField] Text _information;
 
         CanvasGroup _canvasGroup;
@@ -34,6 +35,7 @@ namespace Game
             SetBackground(status.Background);
             SetGoal(status.CurrentSubGoal);
             SetItem(status.Item);
+            SetEffect(status.Effect);
             SetInfomation(status.Information);
         }
 
@@ -41,6 +43,7 @@ namespace Game
         {
             SetGoal(status.CurrentSubGoal);
             SetItem(status.Item);
+            SetEffect(status.Effect);
             SetInfomation(status.Information);
         }
 
@@ -51,6 +54,7 @@ namespace Game
             SetBackground("--");
             SetGoal(null);
             SetItem(null);
+            SetEffect(null);
             SetInfomation(null);
         }
 
@@ -111,6 +115,35 @@ namespace Game
                 for (int i = 0; i < emptyCount; i++)
                 {
                     _item.text += "--\n";
+                }
+            }
+        }
+
+        void SetEffect(IEnumerable<string> effect)
+        {
+            // 効果欄は最大3つ表示可能なデザインになっている。
+            const int Max = 3;
+
+            _effect.text = string.Empty;
+
+            if (effect == null)
+            {
+                for (int i = 0; i < Max; i++)
+                {
+                    _effect.text += "--\n";
+                }
+            }
+            else
+            {
+                foreach (string item in effect)
+                {
+                    _effect.text += $"{item}\n";
+                }
+
+                int emptyCount = Max - effect.Count();
+                for (int i = 0; i < emptyCount; i++)
+                {
+                    _effect.text += "--\n";
                 }
             }
         }

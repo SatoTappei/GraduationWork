@@ -39,6 +39,13 @@ namespace Game
                     trap.Execute();
                 }
             }
+            if (GUI.Button(new Rect(1500, 0, 300, 70), $"ÉNÉ}"))
+            {
+                if (TryGetComponent(out FallingBearEvent bear))
+                {
+                    bear.Execute();
+                }
+            }
         }
     }
 }

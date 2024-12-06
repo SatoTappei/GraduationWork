@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-
 namespace Game
 {
     public class GetRequestedItem : SubGoal
@@ -18,9 +15,9 @@ namespace Game
 
         public override bool IsCompleted()
         {
-            foreach (ItemInventory.Entry item in _itemInventory.Entries)
+            foreach (ItemInventory.Entry item in _itemInventory.GetEntries())
             {
-                if (item.Name == "ˆË—Š‚³‚ê‚½ƒAƒCƒeƒ€") return true;
+                if (item.Name == "‰×•¨") return true;
             }
 
             return false;

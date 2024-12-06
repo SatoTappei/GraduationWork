@@ -18,6 +18,9 @@ namespace Game
             _vcam = GetComponent<CinemachineVirtualCamera>();
             _follow = new GameObject("FreeMovableCameraFollow");
             _follow.transform.position = _vcam.transform.position;
+
+            // ƒJƒƒ‰‚Ì‘ã‚í‚è‚É‰¹‚ğ•·‚­B
+            //_follow.AddComponent<AudioListener>();
         }
 
         void Start()

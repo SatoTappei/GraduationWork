@@ -26,8 +26,6 @@ namespace Game
             _contents = new Dictionary<string, Stack<Item>>();
         }
 
-        public IEnumerable<Entry> Entries => GetEntries();
-
         public void Add(Item item)
         {
             string key = item.Name.Japanese;
@@ -50,7 +48,7 @@ namespace Game
             else return false;
         }
 
-        IEnumerable<Entry> GetEntries()
+        public IEnumerable<Entry> GetEntries()
         {
             foreach (KeyValuePair<string, Stack<Item>> content in _contents)
             {

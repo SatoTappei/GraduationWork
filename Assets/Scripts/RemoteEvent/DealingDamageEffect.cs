@@ -19,6 +19,7 @@ namespace Game
         [SerializeField] MeshRenderer[] _tankRenderers;
         [SerializeField] MeshRenderer _shellRenderer;
 
+        WaitForSeconds _waitExplosionEffect;
         WaitForSeconds _waitExitEffect;
 
         void OnEnable()
@@ -62,7 +63,8 @@ namespace Game
                 target.Damage(nameof(DealingDamageEffect), nameof(DealingDamageEffect), 33, default);
             }
 
-            yield return new WaitForSeconds(1.0f);
+            // 爆発の演出が終わるまで待つ。演出の長さに合わせて時間を指定。
+            yield return _waitExplosionEffect ??= new WaitForSeconds(1.0f);
 
             // 演出を再生して退場。
             _smokeParticle.Play();

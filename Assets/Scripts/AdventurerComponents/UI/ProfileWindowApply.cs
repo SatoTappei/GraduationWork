@@ -1,9 +1,16 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game
 {
+    // ProfileWindowのEffectの欄に表示できる。
+    // ステータス効果が有効な場合、効果の概要を表示する。
+    public interface IStatusEffectDisplayable
+    {
+        bool IsEnabled();
+        string GetEntry();
+    }
+
     public class ProfileWindowApply : MonoBehaviour, IProfileWindowDisplayStatus
     {
         Blackboard _blackboard;
@@ -17,7 +24,8 @@ namespace Game
         string IProfileWindowDisplayStatus.Job => _blackboard.Job;
         string IProfileWindowDisplayStatus.Background => _blackboard.Background;
         SubGoal IProfileWindowDisplayStatus.CurrentSubGoal => _subGoalPath.Current;
-        IEnumerable<ItemInventory.Entry> IProfileWindowDisplayStatus.Item => _itemInventory.Entries;
+        IEnumerable<ItemInventory.Entry> IProfileWindowDisplayStatus.Item => _itemInventory.GetEntries();
+        IEnumerable<string> IProfileWindowDisplayStatus.Effect => GetEnabledStatusEffects();
         IReadOnlyList<SharedInformation> IProfileWindowDisplayStatus.Information => _informationStock.Stock;
 
         void Awake()
@@ -44,6 +52,15 @@ namespace Game
             if (_uiManager != null)
             {
                 _uiManager.DeleteProfileWindowStatus(_id);
+            }
+        }
+
+        IEnumerable<string> GetEnabledStatusEffects()
+        {
+            IStatusEffectDisplayable[] statusEffects = GetComponents<IStatusEffectDisplayable>();
+            foreach (IStatusEffectDisplayable e in statusEffects)
+            {
+                if (e.IsEnabled()) yield return e.GetEntry();
             }
         }
     }

@@ -10,6 +10,7 @@ TagManager:
   - CommentDisplayer
   - AdventurerSpawner
   - GameManager
+  - TargetFocusCamera
   layers:
   - Default
   - TransparentFX
