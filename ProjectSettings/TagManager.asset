@@ -6,11 +6,10 @@ TagManager:
   tags:
   - DungeonManager
   - UiManager
-  - FreeMovableCamera
   - CommentDisplayer
   - AdventurerSpawner
   - GameManager
-  - TargetFocusCamera
+  - BirdsEyeViewCamera
   layers:
   - Default
   - TransparentFX

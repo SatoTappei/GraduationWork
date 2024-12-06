@@ -11,21 +11,10 @@ namespace Game
         [SerializeField] float _rotateSpeed = 5.0f;
 
         CinemachineVirtualCamera _vcam;
-        GameObject _follow;
 
         void Awake()
         {
             _vcam = GetComponent<CinemachineVirtualCamera>();
-            _follow = new GameObject("FreeMovableCameraFollow");
-            _follow.transform.position = _vcam.transform.position;
-
-            // カメラの代わりに音を聞く。
-            //_follow.AddComponent<AudioListener>();
-        }
-
-        void Start()
-        {
-            _vcam.Follow = _follow.transform;
         }
 
         void Update()
@@ -36,13 +25,13 @@ namespace Game
 
         public static bool TryFind(out FreeMovableCamera result)
         {
-            result = GameObject.FindGameObjectWithTag("FreeMovableCamera").GetComponent<FreeMovableCamera>();
+            result = GameObject.FindGameObjectWithTag("BirdsEyeViewCamera").GetComponent<FreeMovableCamera>();
             return result != null;
         }
 
         public void SetPosition(Vector3 position)
         {
-            _follow.transform.position = position;
+            _vcam.Follow.transform.position = position;
         }
 
         // 移動はFollowに指定したオブジェクトを動かす。
@@ -60,7 +49,7 @@ namespace Game
             Quaternion forward = Quaternion.AngleAxis(cameraAngle, Vector3.up);
 
             Vector3 velo = forward * input * Time.deltaTime * _moveSpeed;
-            _follow.transform.Translate(velo);
+            _vcam.Follow.transform.Translate(velo);
         }
 
         // 回転はVcamのTransformの値を操作する。

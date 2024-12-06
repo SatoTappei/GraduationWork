@@ -17,27 +17,20 @@ namespace Game
     public class TargetFocusCamera : MonoBehaviour
     {
         CinemachineVirtualCamera _vcam;
-        GameObject _follow;
 
         void Awake()
         {
             _vcam = GetComponent<CinemachineVirtualCamera>();
-            _follow = new GameObject("TargetFocusCameraFollow");
-            _follow.transform.position = _vcam.transform.position;
-
-            // ÉJÉÅÉâÇÃë„ÇÌÇËÇ…âπÇï∑Ç≠ÅB
-            _follow.AddComponent<AudioListener>();
         }
 
         void Start()
         {
-            _vcam.Follow = _follow.transform;
             StartCoroutine(UpdateAsync());
         }
 
         public static bool TryFind(out TargetFocusCamera result)
         {
-            result = GameObject.FindGameObjectWithTag("TargetFocusCamera").GetComponent<TargetFocusCamera>();
+            result = GameObject.FindGameObjectWithTag("BirdsEyeViewCamera").GetComponent<TargetFocusCamera>();
             return result != null;
         }
 
@@ -90,7 +83,7 @@ namespace Game
             {
                 if (target == null) break;
 
-                _follow.transform.position = target.transform.position;
+                _vcam.Follow.position = target.transform.position;
                 _vcam.transform.RotateAround(_vcam.transform.position, Vector3.up, RotateSpeed);
 
                 yield return null;
