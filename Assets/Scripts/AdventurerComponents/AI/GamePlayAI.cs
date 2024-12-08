@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using AI;
 
 namespace Game
 {
@@ -44,7 +45,7 @@ namespace Game
         SubGoalPath _subGoalPath;
         ExploreRecord _exploreRecord;
         DungeonManager _dungeonManager;
-        AIRequest _ai;
+        AIClient _ai;
 
         void Awake()
         {
@@ -72,7 +73,7 @@ namespace Game
                 $"- Please select the next action from the AvailableActions and tell us why you made that choice.\n" +
                 $"- If you lack the information needed to select the next action, please tell us what information you want.";
 #endif
-            _ai = AIRequestFactory.Create(prompt);
+            _ai = new AIClient(prompt);
         }
 
         public async UniTask<string> RequestNextActionAsync(CancellationToken token)
@@ -91,7 +92,7 @@ namespace Game
             format.AvailableActions = _availableActions.Actions.ToArray();
             format.Goal = _subGoalPath.Current.Text.English;
 
-            return await _ai.RequestAsync(JsonUtility.ToJson(format));
+            return await _ai.RequestAsync(JsonUtility.ToJson(format), token);
         }
 
         string GetCellInfo(Vector2Int coords)

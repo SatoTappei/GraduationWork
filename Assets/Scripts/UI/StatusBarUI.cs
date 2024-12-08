@@ -59,7 +59,8 @@ namespace Game
         void SetProfile(Sprite icon, string displayName)
         {
             _icon.sprite = icon;
-            _name.text = displayName;
+            // 表示名が長すぎる場合はカット。
+            _name.text = displayName.Substring(0, Mathf.Min(displayName.Length, 8));
         }
 
         void SetHpGaugeScale(int current, int max) => SetGaugeScale(_hpGauge, current, max);

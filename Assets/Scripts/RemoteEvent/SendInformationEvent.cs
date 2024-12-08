@@ -3,12 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using AI;
 
 namespace Game
 {
     public class SendInformationEvent : MonoBehaviour
     {
-        AIRequest _ai;
+        AIClient _ai;
         AdventurerSpawner _adventurerSpawner;
         UiManager _uiManager;
 
@@ -22,7 +23,7 @@ namespace Game
                 $"'''\n" +
                 $"# 出力形式\n" +
                 $"- 英語に翻訳した文章のみをそのまま出力してください。\n";
-            _ai = AIRequestFactory.Create(prompt);
+            _ai = new AIClient(prompt);
 
             AdventurerSpawner.TryFind(out _adventurerSpawner);
             UiManager.TryFind(out _uiManager);
@@ -46,7 +47,7 @@ namespace Game
                 $"'''\n" +
                 $"# 出力形式\n" +
                 $"- 英語に翻訳した文章のみをそのまま出力してください。\n";
-            string response = await _ai.RequestAsync(prompt);
+            string response = await _ai.RequestAsync(prompt, token);
 
             // 冒険者全員に伝える。
             if (_adventurerSpawner != null)

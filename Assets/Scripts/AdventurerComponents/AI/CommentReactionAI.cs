@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using AI;
 
 namespace Game
 {
@@ -25,7 +26,7 @@ namespace Game
         {
             token.ThrowIfCancellationRequested();
 
-            AIRequest ai = CreateAI();
+            AIClient ai = CreateAI();
             string prompt =
                 $"# 指示内容\n" +
                 $"- 自身のキャラクターの設定を基に、次の台詞に対する返答を考えてください。\n" +
@@ -38,7 +39,7 @@ namespace Game
                 $"# 出力例\n" +
                 $"- 応援ありがとう。\n" +
                 $"- めげずに頑張るぞ！\n";
-            string response = await ai.RequestAsync(prompt);
+            string response = await ai.RequestAsync(prompt, token);
 
             if (response[0] == '-') response = response[1..];
 
@@ -49,7 +50,7 @@ namespace Game
         {
             token.ThrowIfCancellationRequested();
 
-            AIRequest ai = CreateAI();
+            AIClient ai = CreateAI();
             string prompt =
                 $"# 指示内容\n" +
                 $"- 自身のキャラクターの設定を基に、台詞「{GetCommentText(comment)}」に対し、どのような印象を持つか答えてください。\n" +
@@ -62,7 +63,7 @@ namespace Game
                 $"# 出力例\n" +
                 $"- 1\n" +
                 $"- -0.2\n";
-            string response = await ai.RequestAsync(prompt);
+            string response = await ai.RequestAsync(prompt, token);
 
             if (response[0] == '-') response = response[1..];
 
@@ -82,7 +83,7 @@ namespace Game
             return comment.ElementAt(r).Comment;
         }
 
-        AIRequest CreateAI()
+        AIClient CreateAI()
         {
             Blackboard blackboard = GetComponent<Blackboard>();
             string age = blackboard.AdventurerSheet.Age;
@@ -96,7 +97,7 @@ namespace Game
                 $"- {age}歳の{job}。\n" +
                 $"- {background}\n";
 
-            return AIRequestFactory.Create(prompt);
+            return new AIClient(prompt);
         }
     }
 }

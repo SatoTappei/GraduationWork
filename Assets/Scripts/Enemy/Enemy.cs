@@ -26,8 +26,7 @@ namespace Game
 
         public void Initialize(Vector2Int coords)
         {
-            _blackboard.MaxHp = 100;               // 自由に設定可能。
-            _blackboard.CurrentHp = 100;           // 自由に設定可能。
+            _blackboard.CurrentHp = _blackboard.MaxHp;
             _blackboard.SpawnCoords = coords;
             _blackboard.Coords = coords;
             _blackboard.Direction = Vector2Int.up; // 上以外の向きの場合、回転させる処理が必要。

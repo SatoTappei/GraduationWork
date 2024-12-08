@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using UnityEngine;
+using AI;
 
 namespace Game
 {
@@ -22,7 +23,7 @@ namespace Game
             public int Number;
         }
 
-        AIRequest _ai;
+        AIClient _ai;
 
         void Awake()
         {
@@ -33,7 +34,7 @@ namespace Game
                 $"- You need to tell other players what you know, so choose which information you want to tell them.\n" +
                 $"- Input is given in Json format.\n" +
                 $"- Several options will be presented as text with corresponding numbers. Select the option that best aligns with your choice and return only the number of the selected option.";
-            _ai = AIRequestFactory.Create(prompt);
+            _ai = new AIClient(prompt);
         }
 
         public async UniTask<SharedInformation> SelectAsync(IReadOnlyList<SharedInformation> information, CancellationToken token)
@@ -65,7 +66,7 @@ namespace Game
             
             RequestFormat request = new RequestFormat();
             request.Choices = choices;
-            string result = await _ai.RequestAsync(JsonUtility.ToJson(request));
+            string result = await _ai.RequestAsync(JsonUtility.ToJson(request), token);
             
             // 出力された文章の中に数値以外の文字列が含まれている可能性があるので、弾いてから数値に変換。
             int number = result

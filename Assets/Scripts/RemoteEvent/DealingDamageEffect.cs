@@ -59,8 +59,12 @@ namespace Game
 
             if (target != null)
             {
-                // ダメージ量を適当に設定。
-                target.Damage(nameof(DealingDamageEffect), nameof(DealingDamageEffect), 33, default);
+                target.Damage(
+                    nameof(DealingDamageEffect), 
+                    nameof(DealingDamageEffect), 
+                    33, // ダメージ量を適当に設定。
+                    target.Coords
+                );
             }
 
             // 爆発の演出が終わるまで待つ。演出の長さに合わせて時間を指定。

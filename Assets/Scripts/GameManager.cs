@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -9,7 +8,7 @@ namespace Game
     public class GameManager : MonoBehaviour
     {
         Dictionary<Adventurer, string> _adventureResults;
-
+        
         void Awake()
         {
             _adventureResults = new Dictionary<Adventurer, string>();

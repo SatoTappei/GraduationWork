@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 using System.Threading;
+using AI;
 
 namespace Game
 {
@@ -16,7 +17,7 @@ namespace Game
             public string Source;
         }
 
-        AIRequest _ai;
+        AIClient _ai;
 
         void Awake()
         {
@@ -31,7 +32,7 @@ namespace Game
                 $"# OutputExample\n" +
                 $"- 0.2\n" +
                 $"- 1.0\n";
-            _ai = AIRequestFactory.Create(prompt);
+            _ai = new AIClient(prompt);
         }
 
         public async UniTask<float> EvaluateAsync(SharedInformation information, CancellationToken token)
@@ -44,7 +45,7 @@ namespace Game
             request.Text = information.Text.English;
             request.Source = information.Source;
             
-            string result = await _ai.RequestAsync(JsonUtility.ToJson(request));
+            string result = await _ai.RequestAsync(JsonUtility.ToJson(request), token);
 
             // 出力された文章の中に数値以外の文字列が含まれている可能性があるので、弾いてから数値に変換。
             float score = result

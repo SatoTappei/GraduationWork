@@ -4,6 +4,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using System.Threading;
 using System.Linq;
+using AI;
 
 namespace Game
 {
@@ -37,8 +38,6 @@ namespace Game
 
         async UniTask CreatePath(CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             // AIにキャラクターとしてのロールを与える。
             Blackboard blackboard = GetComponent<Blackboard>();
             string age = blackboard.AdventurerSheet.Age;
@@ -52,7 +51,7 @@ namespace Game
                 $"- {age}歳の{job}。\n" +
                 $"- {background}\n";
 
-            AIRequest ai = AIRequestFactory.Create(rolePrompt);
+            AIClient ai = new AIClient(rolePrompt);
 
             // AIにサブゴールを決めるようリクエスト。
             string prompt =
@@ -83,7 +82,7 @@ namespace Game
                 $"- 1 3 6\n" +
                 $"- 4 5 6\n";
 
-            string response = await ai.RequestAsync(prompt);
+            string response = await ai.RequestAsync(prompt, token);
 
             // AIからのレスポンスが出力例とは異なる場合を想定し、文字列から数字のみを抽出する。
             List<string> result = response.Split().Where(s => int.TryParse(s, out int _)).ToList();

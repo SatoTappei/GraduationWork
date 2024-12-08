@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using AI;
 
 namespace Game
 {
@@ -26,7 +27,7 @@ namespace Game
     public class RolePlayAI : MonoBehaviour
     {
         Blackboard _blackboard;
-        AIRequest _ai;
+        AIClient _ai;
 
         void Awake()
         {
@@ -43,7 +44,7 @@ namespace Game
                 $"- {age}çŒÇÃ{job}ÅB\n" +
                 $"- {background}\n";
 
-            _ai = AIRequestFactory.Create(prompt);
+            _ai = new AIClient(prompt);
         }
 
         public async UniTask<string> RequestLineAsync(RequestLineType type, CancellationToken token)
@@ -63,7 +64,7 @@ namespace Game
                 $"'''\n" +
                 $"# èoóÕó·\n" +
                 $"- {instruction.sample}\n";
-            string response = await _ai.RequestAsync(prompt);
+            string response = await _ai.RequestAsync(prompt, token);
 
             if (response[0] == '-')
             {

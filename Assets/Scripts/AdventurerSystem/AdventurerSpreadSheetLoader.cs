@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -17,27 +16,31 @@ namespace Game
 
             string URL = $"https://docs.google.com/spreadsheets/d/{FileID}/gviz/tq?tqx=out:csv&sheet={SheetName}";
             using UnityWebRequest request = UnityWebRequest.Get(URL);
-            await request.SendWebRequest();
 
-            token.ThrowIfCancellationRequested();
-
-            if (IsSuccess(request.result))
+            try
             {
-                return Parse(request.downloadHandler.text);
+                await request.SendWebRequest().WithCancellation(token);
+            }
+            catch(UnityWebRequestException e)
+            {
+                Debug.LogError(e);
+                return new List<AdventurerSpreadSheetData>();
+            }
+
+            if (request.result == UnityWebRequest.Result.ConnectionError)
+            {
+                Debug.LogError(request.result);
+                return new List<AdventurerSpreadSheetData>();
+            }
+            else if (request.result == UnityWebRequest.Result.ProtocolError)
+            {
+                Debug.LogError(request.result);
+                return new List<AdventurerSpreadSheetData>();
             }
             else
             {
-                Debug.LogError("スプレッドシートから冒険者のプロフィールを読み込めなかった。");
-
-                return null;
+                return Parse(request.downloadHandler.text);
             }
-        }
-
-        static bool IsSuccess(UnityWebRequest.Result result)
-        {
-            if (result == UnityWebRequest.Result.ConnectionError) return false;
-            if (result == UnityWebRequest.Result.ProtocolError) return false;
-            else return true;
         }
 
         static IReadOnlyList<AdventurerSpreadSheetData> Parse(string downloadText)

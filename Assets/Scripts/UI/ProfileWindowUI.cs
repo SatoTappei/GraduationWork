@@ -106,7 +106,7 @@ namespace Game
             }
             else
             {
-                foreach (ItemInventory.Entry entry in item)
+                foreach (ItemInventory.Entry entry in item.Take(Max))
                 {
                     _item.text += $"{entry.Name}\n";
                 }

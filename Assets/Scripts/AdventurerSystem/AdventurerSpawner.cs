@@ -12,6 +12,7 @@ namespace Game
         [SerializeField] Vector2Int _spawnCoords;
 
         AvatarCustomizer _avatarCustomizer;
+        DungeonManager _dungeonManager;
         IReadOnlyList<AdventurerSpreadSheetData> _profiles;
         Adventurer[] _spawned;
 
@@ -20,6 +21,7 @@ namespace Game
         void Awake()
         {
             _avatarCustomizer = GetComponent<AvatarCustomizer>();
+            DungeonManager.TryFind(out _dungeonManager);
 
             // 冒険者の最大数、UIのデザインも変更する必要があり面倒なので、とりあえず4で固定。
             _spawned = new Adventurer[4];
@@ -31,15 +33,12 @@ namespace Game
             return result != null;
         }
 
-        // 人数を指定し、一定間隔で冒険者を生成する。実際に生成した数を返す。
         public async UniTask<int> SpawnAsync(int count, CancellationToken token)
         {
-            // 冒険者のプロフィールを読み込む。
             _profiles = await AdventurerSpreadSheetLoader.GetDataAsync(token);
 
             // 読み込んだプロフィールの数が、引数で指定した数より少ない場合がある。
             int spawnedCount = Mathf.Min(_profiles.Count, count);
-
             for (int i = 0; i < spawnedCount;)
             {
                 if (TrySpawn()) i++;
@@ -49,37 +48,28 @@ namespace Game
             return spawnedCount;
         }
 
-        // 生成する座標に冒険者がいないかつ、シーン上に存在する冒険者が最大数未満の場合は生成する。
         bool TrySpawn()
         {
-            if (IsAdventurerExist(_spawnCoords)) return false;
+            // 生成座標に既に冒険者がいる場合は生成しない。
+            foreach (Actor actor in _dungeonManager.GetActorsOnCell(_spawnCoords))
+            {
+                if (actor is Adventurer _) return false;
+            }
 
             for (int i = 0; i < _spawned.Length; i++)
             {
-                if (_spawned[i] != null) continue;
+                if (_spawned[i] == null)
+                {
+                    _spawned[i] = CreateRandomAdventurer();
 
-                _spawned[i] = CreateRandomAdventurer();
-
-                if (_spawned[i] != null) return true;
+                    if (_spawned[i] == null) return false;
+                    else return true;
+                }
             }
 
             return false;
         }
 
-        // 既に冒険者がいるかチェック。
-        static bool IsAdventurerExist(Vector2Int coords)
-        {
-            if (!DungeonManager.TryFind(out DungeonManager dungeonManager)) return false;
-
-            foreach (Actor actor in dungeonManager.GetActorsOnCell(coords))
-            {
-                if (actor is Adventurer _) return true;
-            }
-
-            return false;
-        }
-
-        // スプレッドシートからランダムなデータを選択し、冒険者を生成。
         Adventurer CreateRandomAdventurer()
         {
             // 生成済みの冒険者の名前。
@@ -96,6 +86,7 @@ namespace Game
 
             if (candidate.Count == 0) return null;
 
+            // ランダムなデータを選択し、冒険者を生成。
             AdventurerSpreadSheetData profile = candidate[Random.Range(0, candidate.Count)];
             AvatarCustomizeData avatarData = _avatarCustomizer.GetCustomizedData(profile);
             

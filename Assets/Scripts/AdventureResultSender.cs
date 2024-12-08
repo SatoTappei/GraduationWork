@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -25,14 +24,14 @@ namespace Game
             form.AddField("results", format);
 
             using UnityWebRequest request = UnityWebRequest.Post(URL, form);
-            await request.SendWebRequest();
+            await request.SendWebRequest().WithCancellation(token);
 
             // スプレッドシートに書き込みが完了するまで待つ。
             bool isProcessing = true;
             while (isProcessing && !token.IsCancellationRequested)
             {
                 using UnityWebRequest getRequest = UnityWebRequest.Get(URL);
-                await getRequest.SendWebRequest();
+                await getRequest.SendWebRequest().WithCancellation(token);
 
                 string json = getRequest.downloadHandler.text;
                 isProcessing = JsonUtility.FromJson<ProcessStatus>(json).isProcessing;
