@@ -78,8 +78,6 @@ namespace Game
 
         public async UniTask<string> RequestNextActionAsync(CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             RequestFormat format = new RequestFormat();
             format.CurrentCoords = _adventurer.Coords;
             format.CurrentLocation = _dungeonManager.GetCell(_adventurer.Coords).Location.ToString();
@@ -92,7 +90,10 @@ namespace Game
             format.AvailableActions = _availableActions.Actions.ToArray();
             format.Goal = _subGoalPath.Current.Text.English;
 
-            return await _ai.RequestAsync(JsonUtility.ToJson(format), token);
+            string response = await _ai.RequestAsync(JsonUtility.ToJson(format), token);
+            token.ThrowIfCancellationRequested();
+
+            return response;
         }
 
         string GetCellInfo(Vector2Int coords)

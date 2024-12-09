@@ -24,8 +24,6 @@ namespace Game
 
         async UniTask<string> RequestLineAsync(IReadOnlyCollection<CommentSpreadSheetData> comment, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             AIClient ai = CreateAI();
             string prompt =
                 $"# 指示内容\n" +
@@ -40,6 +38,7 @@ namespace Game
                 $"- 応援ありがとう。\n" +
                 $"- めげずに頑張るぞ！\n";
             string response = await ai.RequestAsync(prompt, token);
+            token.ThrowIfCancellationRequested();
 
             if (response[0] == '-') response = response[1..];
 
@@ -48,8 +47,6 @@ namespace Game
 
         async UniTask<float> EvaluateAsync(IReadOnlyCollection<CommentSpreadSheetData> comment, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             AIClient ai = CreateAI();
             string prompt =
                 $"# 指示内容\n" +
@@ -64,6 +61,7 @@ namespace Game
                 $"- 1\n" +
                 $"- -0.2\n";
             string response = await ai.RequestAsync(prompt, token);
+            token.ThrowIfCancellationRequested();
 
             if (response[0] == '-') response = response[1..];
 

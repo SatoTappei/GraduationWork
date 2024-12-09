@@ -51,8 +51,6 @@ namespace Game
             const float MoveSpeed = 1.0f;
             const float RotateSpeed = 4.0f;
 
-            token.ThrowIfCancellationRequested();
-
             Vector2Int nextCellCoords = _movementPath.Current.Coords;
             Vector3 nextCellPosition = _movementPath.Current.Position;
 

@@ -11,8 +11,6 @@ namespace Game
     {
         public async UniTask MoveAsync(string targetID, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             CreatePath(targetID);
             await MoveNextCellAsync(token);
         }

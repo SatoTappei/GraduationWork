@@ -49,8 +49,6 @@ namespace Game
 
         public async UniTask<string> RequestLineAsync(RequestLineType type, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             (string content, string sample) instruction = GetContentAndSample(type);
 
             string prompt =
@@ -65,6 +63,7 @@ namespace Game
                 $"# èoóÕó·\n" +
                 $"- {instruction.sample}\n";
             string response = await _ai.RequestAsync(prompt, token);
+            token.ThrowIfCancellationRequested();
 
             if (response[0] == '-')
             {

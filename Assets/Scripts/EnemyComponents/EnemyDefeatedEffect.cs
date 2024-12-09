@@ -14,8 +14,6 @@ namespace Game
 
         public async UniTask PlayAsync(CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             Animator animator = GetComponentInChildren<Animator>();
             AudioSource audioSource = GetComponent<AudioSource>();
 

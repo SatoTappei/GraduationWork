@@ -26,8 +26,6 @@ namespace Game
 
         public async UniTask AttackAsync(CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             // üˆÍ‚ÉUŒ‚‰Â”\‚È‘ÎÛ‚ª‚¢‚éê‡‚ÍUŒ‚B
             if (TryGetTarget<Adventurer>(out Actor target))
             {

@@ -37,8 +37,6 @@ namespace Game
 
         public async UniTask MoveAsync(Vector2Int direction, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             // 向きの値を次のセルの方向に更新。
             Cell nextCell = _dungeonManager.GetCell(Coords + direction);
             Direction = nextCell.Coords - Coords;

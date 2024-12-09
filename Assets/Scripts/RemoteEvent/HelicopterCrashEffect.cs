@@ -23,17 +23,23 @@ namespace Game
         [SerializeField] AudioSource _helicopterAudioSource;
         [SerializeField] AudioSource _missileAudioSource;
 
+        DungeonManager _dungeonManager;
         WaitForSeconds _waitHelicopterExplosion;
+
+        void Awake()
+        {
+            DungeonManager.TryFind(out _dungeonManager);
+        }
 
         public void Play(Vector3 position, Adventurer target)
         {
             transform.position = position;
 
-            StartCoroutine(PlayAsync(target));
+            StartCoroutine(PlayAsync(target.Coords));
             StartCoroutine(RotorAnimationAsync());
         }
 
-        IEnumerator PlayAsync(Adventurer target)
+        IEnumerator PlayAsync(Vector2Int targetCoords)
         {
             foreach (MeshRenderer r in _helicopterRenderers) r.enabled = true;
             _missileRenderer.enabled = true;
@@ -68,14 +74,19 @@ namespace Game
             // ヘリコプターが爆発する演出を待つ。時間は適当に指定。
             yield return _waitHelicopterExplosion ??= new WaitForSeconds(1.5f);
 
-            if (target != null)
+            // イベント演出時間が長いので、目標がイベント発生位置から離れている可能性がある。
+            // なので、実際にイベント発生位置に冒険者がいるかチェック。
+            foreach (Actor actor in _dungeonManager.GetActorsOnCell(targetCoords))
             {
-                target.Damage(
-                    nameof(HelicopterCrashEffect), 
-                    nameof(HelicopterCrashEffect), 
-                    33, // ダメージ量を適当に設定。
-                    target.Coords
-                );
+                if (actor is Adventurer target)
+                {
+                    target.Damage(
+                        nameof(HelicopterCrashEffect),
+                        nameof(HelicopterCrashEffect),
+                        33, // ダメージ量を適当に設定。
+                        targetCoords
+                    );
+                }
             }
 
             // プールに戻す。

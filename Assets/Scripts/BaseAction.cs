@@ -15,8 +15,6 @@ namespace Game
 
         protected async UniTask TranslateAsync(float speed, Vector3 targetPosition, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             _transform ??= transform;
             Vector3 start = _transform.position;
             Vector3 goal = targetPosition;
@@ -37,8 +35,6 @@ namespace Game
  
         protected async UniTask RotateAsync(float speed, Quaternion targetRotation, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             _forwardAxis ??= transform.FindChildRecursive("ForwardAxis");
             Quaternion start = _forwardAxis.rotation;
             Quaternion goal = targetRotation;

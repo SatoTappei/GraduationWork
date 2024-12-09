@@ -10,8 +10,6 @@ namespace Game
     {
         public async UniTask<int> EvaluateAsync(SharedInformation information, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             // awaitする必要ないが、警告対策で一応しておく。
             await UniTask.Yield(cancellationToken: token);
 

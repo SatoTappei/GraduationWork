@@ -37,8 +37,6 @@ namespace Game
 
         async UniTask ExecuteAsync(string text, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             _isRunning = true;
 
             string prompt =
@@ -48,6 +46,7 @@ namespace Game
                 $"# 出力形式\n" +
                 $"- 英語に翻訳した文章のみをそのまま出力してください。\n";
             string response = await _ai.RequestAsync(prompt, token);
+            token.ThrowIfCancellationRequested();
 
             // 冒険者全員に伝える。
             if (_adventurerSpawner != null)

@@ -25,8 +25,6 @@ namespace Game
             const float RotateSpeed = 4.0f;
             const float PlayTime = 2.0f;
 
-            token.ThrowIfCancellationRequested();
-
             // 漁った結果によって行動ログに追加する内容が異なる。
             string actionLogText = string.Empty;
 

@@ -37,7 +37,7 @@ namespace Game
 
         public void DeleteStatusBarStatus(int id)
         {
-            _statusBar.DeleteStatus(id);
+            if (_statusBar != null) _statusBar.DeleteStatus(id);
         }
 
         public void ShowLine(int statusBarID, string line)
@@ -62,7 +62,7 @@ namespace Game
 
         public void DeleteProfileWindowStatus(int id)
         {
-            _profileWindow.DeleteStatus(id);
+            if (_profileWindow != null) _profileWindow.DeleteStatus(id);
         }
 
         public int RegisterCameraFocusTarget(GameObject target)

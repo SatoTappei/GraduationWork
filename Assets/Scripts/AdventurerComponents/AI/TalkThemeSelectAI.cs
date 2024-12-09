@@ -39,8 +39,6 @@ namespace Game
 
         public async UniTask<SharedInformation> SelectAsync(IReadOnlyList<SharedInformation> information, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             // 全ての情報が空文字の場合はAIが正常に判断できない可能性がある。
             bool isEmpty = true;
             foreach (SharedInformation info in information)
@@ -67,7 +65,8 @@ namespace Game
             RequestFormat request = new RequestFormat();
             request.Choices = choices;
             string result = await _ai.RequestAsync(JsonUtility.ToJson(request), token);
-            
+            token.ThrowIfCancellationRequested();
+
             // 出力された文章の中に数値以外の文字列が含まれている可能性があるので、弾いてから数値に変換。
             int number = result
                 .Split()

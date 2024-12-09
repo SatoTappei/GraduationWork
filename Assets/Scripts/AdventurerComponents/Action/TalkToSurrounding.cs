@@ -25,8 +25,6 @@ namespace Game
             const float RotateSpeed = 4.0f;
             const float PlayTime = 3.28f;
 
-            token.ThrowIfCancellationRequested();
-
             // 会話する対象がいるかどうかで行動ログに追加する内容が異なる。
             string actionLogText = string.Empty;
 

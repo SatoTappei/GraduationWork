@@ -25,18 +25,20 @@ namespace Game
         // これ以外のメソッドはこのメソッドでサブゴールを設定した後に呼び出す想定。
         public async UniTask PlanningAsync(CancellationToken token)
         {
-            await CreatePath(token);
+            await CreatePathAsync(token);
 
             _currentIndex = 0;
         }
 
         public void HeadingNext()
         {
+            if (_path.Count == 0) return;
+
             _currentIndex++;
             _currentIndex = Mathf.Min(_currentIndex, _path.Count - 1);
         }
 
-        async UniTask CreatePath(CancellationToken token)
+        async UniTask CreatePathAsync(CancellationToken token)
         {
             // AIにキャラクターとしてのロールを与える。
             Blackboard blackboard = GetComponent<Blackboard>();
@@ -83,6 +85,7 @@ namespace Game
                 $"- 4 5 6\n";
 
             string response = await ai.RequestAsync(prompt, token);
+            token.ThrowIfCancellationRequested();
 
             // AIからのレスポンスが出力例とは異なる場合を想定し、文字列から数字のみを抽出する。
             List<string> result = response.Split().Where(s => int.TryParse(s, out int _)).ToList();

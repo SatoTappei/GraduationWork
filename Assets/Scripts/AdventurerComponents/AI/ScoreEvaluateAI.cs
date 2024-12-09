@@ -37,8 +37,6 @@ namespace Game
 
         public async UniTask<float> EvaluateAsync(SharedInformation information, CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             // SharedInformation型にはAIが判定するのに必要ない日本語の文章とスコア情報が含まれている。
             // リクエスト専用の型に必要な値をコピーし、その型でリクエストする。
             RequestFormat request = new RequestFormat();
@@ -46,6 +44,7 @@ namespace Game
             request.Source = information.Source;
             
             string result = await _ai.RequestAsync(JsonUtility.ToJson(request), token);
+            token.ThrowIfCancellationRequested();
 
             // 出力された文章の中に数値以外の文字列が含まれている可能性があるので、弾いてから数値に変換。
             float score = result

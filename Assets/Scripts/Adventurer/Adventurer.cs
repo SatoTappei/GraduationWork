@@ -17,12 +17,12 @@ namespace Game
         public override Vector2Int Direction => _blackboard.Direction;
         public string SelectedAction => _selectedAction;
 
-        protected virtual void Awake()
+        void Awake()
         {
             _blackboard = GetComponent<Blackboard>();
         }
 
-        protected virtual void Start()
+        void Start()
         {
             UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }

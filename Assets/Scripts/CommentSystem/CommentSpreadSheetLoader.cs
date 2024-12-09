@@ -50,9 +50,7 @@ namespace Game
 
             string URL = $"https://docs.google.com/spreadsheets/d/{FileID}/gviz/tq?tqx=out:csv&sheet={SheetName}";
             using UnityWebRequest request = UnityWebRequest.Get(URL);
-            await request.SendWebRequest();
-
-            token.ThrowIfCancellationRequested();
+            await request.SendWebRequest().WithCancellation(token);
 
             if (IsSuccess(request.result))
             {

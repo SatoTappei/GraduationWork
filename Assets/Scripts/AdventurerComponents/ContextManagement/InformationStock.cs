@@ -39,8 +39,6 @@ namespace Game
         // 保持している情報の残りターンを更新、保留中の情報がある場合はAIが評価し、入れ替える。
         public async UniTask RefreshAsync(CancellationToken token)
         {
-            token.ThrowIfCancellationRequested();
-
             // 残りターンを減らす。
             for (int i = 0; i < _stock.Count; i++)
             {
