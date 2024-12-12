@@ -18,6 +18,7 @@ namespace Game
             [SerializeField] DungeonEntity _golemSpawner;
             [SerializeField] DungeonEntity _barrel;
             [SerializeField] DungeonEntity _container;
+            [SerializeField] DungeonEntity _lever;
 
             public DungeonEntity Entrance => _entrance;
             public DungeonEntity Door => _door;
@@ -28,6 +29,7 @@ namespace Game
             public DungeonEntity GolemSpawner => _golemSpawner;
             public DungeonEntity Barrel => _barrel;
             public DungeonEntity Container => _container;
+            public DungeonEntity Lever => _lever;
         }
 
         [SerializeField] Prefabs _prefabs;
@@ -62,9 +64,10 @@ namespace Game
         void Create()
         {
             CreateGrid();
-            BuildNonDirectionalEntity('<', _prefabs.Entrance);
             BuildDirectionalEntity(Blueprint.Doors, _prefabs.Door);
             BuildDirectionalEntity(Blueprint.Treasures, _prefabs.Treasure);
+            BuildDirectionalEntity(Blueprint.Levers, _prefabs.Lever);
+            BuildNonDirectionalEntity('<', _prefabs.Entrance);
             BuildNonDirectionalEntity('h', _prefabs.HealingSpot);
             BuildNonDirectionalEntity('B', _prefabs.Barrel);
             BuildNonDirectionalEntity('C', _prefabs.Container);
