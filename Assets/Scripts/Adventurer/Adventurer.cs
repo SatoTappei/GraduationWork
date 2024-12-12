@@ -163,17 +163,11 @@ namespace Game
                 // 足元に罠等がある場合に起動。
                 if (foot != null) foot.Activate();
 
-                // 撃破された場合。
-                if (await defeated.DefeatedAsync(token))
+                // 撃破されたもしくは脱出した場合。
+                if (await defeated.DefeatedAsync(token) || await escape.EscapeAsync(token))
                 {
-                    GameManager.ReportAdventureResult(this, "Defeated");
-                    break;
-                }
-
-                // 脱出した場合。
-                if (await escape.EscapeAsync(token))
-                {
-                    GameManager.ReportAdventureResult(this, "Escape");
+                    TryGetComponent(out AdventureResultApply adventureResult);
+                    adventureResult.Send();
                     break;
                 }
 

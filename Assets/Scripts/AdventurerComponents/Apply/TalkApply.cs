@@ -13,10 +13,14 @@ namespace Game
                 information.AddPending(text, source);
             }
 
-            // イベントの場合、専用の演出を再生する。
+            // 各種イベントの場合、それぞれ専用の演出を再生する。
             if (source == nameof(SendInformationEvent))
             {
                 if (TryGetComponent(out ReceiveInformationEffect effect)) effect.Play();
+            }
+            else if (source == nameof(MindReadingEvent))
+            {
+                if (TryGetComponent(out TinfoilHatEffect effect)) effect.Play();
             }
         }
     }

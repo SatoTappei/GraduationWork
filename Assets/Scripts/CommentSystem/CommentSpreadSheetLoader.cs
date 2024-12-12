@@ -45,8 +45,8 @@ namespace Game
 
         async UniTask GetDataAsync(CancellationToken token)
         {
-            const string FileID = "1YvOcHPEIBHViHkyXOzLitoiZVFsgb-XIFOsL4qiH144";
-            const string SheetName = "シート1";
+            const string FileID = "1hQSCky3xafLS3p75MMYjUovEfKLtOvIh9U4HdDNUElk";
+            const string SheetName = "コメント";
 
             string URL = $"https://docs.google.com/spreadsheets/d/{FileID}/gviz/tq?tqx=out:csv&sheet={SheetName}";
             using UnityWebRequest request = UnityWebRequest.Get(URL);

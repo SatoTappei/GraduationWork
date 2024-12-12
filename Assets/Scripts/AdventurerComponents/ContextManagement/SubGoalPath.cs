@@ -13,6 +13,7 @@ namespace Game
         IReadOnlyList<SubGoal> _path;
         int _currentIndex;
 
+        public IReadOnlyList<SubGoal> Path => _path;
         public SubGoal Current => _currentIndex < _path.Count ? _path[_currentIndex] : null;
         public bool IsLast => _currentIndex == _path.Count - 1;
 

@@ -46,13 +46,14 @@ namespace Game
 
             for (int i = 0; i < _used.Length; i++)
             {
-                if (_used[i] && i == id)
-                {
-                    _used[i] = false;
-                    _statusBarUI[i].DeleteStatus();
+                // 既に未使用もしくはIDが違う場合。
+                if (!_used[i] || i != id) continue;
 
-                    return;
-                }
+                _used[i] = false;
+
+                if (_statusBarUI[i] != null) _statusBarUI[i].DeleteStatus();
+
+                return;
             }
 
             Debug.LogWarning($"既に削除済みの{nameof(StatusBarUI)}。: {id}");

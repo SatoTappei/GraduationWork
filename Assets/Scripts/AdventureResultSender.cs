@@ -30,7 +30,7 @@ namespace Game
             bool isProcessing = true;
             while (isProcessing && !token.IsCancellationRequested)
             {
-                using UnityWebRequest getRequest = UnityWebRequest.Get(URL);
+                using UnityWebRequest getRequest = UnityWebRequest.Get($"{URL}?type=completion");
                 await getRequest.SendWebRequest().WithCancellation(token);
 
                 string json = getRequest.downloadHandler.text;
@@ -51,11 +51,11 @@ namespace Game
                 // 冒険者の名前と冒険結果をセットで保持する。
                 // 同じ名前の冒険者が複数存在する場合、Postした先で区別できないので注意。
                 List<Result> results = new List<Result>(adventureResults.Count);
-                foreach (KeyValuePair<Adventurer, string> v in adventureResults)
+                foreach (KeyValuePair<Adventurer, string> result in adventureResults)
                 {
-                    string adventurerName = v.Key.AdventurerSheet.FullName;
-                    string resultType = v.Value;
-                    results.Add(new Result(adventurerName, resultType));
+                    string adventurerName = result.Key.AdventurerSheet.FullName;
+                    string resultContents = result.Value;
+                    results.Add(new Result(adventurerName, resultContents));
                 }
 
                 Results = results.ToArray();
@@ -67,14 +67,14 @@ namespace Game
         [System.Serializable]
         class Result
         {
-            public Result(string name, string type)
+            public Result(string name, string contents)
             {
                 Name = name;
-                Type = type;
+                Contents = contents;
             }
 
             public string Name;
-            public string Type;
+            public string Contents;
         }
 
         public static string Convert(IReadOnlyDictionary<Adventurer, string> adventureResults)

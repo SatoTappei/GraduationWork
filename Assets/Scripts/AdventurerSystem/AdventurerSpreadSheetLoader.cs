@@ -12,7 +12,7 @@ namespace Game
         public static async UniTask<IReadOnlyList<AdventurerSpreadSheetData>> GetDataAsync(CancellationToken token)
         {
             const string FileID = "1hQSCky3xafLS3p75MMYjUovEfKLtOvIh9U4HdDNUElk";
-            const string SheetName = "シート1";
+            const string SheetName = "プロフィール";
 
             string URL = $"https://docs.google.com/spreadsheets/d/{FileID}/gviz/tq?tqx=out:csv&sheet={SheetName}";
             using UnityWebRequest request = UnityWebRequest.Get(URL);
