@@ -8,14 +8,14 @@ namespace Game
     {
         PlacedActors _placedActors;
         Dungeon _dungeon;
-        TerrainFeatures _terrainFeatures;
+        TerrainFeature _terrainFeature;
         AStar _aStar;
 
         void Awake()
         {
             _placedActors = new PlacedActors();
             _dungeon = GetComponent<Dungeon>();
-            _terrainFeatures = GetComponent<TerrainFeatures>();
+            _terrainFeature = GetComponent<TerrainFeature>();
             _aStar = new AStar(_dungeon.Grid);
         }
 
@@ -35,6 +35,16 @@ namespace Game
         {
             GetCell(coords).RemoveActor(actor);
             _placedActors.Remove(actor);
+        }
+
+        public void SetCellTerrainEffect(Vector2Int coords, TerrainEffect effect)
+        {
+            GetCell(coords).TerrainEffect = effect;
+        }
+
+        public void DeleteCellTerrainEffect(Vector2Int coords)
+        {
+            GetCell(coords).TerrainEffect = TerrainEffect.None;
         }
 
         public void AddAvoidCell(Vector2Int coords)
@@ -85,7 +95,7 @@ namespace Game
 
         public bool TryGetTerrainFeature(Vector2Int coords, out SharedInformation feature)
         {
-            if (_terrainFeatures.TryGetInformation(coords, out IReadOnlyList<SharedInformation> result))
+            if (_terrainFeature.TryGetInformation(coords, out IReadOnlyList<SharedInformation> result))
             {
                 // ï°êîÇ†ÇÈèÍçáÇÕÉâÉìÉ_ÉÄÇ≈1Ç¬ëIÇ‘ÅB
                 feature = result[Random.Range(0, result.Count)];

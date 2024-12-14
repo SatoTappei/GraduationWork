@@ -98,7 +98,7 @@ namespace Game
                 Debug.LogError($"適切な数のサブゴールが設定されていない。: {string.Join(",", result)}");
                 result = new List<string> { "0", "2", "6" };
             }
-
+            result = new List<string>() { "2", "6", "6" }; // デバッグ用.
             // 対応するサブゴールのクラスに変換。
             SubGoal[] path = new SubGoal[result.Count];
             for (int i = 0; i < result.Count; i++)

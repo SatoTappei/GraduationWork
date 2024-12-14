@@ -40,11 +40,11 @@ namespace Game
                 }
             }
 
-            // アイテム。
+            // アイテム。送信する数は3つまで。
             if (TryGetComponent(out ItemInventory item))
             {
                 string[] items = item.GetEntries().Select(e => e.Name).ToArray();
-                for (int i = 0; i < items.Length; i++)
+                for (int i = 0; i < Mathf.Min(items.Length, 3); i++)
                 {
                     result[5 + i] = items[i];
                 }

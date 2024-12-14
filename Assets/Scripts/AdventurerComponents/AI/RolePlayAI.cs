@@ -93,7 +93,7 @@ namespace Game
         string GetLineEmotion()
         {
             // 心情の値によって台詞の感情が変化する。閾値は適当に設定。
-            if (_blackboard.CurrentEmotion < _blackboard.MaxEmotion / 10 * 7)
+            if (_blackboard.MaxEmotion / 10 * 7 <= _blackboard.CurrentEmotion)
             {
                 return "普段より少しテンション高めでお願いします。";
             }

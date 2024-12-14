@@ -174,14 +174,14 @@ namespace Game
                 // サブゴールを達成した場合、次のサブゴールを設定。
                 if (subGoalPath.Current.IsCompleted())
                 {
-                    // 利用可能な行動の選択肢がある場合は追加。
-                    TryGetComponent(out AvailableActions availableActions);
-                    availableActions.Add(subGoalPath.Current.GetAdditionalActions());
-
                     // サブゴールを達成した際の演出。
                     if (TryGetComponent(out SubGoalEffect subGoalEffect)) subGoalEffect.Play();
 
                     subGoalPath.HeadingNext();
+
+                    // 利用可能な行動の選択肢がある場合は追加。
+                    TryGetComponent(out AvailableActions availableActions);
+                    availableActions.Add(subGoalPath.Current.GetAdditionalActions());
                 }
 
                 await UniTask.Yield(cancellationToken: token);

@@ -89,7 +89,7 @@ namespace Game
             format.DecisionSupportContext = _informationStock.Entries.ToArray();
             format.AvailableActions = _availableActions.Actions.ToArray();
             format.Goal = _subGoalPath.Current.Text.English;
-
+            
             string response = await _ai.RequestAsync(JsonUtility.ToJson(format), token);
             token.ThrowIfCancellationRequested();
 
@@ -108,9 +108,20 @@ namespace Game
                 {
                     info = $"There is {adventurer.ID}, an adventurer like me.";
                 }
-                else if (actor is Enemy _)
+                else if (actor is Enemy enemy)
                 {
-                    info = "There is an enemy, and we must attack it.";
+                    if (enemy.ID == nameof(BlackKaduki))
+                    {
+                        info = "There is an enemy that seems weaker than you. Do you attack?";
+                    }
+                    else if (enemy.ID == nameof(Soldier))
+                    {
+                        info = "There is an enemy who is as strong as you. Do you attack?";
+                    }
+                    else if (enemy.ID == nameof(Golem))
+                    {
+                        info = "In front of you is the boss of the dungeon. Do you attack?";
+                    }
                 }
                 else if (actor is Treasure treasure)
                 {
@@ -123,21 +134,26 @@ namespace Game
                         info = "There is a treasure chest. You can get it when you scavenge out the contents.";
                     }
                 }
-                else if (actor.ID == "Door")
-                {
-                    info = "Door";
-                }
-                else if (actor.ID == "Entrance")
-                {
-                    info = "Entrance";
-                }
-                else if (actor.ID == "Barrel")
+                else if (actor.ID == nameof(Barrel))
                 {
                     info = "There's a barrel. You might be able to obtain items or information by scavenging it.";
                 }
-                else if (actor.ID == "Container")
+                else if (actor.ID == nameof(Container))
                 {
                     info = "There's a container. You might be able to obtain items or information by scavenging it.";
+                }
+                else if (actor.ID == nameof(Lever))
+                {
+                    info = "There's a lever. To activate the mechanism, select Scavenge.";
+                }
+                else if (cell.TerrainEffect == TerrainEffect.Flaming)
+                {
+                    info = "The floor is on fire. If you step on the floor, you will get burned.";
+                }
+                else
+                {
+                    // î‡ÅAì¸å˚ÅAÇªÇÃëºÇÕÇªÇÃÇ‹Ç‹IDÇï‘Ç∑ÅB
+                    info = actor.ID;
                 }
             }
 

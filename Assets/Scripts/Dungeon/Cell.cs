@@ -12,6 +12,12 @@ namespace Game
         // ここに追加
     }
 
+    public enum TerrainEffect
+    {
+        None,
+        Flaming,
+    }
+
     public enum Location
     {
         None,
@@ -49,6 +55,8 @@ namespace Game
         public Location Location { get; }
         public Vector2Int Coords => new Vector2Int(X, Y);
 
+        // 罠など自身の配置されているセル以外にも効果を及ぼすもの。
+        public TerrainEffect TerrainEffect { get; set; }
         // 宝箱や戦闘中のキャラクターがいるマスなど、動的に状態が変化する場合に使用するフラグ。
         public bool IsAvoid { get; set; }
 

@@ -9,27 +9,17 @@ namespace Game
         [System.Serializable]
         public class Prefabs
         {
-            [SerializeField] DungeonEntity _entrance;
-            [SerializeField] DungeonEntity _door;
-            [SerializeField] DungeonEntity _treasure;
-            [SerializeField] DungeonEntity _healingSpot;
-            [SerializeField] DungeonEntity _blackKadukiSpawner;
-            [SerializeField] DungeonEntity _soldierSpawner;
-            [SerializeField] DungeonEntity _golemSpawner;
-            [SerializeField] DungeonEntity _barrel;
-            [SerializeField] DungeonEntity _container;
-            [SerializeField] DungeonEntity _lever;
-
-            public DungeonEntity Entrance => _entrance;
-            public DungeonEntity Door => _door;
-            public DungeonEntity Treasure => _treasure;
-            public DungeonEntity HealingSpot => _healingSpot;
-            public DungeonEntity BlackKadukiSpawner => _blackKadukiSpawner;
-            public DungeonEntity SoldierSpawner => _soldierSpawner;
-            public DungeonEntity GolemSpawner => _golemSpawner;
-            public DungeonEntity Barrel => _barrel;
-            public DungeonEntity Container => _container;
-            public DungeonEntity Lever => _lever;
+            public DungeonEntity Entrance;
+            public DungeonEntity Door;
+            public DungeonEntity Treasure;
+            public DungeonEntity HealingSpot;
+            public DungeonEntity BlackKadukiSpawner;
+            public DungeonEntity SoldierSpawner;
+            public DungeonEntity GolemSpawner;
+            public DungeonEntity Barrel;
+            public DungeonEntity Container;
+            public DungeonEntity Lever;
+            public DungeonEntity FireBreath;
         }
 
         [SerializeField] Prefabs _prefabs;
@@ -66,11 +56,12 @@ namespace Game
             CreateGrid();
             BuildDirectionalEntity(Blueprint.Doors, _prefabs.Door);
             BuildDirectionalEntity(Blueprint.Treasures, _prefabs.Treasure);
-            BuildDirectionalEntity(Blueprint.Levers, _prefabs.Lever);
             BuildNonDirectionalEntity('<', _prefabs.Entrance);
             BuildNonDirectionalEntity('h', _prefabs.HealingSpot);
             BuildNonDirectionalEntity('B', _prefabs.Barrel);
             BuildNonDirectionalEntity('C', _prefabs.Container);
+            BuildNonDirectionalEntity('l', _prefabs.Lever);
+            BuildNonDirectionalEntity('f', _prefabs.FireBreath);
             BuildEnemySpawner('b', _prefabs.BlackKadukiSpawner);
             BuildEnemySpawner('s', _prefabs.SoldierSpawner);
             BuildEnemySpawner('G', _prefabs.GolemSpawner);
