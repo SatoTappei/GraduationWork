@@ -31,6 +31,9 @@ namespace Game
             // 一度に生成する冒険者の最大数。
             const int Max = 4;
 
+            // "使用中"のスプレッドシートの内容を消す。
+            await SpawnedAdventurerSender.DeleteAsync(token);
+
             AdventurerSpawner.TryFind(out AdventurerSpawner spawner);
             while (!token.IsCancellationRequested)
             {
@@ -39,11 +42,17 @@ namespace Game
                 // 一定間隔で冒険者を生成。
                 int spawnedCount = await spawner.SpawnAsync(Max, token);
 
+                // 生成した冒険者を"使用中"のスプレッドシートに書き込み。
+                await SpawnedAdventurerSender.WriteAsync(spawner.Spawned, token);
+
                 // 生成した冒険者が全員、冒険の結果を報告するまで待つ。
                 await UniTask.WaitUntil(() => _adventureResults.Count == spawnedCount, cancellationToken: token);
 
                 // 冒険の結果を送信する。
                 await AdventureResultSender.SendAsync(_adventureResults, token);
+
+                // "使用中"のスプレッドシートの内容を消す。
+                await SpawnedAdventurerSender.DeleteAsync(token);
             }
         }
 
