@@ -24,6 +24,8 @@ namespace AI
 
         public static void Add(Response response)
         {
+            if (response == null) return;
+
             // GPT4-o-mini‚Ì—¿‹àB
             float prompt = response.usage.prompt_tokens * 0.15f / 1000000;
             float completion = response.usage.completion_tokens * 0.60f / 1000000;
