@@ -16,12 +16,6 @@ namespace Game
             _effect.gameObject.SetActive(false);
         }
 
-        // ƒeƒXƒg
-        void Update()
-        {
-            if (Input.GetKeyDown(KeyCode.Space)) Execute();
-        }
-
         public void Execute()
         {
             if (_effect.gameObject.activeSelf) return;

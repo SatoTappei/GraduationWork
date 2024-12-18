@@ -27,7 +27,7 @@ namespace Game
             }
 
             // イベント実行をログに表示。
-            _uiManager.AddLog("<color=#00ff00>何者かが冒険者を強化した。</color>");
+            _uiManager.AddLog("<color=#22ee22>何者かが冒険者を強化した。</color>");
         }
     }
 }

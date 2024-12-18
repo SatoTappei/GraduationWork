@@ -39,7 +39,7 @@ namespace Game
             }
 
             // イベント実行をログに表示。
-            _uiManager.AddLog("<color=#00ff00>何者かが冒険者の思考を盗聴している。</color>");
+            _uiManager.AddLog("<color=#22ee22>何者かが冒険者の思考を盗聴している。</color>");
         }
     }
 }

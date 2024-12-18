@@ -27,6 +27,12 @@ namespace Game
             // 死亡時の台詞。
             if (TryGetComponent(out LineApply line)) line.ShowLine(RequestLineType.Defeated);
 
+            // ログに表示。
+            if (UiManager.TryFind(out UiManager ui))
+            {
+                ui.AddLog($"<color=#ff2222>{_blackboard.AdventurerSheet.DisplayName}は力尽きた。</color>");
+            }
+
             // 演出の終了を待つ。
             await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
 
