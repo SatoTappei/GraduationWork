@@ -169,6 +169,7 @@ GameObject:
   - component: {fileID: 1814960573001353372}
   - component: {fileID: 2776275514188527621}
   - component: {fileID: 8409105062229918626}
+  - component: {fileID: 4405435962645811882}
   m_Layer: 5
   m_Name: UI_LogRow
   m_TagString: Untagged
@@ -235,3 +236,17 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4405435962645811882
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5670170426231721270}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e2d62cf5df4dc174fa504a8228870428, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _label: {fileID: 3461564785947712807}
+  _value: {fileID: 2807390939916576360}
