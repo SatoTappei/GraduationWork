@@ -65,6 +65,14 @@ namespace Game
             }
         }
 
+        public void Heal(int value)
+        {
+            if (_isInitialized && TryGetComponent(out HealApply heal))
+            {
+                heal.Heal(value);
+            }
+        }
+
         public sealed override string Damage(string id, string weapon, int value, Vector2Int coords)
         {
             if (_isInitialized && TryGetComponent(out DamageApply damage))

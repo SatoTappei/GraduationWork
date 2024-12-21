@@ -6,12 +6,14 @@ namespace Game
 {
     public class ReturnToEntrance : SubGoal
     {
+        public const string JapaneseText = "ダンジョンの入口に戻る。";
+
         BilingualString _text;
         Adventurer _adventurer;
 
         void Awake()
         {
-            _text = new BilingualString("ダンジョンの入口に戻る。", "Return to the entrance.");
+            _text = new BilingualString(JapaneseText, "Return to the entrance.");
             _adventurer = GetComponent<Adventurer>();
         }
 

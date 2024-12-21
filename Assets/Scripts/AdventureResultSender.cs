@@ -23,7 +23,7 @@ namespace Game
             WWWForm form = new WWWForm();
             form.AddField("results", format);
 
-            using UnityWebRequest request = UnityWebRequest.Post(URL, form);
+            using UnityWebRequest request = UnityWebRequest.Post($"{URL}?type=result", form);
             await request.SendWebRequest().WithCancellation(token);
 
             // スプレッドシートに書き込みが完了するまで待つ。

@@ -10,8 +10,8 @@ namespace Game
     {
         public void Send()
         {
-            // 名前,冒険結果,サブゴール最大3個,アイテム最大3個。
-            string[] result = new string[8];
+            // 名前,冒険結果,サブゴール,アイテム最大3個,出会った冒険者最大3人。
+            string[] result = new string[9];
 
             // 名前。
             TryGetComponent(out Adventurer adventurer);
@@ -26,18 +26,19 @@ namespace Game
             }
             else
             {
-                if (Random.value <= 1.0f) result[1] = "Defeated";
+                if (Random.value <= 1.0f) result[1] = "Die";
                 else result[1] = "Rescue";
             }
 
-            // サブゴール。
+            // サブゴール。"ダンジョンの入口に戻る。"以外でランダムに1つ選ぶ。
             if (TryGetComponent(out SubGoalPath path) && path.Path != null && path.Path.Count > 0)
             {
-                string[] subGoals = path.Path.Select(a => a.Text.Japanese).ToArray();
-                for (int i = 0; i < subGoals.Length; i++)
-                {
-                    result[2 + i] = subGoals[i];
-                }
+                string[] subGoals = path.Path
+                    .Select(a => a.Text.Japanese)
+                    .Where(s => s != ReturnToEntrance.JapaneseText)
+                    .ToArray();
+
+                result[2] = subGoals[Random.Range(0, subGoals.Length)];
             }
 
             // アイテム。送信する数は3つまで。
@@ -46,7 +47,17 @@ namespace Game
                 string[] items = item.GetEntries().Select(e => e.Name).ToArray();
                 for (int i = 0; i < Mathf.Min(items.Length, 3); i++)
                 {
-                    result[5 + i] = items[i];
+                    result[3 + i] = items[i];
+                }
+            }
+
+            // 冒険者。送信する数は3人まで。
+            if (TryGetComponent(out TalkPartnerRecord talkPartner))
+            {
+                string[] partners = talkPartner.Partners.ToArray();
+                for (int i = 0; i < Mathf.Min(partners.Length, 3); i++)
+                {
+                    result[6 + i] = partners[i];
                 }
             }
 

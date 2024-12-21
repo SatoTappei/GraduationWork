@@ -42,7 +42,10 @@ namespace Game
                 
                 // 会話中のエフェクトを再生。
                 if (TryGetComponent(out TalkEffect effect)) effect.Play();
-                
+
+                // 会話相手を記憶。
+                if (TryGetComponent(out TalkPartnerRecord partner)) partner.Record(target as Adventurer);
+
                 ApplyTalk(target as Adventurer);
                 
                 actionLogText = "I talked to the adventurers around me about what I knew.";

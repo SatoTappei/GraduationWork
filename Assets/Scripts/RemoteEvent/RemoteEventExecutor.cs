@@ -110,7 +110,14 @@ namespace Game
                     mindReading.Execute();
                 }
             }
-            if (GUI.Button(new Rect(1120, 0, 160, 70), $"‹ó’†•‚—V"))
+            if (GUI.Button(new Rect(1120, 0, 160, 70), $"‰ñ•œ"))
+            {
+                if (TryGetComponent(out HealEvent heal))
+                {
+                    heal.Execute("w‚¢‚Êx");
+                }
+            }
+            if (GUI.Button(new Rect(1280, 0, 160, 70), $"‹ó’†•‚—V"))
             {
                 if (TryGetComponent(out LevitationEvent levitation))
                 {
