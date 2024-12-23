@@ -231,6 +231,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3dc94ac818a97654d82a9043a597cce0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _maxHp: 100
 --- !u!114 &-577041253151864429
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -690,6 +691,11 @@ PrefabInstance:
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 78abb4f9e619ab6489c7ca2d08c8ba61, type: 2}
+    - target: {fileID: 651000430656179093, guid: 8593caea920d39f49820a8fa7d8500bb,
+        type: 3}
+      propertyPath: m_ApplyRootMotion
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4368969097523930307, guid: 8593caea920d39f49820a8fa7d8500bb,
         type: 3}
       propertyPath: m_CastShadows

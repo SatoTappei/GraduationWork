@@ -7,7 +7,7 @@ namespace Game
     public class AdventurerSpreadSheetData
     {
         public AdventurerSpreadSheetData(string fullName, string displayName, string sex, string age, string job,
-            string personality, string motivation, string weaknesses, string background)
+            string personality, string motivation, string weaknesses, string background, string avatar)
         {
             FullName = fullName;
             DisplayName = displayName;
@@ -18,6 +18,7 @@ namespace Game
             Motivation = motivation;
             Weaknesses = weaknesses;
             Background = background;
+            Avatar = avatar;
         }
 
         public string FullName { get; }
@@ -29,6 +30,7 @@ namespace Game
         public string Motivation { get; }
         public string Weaknesses { get; }
         public string Background { get; }
+        public string Avatar { get; }
 
         public bool IsFieldEmpty()
         {
@@ -40,7 +42,8 @@ namespace Game
                    Personality == string.Empty ||
                    Motivation == string.Empty ||
                    Weaknesses == string.Empty ||
-                   Background == string.Empty;
+                   Background == string.Empty ||
+                   Avatar == string.Empty;
         }
 
         public override string ToString()
@@ -53,7 +56,8 @@ namespace Game
                    $"性格:{Personality}\n" +
                    $"モチベーション:{Motivation}\n" +
                    $"弱点:{Weaknesses}\n" +
-                   $"バックストーリー:{Background}";
+                   $"バックストーリー:{Background}\n" +
+                   $"アバター{Avatar}";
         }
     }
 }

@@ -60,7 +60,9 @@ namespace Game
                     cells[5],  // 性格
                     cells[6],  // モチベーション
                     cells[7],  // 弱点
-                    cells[8]); // バックストーリー
+                    cells[8],  // バックストーリー
+                    cells[9]   // アバター
+                );
 
                 if (profile.IsFieldEmpty()) continue;
 

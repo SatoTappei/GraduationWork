@@ -49,7 +49,7 @@ namespace Game
                 await UniTask.WaitUntil(() => _adventureResults.Count == spawnedCount, cancellationToken: token);
 
                 // 冒険の結果を送信する。
-                await AdventureResultSender.SendAsync(_adventureResults, token);
+                //await AdventureResultSender.SendAsync(_adventureResults, token);
 
                 // "使用中"のスプレッドシートの内容を消す。
                 await SpawnedAdventurerSender.DeleteAsync(token);

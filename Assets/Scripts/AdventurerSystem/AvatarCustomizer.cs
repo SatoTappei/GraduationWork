@@ -14,39 +14,39 @@ namespace Game
         public Adventurer Prefab => _prefab;
     }
 
-    // 現状、バリエーションが少ないのでインスペクターに割り当てている。
-    // 必要に応じてAssetBundleなどで指定したものを動的にロードする仕組みにする。
     public class AvatarCustomizer : MonoBehaviour
     {
         [SerializeField] AvatarCustomizeData[] _avatars;
 
         public AvatarCustomizeData GetCustomizedData(AdventurerSpreadSheetData profile)
         {
-            // とりあえず性別でのみ判定する。
-            // 後々、AI側にキャラクターの見た目の選択肢を提示して、その中から選ぶような処理を追加する。
+            if (profile.Avatar == "女傭兵") return _avatars[0];
+            if (profile.Avatar == "男傭兵") return _avatars[1];
+            if (profile.Avatar == "少年") return _avatars[2];
+            if (profile.Avatar == "勇者") return _avatars[3];
+            if (profile.Avatar == "少女(黄)") return _avatars[4];
+            if (profile.Avatar == "少女(赤)") return _avatars[5];
+            if (profile.Avatar == "兵士") return _avatars[6];
+            if (profile.Avatar == "女戦士") return _avatars[7];
+            if (profile.Avatar == "男戦士") return _avatars[8];
+            if (profile.Avatar == "騎士") return _avatars[9];
+            if (profile.Avatar == "女魔法使い") return _avatars[10];
+            if (profile.Avatar == "男魔法使い") return _avatars[11];
+
+            Debug.LogWarning($"{profile.FullName}: {profile.Avatar}に対応するアバターが無い。");
+
             if (profile.Sex == "男性" || profile.Sex == "男")
             {
-                return GetRandomMale();
+                return _avatars[2];
             }
             else if (profile.Sex == "女性" || profile.Sex == "女")
             {
-                return GetRandomFemale();
+                return _avatars[4];
             }
-
-            // 男女以外の場合はランダムなキャラクターを選択。
-            if (Random.value < 0.5f) return GetRandomMale();
-            else return GetRandomFemale();
-        }
-
-        AvatarCustomizeData GetRandomMale()
-        {
-
-            return _avatars[2]; // ChatGPTにアバターの見た目まで決めさせるまで仮。
-        }
-
-        AvatarCustomizeData GetRandomFemale()
-        {
-            return _avatars[4]; // ChatGPTにアバターの見た目まで決めさせるまで仮。
+            else
+            {
+                return _avatars[2];
+            }
         }
     }
 }
