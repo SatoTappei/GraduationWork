@@ -55,7 +55,7 @@ namespace Game
             }
 
             // イベント実行をログに表示
-            _uiManager.AddLog("<color=#22ee22>何者かが冒険者に知恵を授けた。</color>");
+            _uiManager.AddLog("システム", "何者かが冒険者に知恵を授けた。", GameLogColor.Green);
 
             _isRunning = false;
         }

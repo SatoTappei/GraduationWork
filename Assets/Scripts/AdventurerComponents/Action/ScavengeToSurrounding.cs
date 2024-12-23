@@ -66,7 +66,7 @@ namespace Game
                 // 表示する内容がある場合はゲーム進行ログに表示。
                 if (gameLogText != string.Empty && UiManager.TryFind(out UiManager ui))
                 {
-                    ui.AddLog(gameLogText);
+                    ui.AddLog("システム", gameLogText, GameLogColor.White);
                 }
 
                 // 漁った結果に応じた台詞を表示。

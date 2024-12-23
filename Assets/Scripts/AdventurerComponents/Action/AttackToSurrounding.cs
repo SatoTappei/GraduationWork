@@ -51,7 +51,10 @@ namespace Game
                     if (line != null) line.ShowLine(RequestLineType.DefeatEnemy);
                     
                     // ゲーム進行ログに表示。
-                    if (UiManager.TryFind(out UiManager ui)) ui.AddLog($"{_blackboard.DisplayName}が敵を倒した。");
+                    if (UiManager.TryFind(out UiManager ui))
+                    {
+                        ui.AddLog($"システム", $"{_blackboard.DisplayName}が敵を倒した。", GameLogColor.White);
+                    }
 
                     actionLogText = "I attacked the enemy. I defeated the enemy.";
 

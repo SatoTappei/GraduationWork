@@ -7,8 +7,7 @@ namespace Game
     public class CommentDisplayer : MonoBehaviour
     {
         CommentSpreadSheetLoader _commentLoader;
-        CommentPool _commentPool;
-        CommentPlacer _commentPlacer;
+        UiManager _uiManager;
 
         // ゲーム開始時、スプレッドシートから非同期でコメントを読み込んでいる。
         public bool IsReady => !_commentLoader.IsLoading;
@@ -16,8 +15,7 @@ namespace Game
         void Awake()
         {
             _commentLoader = GetComponent<CommentSpreadSheetLoader>();
-            _commentPool = GetComponent<CommentPool>();
-            _commentPlacer = new CommentPlacer();
+            UiManager.TryFind(out _uiManager);
         }
 
         public static bool TryFind(out CommentDisplayer commentDisplayer)
@@ -38,18 +36,11 @@ namespace Game
                 return null;
             }
             
-            // コメント同士が被らないように画面に配置。
+            // ログに追加。
             foreach (CommentSpreadSheetData data in comment)
             {
-                if (_commentPool.TryPop(out DisplayedComment displayedComment))
-                {
-                    displayedComment.SetText(data.Comment);
-                    _commentPlacer.Set(displayedComment);
-                }
+                _uiManager.AddLog($"{data.Name}へのコメント", data.Comment, GameLogColor.Green);
             }
-
-            // 配置したコメントを流す。
-            _commentPlacer.Play();
 
             return comment;
         }

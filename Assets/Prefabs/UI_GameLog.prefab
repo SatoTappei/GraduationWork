@@ -34,8 +34,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 4, y: -16}
-  m_SizeDelta: {x: 655, y: 82.5}
+  m_AnchoredPosition: {x: 0, y: -16}
+  m_SizeDelta: {x: 630, y: 42.7}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6895039943946106166
 CanvasRenderer:
@@ -67,7 +67,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 12800000, guid: 43eac5eb84287ea4b9acad42e32f2ac7, type: 3}
-    m_FontSize: 30
+    m_FontSize: 27
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 2
@@ -113,8 +113,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 4, y: 19}
-  m_SizeDelta: {x: 655, y: 82.5}
+  m_AnchoredPosition: {x: 0, y: 16}
+  m_SizeDelta: {x: 630, y: 42}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &578135929825982478
 CanvasRenderer:
@@ -169,9 +169,9 @@ GameObject:
   - component: {fileID: 1814960573001353372}
   - component: {fileID: 2776275514188527621}
   - component: {fileID: 8409105062229918626}
-  - component: {fileID: 4405435962645811882}
+  - component: {fileID: 8822489390379358325}
   m_Layer: 5
-  m_Name: UI_LogRow
+  m_Name: UI_GameLog
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -196,7 +196,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 660, y: 120}
+  m_SizeDelta: {x: 640, y: 80}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2776275514188527621
 CanvasRenderer:
@@ -236,7 +236,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &4405435962645811882
+--- !u!114 &8822489390379358325
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -245,8 +245,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 5670170426231721270}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2d62cf5df4dc174fa504a8228870428, type: 3}
+  m_Script: {fileID: 11500000, guid: c17c6139746eb8c4aafaecdc2f8bad52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _label: {fileID: 3461564785947712807}
   _value: {fileID: 2807390939916576360}
+  _startX: -700
+  _goalX: 4

@@ -30,7 +30,7 @@ namespace Game
             // ログに表示。
             if (UiManager.TryFind(out UiManager ui))
             {
-                ui.AddLog($"<color=#ff2222>{_blackboard.AdventurerSheet.DisplayName}は力尽きた。</color>");
+                ui.AddLog("システム", $"{_blackboard.AdventurerSheet.DisplayName}は力尽きた。", GameLogColor.Red);
             }
 
             // 演出の終了を待つ。

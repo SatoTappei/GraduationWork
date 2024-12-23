@@ -27,11 +27,11 @@ namespace Game
             // 後々、AI側にキャラクターの見た目の選択肢を提示して、その中から選ぶような処理を追加する。
             if (profile.Sex == "男性" || profile.Sex == "男")
             {
-                return GetRandomMale();
+                return _females[4];
             }
             else if (profile.Sex == "女性" || profile.Sex == "女")
             {
-                return GetRandomFemale();
+                return _females[4];
             }
 
             // 男女以外の場合はランダムなキャラクターを選択。

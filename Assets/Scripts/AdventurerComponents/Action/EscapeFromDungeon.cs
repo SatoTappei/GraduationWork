@@ -39,7 +39,7 @@ namespace Game
 
             // ゲーム進行ログに表示。
             UiManager.TryFind(out UiManager uiManager);
-            uiManager.AddLog($"<color=#ffd700>{_blackboard.DisplayName}がダンジョンから脱出した。</color>");
+            uiManager.AddLog($"システム", $"{_blackboard.DisplayName}がダンジョンから脱出した。", GameLogColor.Yellow);
 
             // 演出の終了を待つ。
             await UniTask.WaitForSeconds(AnimationLength, cancellationToken: token);

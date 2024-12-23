@@ -6,11 +6,13 @@ namespace Game
 {
     public class CommentSpreadSheetData
     {
-        public CommentSpreadSheetData(string comment)
+        public CommentSpreadSheetData(string name, string comment)
         {
+            Name = name;
             Comment = comment;
         }
 
+        public string Name { get; }
         public string Comment { get; }
     }
 }

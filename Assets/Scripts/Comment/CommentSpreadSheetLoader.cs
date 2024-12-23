@@ -74,11 +74,11 @@ namespace Game
             {
                 string[] cells = row.Split(",").Select(c => c.Trim('"')).ToArray();
                 
-                // 冒険別にキューイング。
+                // 冒険者別にキューイング。
                 string name = cells[0];
                 string comment = cells[1];
                 _comments.TryAdd(name, new Queue<CommentSpreadSheetData>());
-                _comments[name].Enqueue(new CommentSpreadSheetData(comment));
+                _comments[name].Enqueue(new CommentSpreadSheetData(name, comment));
             }
         }
     }

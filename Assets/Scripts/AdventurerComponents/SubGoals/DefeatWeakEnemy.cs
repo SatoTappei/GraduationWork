@@ -11,7 +11,7 @@ namespace Game
 
         void Awake()
         {
-            _text = new BilingualString("©•ª‚æ‚èã‚»‚¤‚È“G‚ğ“|‚·B", "Defeat weak enemies roaming in the dungeon.");
+            _text = new BilingualString("ã‚»‚¤‚È“G‚ğ“|‚·B", "Defeat weak enemies roaming in the dungeon.");
             _blackboard = GetComponent<Blackboard>();
         }
 

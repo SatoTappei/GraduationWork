@@ -45,9 +45,9 @@ namespace Game
             _statusBar.ShowLine(statusBarID, line);
         }
 
-        public void AddLog(string message)
+        public void AddLog(string label, string text, GameLogColor color)
         {
-            _gameLog.Add(message);
+            _gameLog.Add(label, text, color);
         }
 
         public int RegisterToProfileWindow(IProfileWindowDisplayStatus status)

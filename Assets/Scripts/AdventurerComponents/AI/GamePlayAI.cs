@@ -142,6 +142,10 @@ namespace Game
                 {
                     info = "There's a container. You might be able to obtain items or information by scavenging it.";
                 }
+                else if (actor.ID == nameof(HealingSpot))
+                {
+                    info = "There are places where you can recover your health.";
+                }
                 else if (actor.ID == nameof(Lever))
                 {
                     info = "There's a lever. To activate the mechanism, select Scavenge.";

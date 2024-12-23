@@ -47,7 +47,7 @@ namespace Game
             }
 
             // イベント実行をログに表示。
-            _uiManager.AddLog("<color=#22ee22>何者かが罠を設置した。</color>");
+            _uiManager.AddLog("システム", "何者かが罠を設置した。", GameLogColor.Green);
         }
 
         // イベントの候補となる座標を描画する。

@@ -11,7 +11,8 @@ namespace Game
             if (UiManager.TryFind(out UiManager ui) && TryGetComponent(out SubGoalPath subGoalPath))
             {
                 Blackboard blackboard = GetComponent<Blackboard>();
-                ui.AddLog($"{blackboard.DisplayName}が「{subGoalPath.Current.Text.Japanese}」を達成。");
+                string log = $"{blackboard.DisplayName}が「{subGoalPath.Current.Text.Japanese}」を達成。";
+                ui.AddLog($"システム", log, GameLogColor.White);
             }
         }
     }

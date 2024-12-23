@@ -37,7 +37,7 @@ namespace Game
             }
 
             // イベント実行をログに表示。
-            _uiManager.AddLog("<color=#22ee22>何者かが冒険者を攻撃した。</color>");
+            _uiManager.AddLog("システム", "何者かが冒険者にいたずらした。", GameLogColor.Green);
         }
     }
 }
