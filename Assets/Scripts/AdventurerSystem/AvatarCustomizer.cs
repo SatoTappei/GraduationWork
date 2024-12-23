@@ -18,8 +18,7 @@ namespace Game
     // 必要に応じてAssetBundleなどで指定したものを動的にロードする仕組みにする。
     public class AvatarCustomizer : MonoBehaviour
     {
-        [SerializeField] AvatarCustomizeData[] _males;
-        [SerializeField] AvatarCustomizeData[] _females;
+        [SerializeField] AvatarCustomizeData[] _avatars;
 
         public AvatarCustomizeData GetCustomizedData(AdventurerSpreadSheetData profile)
         {
@@ -27,11 +26,11 @@ namespace Game
             // 後々、AI側にキャラクターの見た目の選択肢を提示して、その中から選ぶような処理を追加する。
             if (profile.Sex == "男性" || profile.Sex == "男")
             {
-                return _females[4];
+                return GetRandomMale();
             }
             else if (profile.Sex == "女性" || profile.Sex == "女")
             {
-                return _females[4];
+                return GetRandomFemale();
             }
 
             // 男女以外の場合はランダムなキャラクターを選択。
@@ -39,7 +38,15 @@ namespace Game
             else return GetRandomFemale();
         }
 
-        AvatarCustomizeData GetRandomMale() => _males[Random.Range(0, _males.Length)];
-        AvatarCustomizeData GetRandomFemale() => _females[Random.Range(0, _males.Length)];
+        AvatarCustomizeData GetRandomMale()
+        {
+
+            return _avatars[2]; // ChatGPTにアバターの見た目まで決めさせるまで仮。
+        }
+
+        AvatarCustomizeData GetRandomFemale()
+        {
+            return _avatars[4]; // ChatGPTにアバターの見た目まで決めさせるまで仮。
+        }
     }
 }
