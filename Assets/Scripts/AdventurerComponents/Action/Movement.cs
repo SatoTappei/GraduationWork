@@ -64,12 +64,13 @@ namespace Game
                 door.Open(forwardCoords);
             }
 
-            // 移動の結果によって行動ログに追加する内容が異なる。
             string logText = string.Empty;
+            float speedMag = _blackboard.SpeedMagnification;
 
             // 通行可能なセルの場合は移動、不可能の場合はそのセルの方向に回転のみ行う。
             if (_movementPath.Current.IsPassable())
             {
+                _animator.SetFloat("Speed", speedMag);
                 _animator.Play("Walk");
 
                 // 座標の値を次のセルの座標に更新。
@@ -77,8 +78,8 @@ namespace Game
                 Coords = nextCellCoords;
                 _dungeonManager.AddActorOnCell(Coords, _adventurer);
 
-                await (TranslateAsync(MoveSpeed, nextCellPosition, token), 
-                    RotateAsync(RotateSpeed, nextCellPosition, token));
+                await (TranslateAsync(MoveSpeed * speedMag, nextCellPosition, token),
+                    RotateAsync(RotateSpeed * speedMag, nextCellPosition, token));
 
                 // 移動に成功したことを記録。
                 logText = $"Successfully moved to the {GetDirectionName()}.";
@@ -87,10 +88,11 @@ namespace Game
                 if (TryGetComponent(out ExploreRecord record)) record.IncreaseCount(Coords);
 
                 _animator.Play("Idle");
+                _animator.SetFloat("Speed", 1.0f);
             }
             else
             {
-                await RotateAsync(MoveSpeed, nextCellPosition, token);
+                await RotateAsync(MoveSpeed * speedMag, nextCellPosition, token);
 
                 // 移動に失敗したことを記録。
                 logText = $"Failed to move to the {GetDirectionName()}. Cannot move in this direction.";

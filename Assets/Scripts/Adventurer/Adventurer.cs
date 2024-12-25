@@ -45,6 +45,8 @@ namespace Game
             _blackboard.CurrentFatigue = 0;             // ターン経過で増加していく。
             _blackboard.Coords = new Vector2Int(11, 8); // ダンジョンの入り口が固定で1箇所。
             _blackboard.Direction = Vector2Int.up;      // 上以外の向きの場合、回転させる処理が必要。
+            _blackboard.AttackMagnification = 1.0f;
+            _blackboard.SpeedMagnification = 1.0f;
 
             _isInitialized = true;
         }
@@ -127,6 +129,8 @@ namespace Game
             TryGetComponent(out Defeated defeated);
             TryGetComponent(out EscapeFromDungeon escape);
             TryGetComponent(out FootTrapApply foot);
+            TryGetComponent(out AvailableActions availableActions);
+            TryGetComponent(out SurroundingApply surroundingApply);
             while (!token.IsCancellationRequested)
             {
                 // ターン数を更新。
@@ -148,6 +152,10 @@ namespace Game
                 {
                     informationStock.AddPending(feature);
                 }
+
+                // 周囲に冒険者または敵がいる場合は、その方向に移動する選択肢を削除する。
+                availableActions.SetDefault();
+                surroundingApply.RemoveAction();
 
                 // 保持している情報を更新。
                 // 新しい情報を知った場合、このタイミングで保持している情報に追加される。
@@ -188,7 +196,6 @@ namespace Game
                     subGoalPath.HeadingNext();
 
                     // 利用可能な行動の選択肢がある場合は追加。
-                    TryGetComponent(out AvailableActions availableActions);
                     availableActions.Add(subGoalPath.Current.GetAdditionalActions());
                 }
 

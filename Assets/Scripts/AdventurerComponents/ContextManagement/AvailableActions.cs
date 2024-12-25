@@ -12,21 +12,30 @@ namespace Game
 
         void Awake()
         {
-            _actions = new List<string>()
-            {
-                "Move North",
-                "Move South",
-                "Move East",
-                "Move West",
-                "Attack Surrounding",
-                "Scavenge Surrounding",
-                "Talk Surrounding"
-            };
+            _actions = new List<string>();
+            SetDefault();
         }
 
         public void Add(IEnumerable<string> actions)
         {
             _actions.AddRange(actions);
+        }
+
+        public void Remove(string action)
+        {
+            _actions.Remove(action);
+        }
+
+        public void SetDefault()
+        {
+            _actions.Clear();
+            _actions.Add("Move North");
+            _actions.Add("Move South");
+            _actions.Add("Move East");
+            _actions.Add("Move West");
+            _actions.Add("Attack Surrounding");
+            _actions.Add("Scavenge Surrounding");
+            _actions.Add("Talk Surrounding");
         }
     }
 }

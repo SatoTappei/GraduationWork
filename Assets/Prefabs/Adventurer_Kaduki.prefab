@@ -118,6 +118,7 @@ GameObject:
   - component: {fileID: 7248095406480191766}
   - component: {fileID: -5473029120153267882}
   - component: {fileID: -5364776672662464350}
+  - component: {fileID: 3074114337178687801}
   m_Layer: 0
   m_Name: Adventurer_Kaduki
   m_TagString: Untagged
@@ -735,6 +736,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particle: {fileID: 1039990398969138017}
+--- !u!114 &3074114337178687801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6972671287923862920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97052a03487324d870a38e39743507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &489531028917111896
 PrefabInstance:
   m_ObjectHideFlags: 0

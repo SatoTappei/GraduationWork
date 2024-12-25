@@ -118,6 +118,7 @@ GameObject:
   - component: {fileID: 3452943113994189238}
   - component: {fileID: 1502088128253149943}
   - component: {fileID: -12706680934873612}
+  - component: {fileID: -8083505427148943964}
   m_Layer: 0
   m_Name: Adventurer_ToonSoldier
   m_TagString: Untagged
@@ -735,6 +736,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particle: {fileID: 6768967045129009173}
+--- !u!114 &-8083505427148943964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8216320765780504555}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97052a03487324d870a38e39743507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &1244046596657391244
 PrefabInstance:
   m_ObjectHideFlags: 0

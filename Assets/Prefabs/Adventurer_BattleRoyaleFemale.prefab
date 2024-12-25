@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: 2421274340217846471}
   - component: {fileID: 164718769431164741}
   - component: {fileID: -4039279693956798551}
+  - component: {fileID: 3030327594281524537}
   m_Layer: 0
   m_Name: Adventurer_BattleRoyaleFemale
   m_TagString: Untagged
@@ -667,6 +668,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particle: {fileID: 3563398503923634403}
+--- !u!114 &3030327594281524537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 962570728910692094}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97052a03487324d870a38e39743507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &6012068568836445885
 GameObject:
   m_ObjectHideFlags: 0

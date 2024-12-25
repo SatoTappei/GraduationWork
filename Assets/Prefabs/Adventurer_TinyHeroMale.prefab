@@ -50,6 +50,7 @@ GameObject:
   - component: {fileID: -332135039981181162}
   - component: {fileID: 6727992794984719839}
   - component: {fileID: 3691943102424278817}
+  - component: {fileID: -1397408511167100795}
   m_Layer: 0
   m_Name: Adventurer_TinyHeroMale
   m_TagString: Untagged
@@ -667,6 +668,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _particle: {fileID: 4945217782704429581}
+--- !u!114 &-1397408511167100795
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 727597502120375048}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97052a03487324d870a38e39743507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2873179831568307341
 GameObject:
   m_ObjectHideFlags: 0

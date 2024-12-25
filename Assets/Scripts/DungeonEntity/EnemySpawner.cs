@@ -32,7 +32,7 @@ namespace Game
         {
             while (true)
             {
-                _spawned = Choice();
+                _spawned = Instantiate(Choice());
                 _spawned.Initialize(Coords);
 
                 yield return _waitDefeated ??= new WaitUntil(IsDefeated);
