@@ -51,6 +51,14 @@ namespace Game
             _isInitialized = true;
         }
 
+        public void Cleanup()
+        {
+            if (TryGetComponent(out ActionLog log)) log.Delete();
+            if (TryGetComponent(out ExploreRecord record)) record.Delete();
+            if (TryGetComponent(out InformationStock information)) information.RequestDelete();
+            if (TryGetComponent(out GamePlayAI ai)) ai.RequestInitialize();
+        }
+
         public void Talk(BilingualString text, string source, Vector2Int coords)
         {
             if (_isInitialized && TryGetComponent(out TalkApply talk))
@@ -153,9 +161,8 @@ namespace Game
                     informationStock.AddPending(feature);
                 }
 
-                // 周囲に冒険者または敵がいる場合は、その方向に移動する選択肢を削除する。
-                availableActions.SetDefault();
-                surroundingApply.RemoveAction();
+                // 周囲に冒険者がいるか調べ、このターンに選べる行動の選択肢に反映する。
+                surroundingApply.Check();
 
                 // 保持している情報を更新。
                 // 新しい情報を知った場合、このタイミングで保持している情報に追加される。

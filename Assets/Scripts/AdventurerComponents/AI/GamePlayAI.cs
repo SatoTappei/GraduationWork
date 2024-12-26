@@ -47,6 +47,9 @@ namespace Game
         DungeonManager _dungeonManager;
         AIClient _ai;
 
+        // AIの挙動が気に入らない場合、次にリクエストする前に初期化する。
+        bool _isRequestedInitialize;
+
         void Awake()
         {
             _adventurer = GetComponent<Adventurer>();
@@ -58,6 +61,43 @@ namespace Game
             _exploreRecord = GetComponent<ExploreRecord>();
             DungeonManager.TryFind(out _dungeonManager);
 
+            Initialize();
+        }
+
+        public void RequestInitialize()
+        {
+            _isRequestedInitialize = true;
+        }
+
+        public async UniTask<string> RequestNextActionAsync(CancellationToken token)
+        {
+            RequestFormat format = new RequestFormat();
+            format.CurrentCoords = _adventurer.Coords;
+            format.CurrentLocation = _dungeonManager.GetCell(_adventurer.Coords).Location.ToString();
+            format.Surroundings.North = GetCellInfo(_adventurer.Coords + Vector2Int.up);
+            format.Surroundings.South = GetCellInfo(_adventurer.Coords + Vector2Int.down);
+            format.Surroundings.East = GetCellInfo(_adventurer.Coords + Vector2Int.right);
+            format.Surroundings.West = GetCellInfo(_adventurer.Coords + Vector2Int.left);
+            format.ActionLog = _actionLog.Log.ToArray();
+            format.DecisionSupportContext = _informationStock.Entries.ToArray();
+            format.AvailableActions = _availableActions.Actions.ToArray();
+            format.Goal = _subGoalPath.Current.Text.English;
+
+            // 初期化を要求されていた場合。
+            if (_isRequestedInitialize)
+            {
+                _isRequestedInitialize = false;
+                Initialize();
+            }
+
+            string response = await _ai.RequestAsync(JsonUtility.ToJson(format), token);
+            token.ThrowIfCancellationRequested();
+
+            return response;
+        }
+
+        void Initialize()
+        {
             string personality = _blackboard.AdventurerSheet.Personality;
             string motivation = _blackboard.AdventurerSheet.Motivation;
             string weaknesses = _blackboard.AdventurerSheet.Weaknesses;
@@ -74,26 +114,6 @@ namespace Game
                 $"- If you lack the information needed to select the next action, please tell us what information you want.";
 #endif
             _ai = new AIClient(prompt);
-        }
-
-        public async UniTask<string> RequestNextActionAsync(CancellationToken token)
-        {
-            RequestFormat format = new RequestFormat();
-            format.CurrentCoords = _adventurer.Coords;
-            format.CurrentLocation = _dungeonManager.GetCell(_adventurer.Coords).Location.ToString();
-            format.Surroundings.North = GetCellInfo(_adventurer.Coords + Vector2Int.up);
-            format.Surroundings.South = GetCellInfo(_adventurer.Coords + Vector2Int.down);
-            format.Surroundings.East = GetCellInfo(_adventurer.Coords + Vector2Int.right);
-            format.Surroundings.West = GetCellInfo(_adventurer.Coords + Vector2Int.left);
-            format.ActionLog = _actionLog.Log.ToArray();
-            format.DecisionSupportContext = _informationStock.Entries.ToArray();
-            format.AvailableActions = _availableActions.Actions.ToArray();
-            format.Goal = _subGoalPath.Current.Text.English;
-            
-            string response = await _ai.RequestAsync(JsonUtility.ToJson(format), token);
-            token.ThrowIfCancellationRequested();
-
-            return response;
         }
 
         string GetCellInfo(Vector2Int coords)

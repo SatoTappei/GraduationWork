@@ -58,7 +58,7 @@ namespace Game
             }
             else
             {
-                await RotateAsync(_moveSpeed, nextCell.Position, token);
+                await RotateAsync(_rotateSpeed, nextCell.Position, token);
             }
         }
     }

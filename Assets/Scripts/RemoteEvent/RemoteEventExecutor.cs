@@ -6,56 +6,6 @@ namespace Game
 {
     public class RemoteEventExecutor : MonoBehaviour
     {
-        void Start()
-        {
-            //StartCoroutine(UpdateAsync());
-        }
-
-        IEnumerator UpdateAsync()
-        {
-            while (true)
-            {
-                int r = Random.Range(0, 5);
-                if (r == 0)
-                {
-                    if (TryGetComponent(out SendInformationEvent sendInformation))
-                    {
-                        sendInformation.Execute("ぽんぽんぺいん");
-                    }
-                }
-                if (r == 1)
-                {
-                    if (TryGetComponent(out CharacterPowerUpEvent powerUp))
-                    {
-                        powerUp.Execute();
-                    }
-                }
-                if (r == 2)
-                {
-                    if (TryGetComponent(out DealingDamageEvent damage))
-                    {
-                        damage.Execute();
-                    }
-                }
-                if (r == 3)
-                {
-                    if (TryGetComponent(out TrapGenerateEvent trap))
-                    {
-                        trap.Execute();
-                    }
-                }
-                if (r == 4)
-                {
-                    if (TryGetComponent(out FallingBearEvent bear))
-                    {
-                        bear.Execute();
-                    }
-                }
-
-                yield return new WaitForSeconds(1.0f);
-            }
-        }
-
         void OnGUI()
         {
             GUIStyle style = GUI.skin.GetStyle("button");
@@ -122,6 +72,16 @@ namespace Game
                 if (TryGetComponent(out LevitationEvent levitation))
                 {
                     levitation.Execute();
+                }
+            }
+
+            // デバッグ用。
+            if (GUI.Button(new Rect(1440, 0, 160, 70), $"クリナプ"))
+            {
+                AdventurerSpawner.TryFind(out AdventurerSpawner spawner);
+                foreach (Adventurer adventurer in spawner.Spawned)
+                {
+                    if (adventurer != null) adventurer.Cleanup();
                 }
             }
         }

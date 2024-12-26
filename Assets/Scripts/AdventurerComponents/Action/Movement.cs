@@ -92,7 +92,7 @@ namespace Game
             }
             else
             {
-                await RotateAsync(MoveSpeed * speedMag, nextCellPosition, token);
+                await RotateAsync(RotateSpeed * speedMag, nextCellPosition, token);
 
                 // à⁄ìÆÇ…é∏îsÇµÇΩÇ±Ç∆ÇãLò^ÅB
                 logText = $"Failed to move to the {GetDirectionName()}. Cannot move in this direction.";

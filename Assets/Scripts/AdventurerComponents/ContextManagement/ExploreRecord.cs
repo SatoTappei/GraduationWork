@@ -22,5 +22,16 @@ namespace Game
         {
             return _count[coords.y, coords.x];
         }
+
+        public void Delete()
+        {
+            for (int i = 0; i < _count.GetLength(0); i++)
+            {
+                for (int k = 0; k < _count.GetLength(1); k++)
+                {
+                    _count[i, k] = 0;
+                }
+            }
+        }
     }
 }

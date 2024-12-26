@@ -17,26 +17,23 @@ namespace Game
             DungeonManager.TryFind(out  _dungeonManager);
         }
 
-        public void RemoveAction()
+        public void Check()
         {
-            if (IsAdventurerExist(Vector2Int.up))
-            {
-                _availableActions.Remove("Move North");
-            }
+            Apply(Vector2Int.up, "Move North");
+            Apply(Vector2Int.down, "Move South");
+            Apply(Vector2Int.right, "Move East");
+            Apply(Vector2Int.left, "Move West");
+        }
 
-            if (IsAdventurerExist(Vector2Int.down))
+        void Apply(Vector2Int direction, string action)
+        {
+            if (IsAdventurerExist(direction))
             {
-                _availableActions.Remove("Move South");
+                _availableActions.Remove(action);
             }
-
-            if (IsAdventurerExist(Vector2Int.right))
+            else
             {
-                _availableActions.Remove("Move East");
-            }
-
-            if (IsAdventurerExist(Vector2Int.left))
-            {
-                _availableActions.Remove("Move West");
+                _availableActions.Add(action);
             }
         }
 

@@ -25,5 +25,10 @@ namespace Game
             // ‚±‚ÌƒƒO‚ÌãŒÀ‚ð‘‚â‚µ‚½‚©‚ç‚ÆŒ¾‚Á‚ÄAI‚Ì¸“x‚ªã‚ª‚é‚Æ‚ÍŒÀ‚ç‚È‚¢B
             if (_log.Count > 10) _log.Dequeue();
         }
+
+        public void Delete()
+        {
+            _log.Clear();
+        }
     }
 }

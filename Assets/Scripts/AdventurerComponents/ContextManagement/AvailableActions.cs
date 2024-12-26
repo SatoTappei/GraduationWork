@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
+    // 削除してから追加すると選択肢の並び順が変わるが、AIが行動を選択する際に影響するのか？
     public class AvailableActions : MonoBehaviour
     {
         List<string> _actions;
@@ -18,7 +19,14 @@ namespace Game
 
         public void Add(IEnumerable<string> actions)
         {
-            _actions.AddRange(actions);
+            foreach (string action in actions) Add(action);
+        }
+
+        public void Add(string action)
+        {
+            if (_actions.Contains(action)) return;
+
+            _actions.Add(action);
         }
 
         public void Remove(string action)

@@ -16,6 +16,9 @@ namespace Game
         TurnEvaluateAI _turnEvaluateAI;
         SharedInformation _talkTheme;
 
+        // 次に情報を更新するタイミングで保留中を含め全て削除する。
+        bool _isRequestedDelete;
+
         public BilingualString TalkTheme => _talkTheme.Text;
         public IReadOnlyList<string> Entries => _stock.Select(info => info.Text.English).ToArray();
         public IReadOnlyList<SharedInformation> Stock => _stock;
@@ -36,9 +39,22 @@ namespace Game
             _pending.Enqueue(info);
         }
 
+        public void RequestDelete()
+        {
+            _isRequestedDelete = true;
+        }
+
         // 保持している情報の残りターンを更新、保留中の情報がある場合はAIが評価し、入れ替える。
         public async UniTask RefreshAsync(CancellationToken token)
         {
+            // 情報の削除を要求されていた場合。
+            if (_isRequestedDelete)
+            {
+                _isRequestedDelete = false;
+                _stock.Clear();
+                _pending.Clear();
+            }
+
             // 残りターンを減らす。
             for (int i = 0; i < _stock.Count; i++)
             {
