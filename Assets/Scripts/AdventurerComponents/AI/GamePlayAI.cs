@@ -184,11 +184,11 @@ namespace Game
             return GetExploreRecordTag(coords) + info;
         }
 
-        // 探索回数に応じたタグを返す。
         string GetExploreRecordTag(Vector2Int coords)
         {
             int count = _exploreRecord.GetCount(coords);
 
+            // 探索回数に応じたタグを返す。
             if (count == 0) return "[Unexplored] ";
             else return $"[Exproled {count} times.] ";
         }

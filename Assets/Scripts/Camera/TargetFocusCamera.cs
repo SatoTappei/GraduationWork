@@ -57,6 +57,7 @@ namespace Game
             // 冒険者が「移動」以外の行動をしている場合はズームする。
             float zoom = 1.0f;
             if (target.SelectedAction == "Attack Surrounding" ||
+                target.SelectedAction == "Attack Surrounding Adventurer" ||
                 target.SelectedAction == "Scavenge Surrounding" ||
                 target.SelectedAction == "Talk Surrounding")
             {

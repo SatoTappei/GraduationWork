@@ -9,32 +9,33 @@ namespace Game
 {
     public class InformationStock : MonoBehaviour
     {
-        List<SharedInformation> _stock;
-        Queue<SharedInformation> _pending;
+        List<Information> _stock;
+        Queue<Information> _pending;
         TalkThemeSelectAI _talkThemeSelectAI;
         ScoreEvaluateAI _scoreEvaluateAI;
         TurnEvaluateAI _turnEvaluateAI;
-        SharedInformation _talkTheme;
+        Information _talkTheme;
 
         // 次に情報を更新するタイミングで保留中を含め全て削除する。
         bool _isRequestedDelete;
 
         public BilingualString TalkTheme => _talkTheme.Text;
         public IReadOnlyList<string> Entries => _stock.Select(info => info.Text.English).ToArray();
-        public IReadOnlyList<SharedInformation> Stock => _stock;
+        public IReadOnlyList<Information> Stock => _stock;
+        public IEnumerable<Information> SharedStock => Stock.Where(info => info.IsShared);
 
         void Awake()
         {
-            _stock = new List<SharedInformation>();
-            _pending = new Queue<SharedInformation>();
+            _stock = new List<Information>();
+            _pending = new Queue<Information>();
         }
 
-        public void AddPending(BilingualString text, string source)
+        public void AddPending(BilingualString text, string source, bool isShared = true)
         {
-            _pending.Enqueue(new SharedInformation(text, source));
+            AddPending(new Information(text, source, isShared));
         }
 
-        public void AddPending(SharedInformation info)
+        public void AddPending(Information info)
         {
             _pending.Enqueue(info);
         }
@@ -72,8 +73,8 @@ namespace Game
 
             // 非同期処理で評価するため、保留中の中身が変化する場合がある。
             // そのため、評価用のキューに中身を移しておく。
-            Queue<SharedInformation> pendingCopy = new Queue<SharedInformation>();
-            foreach (SharedInformation p in _pending)
+            Queue<Information> pendingCopy = new Queue<Information>();
+            foreach (Information p in _pending)
             {
                 pendingCopy.Enqueue(p);
             }
@@ -86,7 +87,7 @@ namespace Game
             _turnEvaluateAI ??= GetComponent<TurnEvaluateAI>();
 
             // 保留中の情報をAIが評価し、保持している情報に追加。
-            foreach (SharedInformation newInfo in pendingCopy)
+            foreach (Information newInfo in pendingCopy)
             {
                 // AIの評価でスコアと残りターンを決める。
                 newInfo.Score = await _scoreEvaluateAI.EvaluateAsync(newInfo, token);
@@ -106,10 +107,10 @@ namespace Game
             _talkTheme = await _talkThemeSelectAI.SelectAsync(_stock, token);
         }
 
-        void Replace(SharedInformation newInfo)
+        void Replace(Information newInfo)
         {
             // 既に知っている情報の場合は、スコアと残りターンを更新する。
-            foreach (SharedInformation info in _stock)
+            foreach (Information info in _stock)
             {
                 if (info.Text.Japanese == newInfo.Text.Japanese)
                 {
@@ -123,7 +124,7 @@ namespace Game
             _stock.Add(newInfo);
         }
 
-        static void Sort(List<SharedInformation> list, int left, int right)
+        static void Sort(List<Information> list, int left, int right)
         {
             if (left >= right) return;
 
@@ -144,9 +145,9 @@ namespace Game
             Sort(list, current + 1, right);
         }
 
-        static void Swap(List<SharedInformation> list, int a, int b)
+        static void Swap(List<Information> list, int a, int b)
         {
-            SharedInformation x = list[a];
+            Information x = list[a];
             list[a] = list[b];
             list[b] = x;
         }

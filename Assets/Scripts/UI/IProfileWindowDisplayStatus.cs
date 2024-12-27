@@ -12,6 +12,6 @@ namespace Game
         public SubGoal CurrentSubGoal { get; }
         public IEnumerable<ItemInventory.Entry> Item { get; }
         public IEnumerable<string> Effect { get; }
-        public IReadOnlyList<SharedInformation> Information { get; }
+        public IReadOnlyList<Information> Information { get; }
     }
 }

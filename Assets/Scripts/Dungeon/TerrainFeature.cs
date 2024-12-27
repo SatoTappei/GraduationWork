@@ -24,17 +24,17 @@ namespace Game
             public string English => _english;
             public int ValidTurn => _validTurn;
 
-            public SharedInformation ToSharedInformation()
+            public Information ToInformation()
             {
                 // この情報が信頼できるかの判断はAIに任せるため、Scoreの値は設定しない。
-                return new SharedInformation(Japanese, English, "System", ValidTurn);
+                return new Information(Japanese, English, "System", ValidTurn, true);
             }
         }
 
         [SerializeField] Data[] _data;
         [SerializeField] bool _isDrawGizmos = true;
 
-        Dictionary<Vector2Int, List<SharedInformation>> _table;
+        Dictionary<Vector2Int, List<Information>> _table;
 
         void Awake()
         {
@@ -46,15 +46,15 @@ namespace Game
             if (_isDrawGizmos) Draw();
         }
 
-        public bool TryGetInformation(Vector2Int coords, out IReadOnlyList<SharedInformation> result)
+        public bool TryGetInformation(Vector2Int coords, out IReadOnlyList<Information> result)
         {
-            if (_table.TryGetValue(coords, out List<SharedInformation> list))
+            if (_table.TryGetValue(coords, out List<Information> list))
             {
                 // 呼び出し元で中身の値を弄っても影響が出ないよう、コピーして渡す。
-                List<SharedInformation> temp = new List<SharedInformation>();
-                foreach (SharedInformation e in list)
+                List<Information> temp = new List<Information>();
+                foreach (Information e in list)
                 {
-                    SharedInformation copy = new SharedInformation(e.Text, e.Source, e.RemainingTurn);
+                    Information copy = new Information(e.Text, e.Source, e.RemainingTurn, true);
                     temp.Add(copy);
                 }
 
@@ -70,12 +70,12 @@ namespace Game
 
         void ConvertDataToTable()
         {
-            _table = new Dictionary<Vector2Int, List<SharedInformation>>();
+            _table = new Dictionary<Vector2Int, List<Information>>();
 
             foreach (Data data in _data)
             {
-                _table.TryAdd(data.Coords, new List<SharedInformation>());
-                _table[data.Coords].Add(data.ToSharedInformation());
+                _table.TryAdd(data.Coords, new List<Information>());
+                _table[data.Coords].Add(data.ToInformation());
             }
         }
 

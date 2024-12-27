@@ -37,17 +37,26 @@ namespace Game
         public void Initialize(AdventurerSheet adventurerSheet)
         {
             _blackboard.AdventurerSheet = adventurerSheet;
-            _blackboard.MaxHp = 100;                    // 自由に設定可能。
-            _blackboard.CurrentHp = 100;                // 自由に設定可能。
-            _blackboard.MaxEmotion = 100;               // 自由に設定可能。
-            _blackboard.CurrentEmotion = 50;            // 生成時、自身へのコメントで上下する。
-            _blackboard.MaxFatigue = 100;               // 自由に設定可能。
-            _blackboard.CurrentFatigue = 0;             // ターン経過で増加していく。
-            _blackboard.Coords = new Vector2Int(11, 8); // ダンジョンの入り口が固定で1箇所。
-            _blackboard.Direction = Vector2Int.up;      // 上以外の向きの場合、回転させる処理が必要。
+            // レベルに応じて体力を設定。レベルは最大30と仮定。
+            _blackboard.MaxHp = CalculationFormula.GetHp(adventurerSheet.Level);
+            _blackboard.CurrentHp = _blackboard.MaxHp;
+            // 心情は生成時、自身へのコメントで上下する。
+            _blackboard.MaxEmotion = 100;
+            _blackboard.CurrentEmotion = 50;            
+            // 疲労はターン経過で増加していく。
+            _blackboard.MaxFatigue = 100;
+            _blackboard.CurrentFatigue = 0;
+            // レベルに応じて攻撃力を設定。レベルは最大30と仮定。
+            _blackboard.Attack = CalculationFormula.GetAttack(adventurerSheet.Level);
             _blackboard.AttackMagnification = 1.0f;
+            // レベルに応じて行動速度を設定。レベルは最大30と仮定。
+            _blackboard.Speed = CalculationFormula.GetSpeed(adventurerSheet.Level);
             _blackboard.SpeedMagnification = 1.0f;
-
+            // ダンジョンの入り口が固定で1箇所。
+            _blackboard.Coords = new Vector2Int(11, 8);
+            // 上以外の向きの場合、回転させる処理が必要。
+            _blackboard.Direction = Vector2Int.up;
+            
             _isInitialized = true;
         }
 
@@ -156,7 +165,7 @@ namespace Game
 
                 // 現在いるセルについて、地形の特徴に関する情報がある場合、
                 // AIが次の行動を選択する際に、考慮する情報の候補として追加する。
-                if (dungeonManager.TryGetTerrainFeature(Coords, out SharedInformation feature))
+                if (dungeonManager.TryGetTerrainFeature(Coords, out Information feature))
                 {
                     informationStock.AddPending(feature);
                 }
@@ -180,6 +189,7 @@ namespace Game
                 if (_selectedAction == "Move West") await moveToDirection.MoveAsync(Vector2Int.left, token);
                 if (_selectedAction == "Return To Entrance") await moveToTarget.MoveAsync("Entrance", token);
                 if (_selectedAction == "Attack Surrounding") await attack.AttackAsync<Enemy>(token);
+                if (_selectedAction == "Attack Surrounding Adventurer") await attack.AttackAsync<Adventurer>(token);
                 if (_selectedAction == "Scavenge Surrounding") await scavenge.ScavengeAsync(token);
                 if (_selectedAction == "Talk Surrounding") await talk.TalkAsync(token);
 

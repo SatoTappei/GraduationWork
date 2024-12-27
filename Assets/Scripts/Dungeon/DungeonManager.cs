@@ -93,9 +93,9 @@ namespace Game
             return _aStar.Pathfinding(start, goal, result);
         }
 
-        public bool TryGetTerrainFeature(Vector2Int coords, out SharedInformation feature)
+        public bool TryGetTerrainFeature(Vector2Int coords, out Information feature)
         {
-            if (_terrainFeature.TryGetInformation(coords, out IReadOnlyList<SharedInformation> result))
+            if (_terrainFeature.TryGetInformation(coords, out IReadOnlyList<Information> result))
             {
                 // •¡”‚ ‚éê‡‚Íƒ‰ƒ“ƒ_ƒ€‚Å1‚Â‘I‚ÔB
                 feature = result[Random.Range(0, result.Count)];

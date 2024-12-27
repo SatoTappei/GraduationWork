@@ -35,7 +35,7 @@ namespace Game
             _ai = new AIClient(prompt);
         }
 
-        public async UniTask<float> EvaluateAsync(SharedInformation information, CancellationToken token)
+        public async UniTask<float> EvaluateAsync(Information information, CancellationToken token)
         {
             // SharedInformation型にはAIが判定するのに必要ない日本語の文章とスコア情報が含まれている。
             // リクエスト専用の型に必要な値をコピーし、その型でリクエストする。

@@ -8,7 +8,7 @@ namespace Game
 {
     public class TurnEvaluateAI : MonoBehaviour
     {
-        public async UniTask<int> EvaluateAsync(SharedInformation information, CancellationToken token)
+        public async UniTask<int> EvaluateAsync(Information information, CancellationToken token)
         {
             // awaitする必要ないが、警告対策で一応しておく。
             await UniTask.Yield(cancellationToken: token);

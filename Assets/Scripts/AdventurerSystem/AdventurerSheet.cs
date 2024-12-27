@@ -19,6 +19,8 @@ namespace Game
             Motivation = motivation;
             Weaknesses = weaknesses;
             Background = background;
+            Level = 1;
+            Gold = 1000;
             Icon = icon;
         }
 
@@ -36,6 +38,8 @@ namespace Game
         public string Motivation { get; }
         public string Weaknesses { get; }
         public string Background { get; }
+        public int Level { get; }
+        public int Gold { get; }
         public Sprite Icon { get; }
     }
 }

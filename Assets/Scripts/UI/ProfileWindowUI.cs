@@ -148,7 +148,7 @@ namespace Game
             }
         }
 
-        void SetInfomation(IReadOnlyList<SharedInformation> information)
+        void SetInfomation(IReadOnlyList<Information> information)
         {
             // 知っている情報欄は最大4つ表示可能なデザインになっている。
             const int Max = 4;

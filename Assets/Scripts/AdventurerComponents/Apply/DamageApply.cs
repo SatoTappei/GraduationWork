@@ -19,6 +19,12 @@ namespace Game
                 effect.Play(blackboard.Coords, attackerCoords);
             }
 
+            // 狂気を付与する場合。
+            if (weapon == "Madness" && TryGetComponent(out MadnessApply madness))
+            {
+                madness.Apply();
+            }
+
             // 体力を操作するコンポーネント作る？
             blackboard.CurrentHp -= value;
             blackboard.CurrentHp = Mathf.Max(0, blackboard.CurrentHp);

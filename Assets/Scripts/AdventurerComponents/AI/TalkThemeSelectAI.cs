@@ -37,13 +37,13 @@ namespace Game
             _ai = new AIClient(prompt);
         }
 
-        public async UniTask<SharedInformation> SelectAsync(IReadOnlyList<SharedInformation> information, CancellationToken token)
+        public async UniTask<Information> SelectAsync(IReadOnlyList<Information> information, CancellationToken token)
         {
             // ‘S‚Ä‚Ìî•ñ‚ª‹ó•¶š‚Ìê‡‚ÍAI‚ª³í‚É”»’f‚Å‚«‚È‚¢‰Â”\«‚ª‚ ‚éB
             bool isEmpty = true;
-            foreach (SharedInformation info in information)
+            foreach (Information info in information)
             {
-                if (info.Text.English != string.Empty)
+                if (info.Text.English != string.Empty && info.IsShared)
                 {
                     isEmpty = false;
                     break;
@@ -55,7 +55,7 @@ namespace Game
             Choice[] choices = new Choice[information.Count];
             for (int i = 0; i < choices.Length; i++)
             {
-                if (information[i] == null) continue;
+                if (information[i] == null || !information[i].IsShared) continue;
 
                 choices[i] = new Choice();
                 choices[i].Text = information[i].Text.English;

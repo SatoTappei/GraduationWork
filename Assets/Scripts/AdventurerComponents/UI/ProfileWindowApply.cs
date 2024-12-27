@@ -26,7 +26,7 @@ namespace Game
         SubGoal IProfileWindowDisplayStatus.CurrentSubGoal => _subGoalPath.Current;
         IEnumerable<ItemInventory.Entry> IProfileWindowDisplayStatus.Item => _itemInventory.GetEntries();
         IEnumerable<string> IProfileWindowDisplayStatus.Effect => GetEnabledStatusEffects();
-        IReadOnlyList<SharedInformation> IProfileWindowDisplayStatus.Information => _informationStock.Stock;
+        IReadOnlyList<Information> IProfileWindowDisplayStatus.Information => _informationStock.Stock;
 
         void Awake()
         {
