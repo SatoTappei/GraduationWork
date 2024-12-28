@@ -19,7 +19,7 @@ namespace Game
             Motivation = motivation;
             Weaknesses = weaknesses;
             Background = background;
-            Level = 1;
+            Level = 30;
             Gold = 1000;
             Icon = icon;
         }

@@ -87,6 +87,7 @@ GameObject:
   - component: {fileID: -6412097951648677985}
   - component: {fileID: -6759899416381297883}
   - component: {fileID: 5807565525266720960}
+  - component: {fileID: -1518174148194876282}
   m_Layer: 0
   m_Name: Adventurer_Boy
   m_TagString: Untagged
@@ -714,6 +715,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d97052a03487324d870a38e39743507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-1518174148194876282
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6162295716941534563}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87a765c63bdf0f447945139253a98175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6194917439864086147

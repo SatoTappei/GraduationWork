@@ -25,7 +25,6 @@ namespace Game
         {
             // シリアライズしても良い。
             const float RotateSpeed = 4.0f;
-            const int Damage = 34;
             const string Weapon = "パンチ";
 
             // 攻撃の結果によって行動ログに追加する内容が異なる。
@@ -44,16 +43,16 @@ namespace Game
                 if (TryGetComponent(out LineApply line)) line.ShowLine(RequestLineType.Attack);
 
                 // ダメージを与える。
-                string attackResult = ApplyDamage(target as IDamageable, Weapon, Damage);
+                string attackResult = ApplyDamage(target as Character, Weapon, _blackboard.Attack);
                 if (attackResult == "Defeat")
                 {
                     // 撃破時の台詞。
                     if (line != null) line.ShowLine(RequestLineType.DefeatEnemy);
                     
                     // ゲーム進行ログに表示。
-                    if (UiManager.TryFind(out UiManager ui))
+                    if (GameLog.TryFind(out GameLog gameLog))
                     {
-                        ui.AddLog($"システム", $"{_blackboard.DisplayName}が敵を倒した。", GameLogColor.White);
+                        gameLog.Add($"システム", $"{_blackboard.DisplayName}が敵を倒した。", GameLogColor.White);
                     }
 
                     actionLogText = "I attacked the enemy. I defeated the enemy.";
@@ -86,7 +85,7 @@ namespace Game
             if (TryGetComponent(out ActionLog log)) log.Add(actionLogText);
         }
 
-        string ApplyDamage(IDamageable target, string weapon, int damage)
+        string ApplyDamage(Character target, string weapon, int damage)
         {
             if (target == null) return "Miss";
 

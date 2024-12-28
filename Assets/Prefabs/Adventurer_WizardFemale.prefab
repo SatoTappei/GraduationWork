@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 7165900858184723856}
   - component: {fileID: 2062754729878785328}
   - component: {fileID: -8613287646338010163}
+  - component: {fileID: 4065074424851508837}
   m_Layer: 0
   m_Name: Adventurer_WizardFemale
   m_TagString: Untagged
@@ -746,6 +747,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d97052a03487324d870a38e39743507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4065074424851508837
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6204837878007132115}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87a765c63bdf0f447945139253a98175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1725906154578822639

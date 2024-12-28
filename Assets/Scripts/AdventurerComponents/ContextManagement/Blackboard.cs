@@ -21,7 +21,7 @@ namespace Game
         public int MaxFatigue { get; set; }
         public int CurrentFatigue { get; set; }
         // 攻撃力。
-        public float Attack { get; set; }
+        public int Attack { get; set; }
         public float AttackMagnification { get; set; }
         // 行動速度。
         public float Speed { get; set; }

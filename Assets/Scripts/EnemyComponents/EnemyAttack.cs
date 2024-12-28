@@ -36,14 +36,14 @@ namespace Game
                 _animator.Play("Attack");
 
                 // ダメージを与える。
-                ApplyDamage(target as IDamageable, _weapon, _damage);
+                ApplyDamage(target as Character, _weapon, _damage);
 
                 // アニメーションの再生終了を待つ。
                 await UniTask.WaitForSeconds(_animationLength, cancellationToken: token);
             }
         }
 
-        string ApplyDamage(IDamageable target, string weapon, int damage)
+        string ApplyDamage(Character target, string weapon, int damage)
         {
             if (target == null) return "Miss";
 

@@ -12,14 +12,14 @@ namespace Game
 
         TrapPool _trapPool;
         DungeonManager _dungeonManager;
-        UiManager _uiManager;
+        GameLog _gameLog;
         HashSet<Vector2Int> _placedCoords;
 
         void Awake()
         {
             _trapPool = GetComponent<TrapPool>();
             DungeonManager.TryFind(out _dungeonManager);
-            UiManager.TryFind(out _uiManager);
+            GameLog.TryFind(out _gameLog);
             _placedCoords = new HashSet<Vector2Int>();
 
             // 先頭の座標から順に配置してもランダムに配置されるよう、並び替える。
@@ -47,7 +47,7 @@ namespace Game
             }
 
             // イベント実行をログに表示。
-            _uiManager.AddLog("システム", "何者かが罠を設置した。", GameLogColor.Green);
+            _gameLog.Add("システム", "何者かが罠を設置した。", GameLogColor.Green);
         }
 
         // イベントの候補となる座標を描画する。

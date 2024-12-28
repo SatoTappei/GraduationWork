@@ -17,7 +17,7 @@ namespace Game
         SubGoalPath _subGoalPath;
         ItemInventory _itemInventory;
         InformationStock _informationStock;
-        UiManager _uiManager;
+        ProfileWindow _profileWindow;
         int _id;
 
         string IProfileWindowDisplayStatus.FullName => _blackboard.FullName;
@@ -34,24 +34,24 @@ namespace Game
             _subGoalPath = GetComponent<SubGoalPath>();
             _itemInventory = GetComponent<ItemInventory>();
             _informationStock = GetComponent<InformationStock>();
-            UiManager.TryFind(out _uiManager);
+            ProfileWindow.TryFind(out _profileWindow);
         }
 
         public void Register()
         {
-            _id = _uiManager.RegisterToProfileWindow(this);
+            _id = _profileWindow.RegisterStatus(this);
         }
 
         public void Apply()
         {
-            _uiManager.UpdateProfileWindowStatus(_id, this);
+            _profileWindow.UpdateStatus(_id, this);
         }
 
         void OnDestroy()
         {
-            if (_uiManager != null)
+            if (_profileWindow != null)
             {
-                _uiManager.DeleteProfileWindowStatus(_id);
+                _profileWindow.DeleteStatus(_id);
             }
         }
 

@@ -15,6 +15,12 @@ namespace Game
             _used = new bool[_profileWindowUI.Length];
         }
 
+        public static bool TryFind(out ProfileWindow result)
+        {
+            result = GameObject.FindGameObjectWithTag("UiManager").GetComponent<ProfileWindow>();
+            return result != null;
+        }
+
         public int RegisterStatus(IProfileWindowDisplayStatus status)
         {
             for (int i = 0; i < _used.Length; i++)

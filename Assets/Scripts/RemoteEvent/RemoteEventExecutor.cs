@@ -6,6 +6,11 @@ namespace Game
 {
     public class RemoteEventExecutor : MonoBehaviour
     {
+        void Start()
+        {
+            //StartCoroutine(AutoRepeatingAsync());
+        }
+
         void OnGUI()
         {
             GUIStyle style = GUI.skin.GetStyle("button");
@@ -83,6 +88,60 @@ namespace Game
                 {
                     if (adventurer != null) adventurer.Cleanup();
                 }
+            }
+            if (GUI.Button(new Rect(1600, 0, 160, 70), $"‹¶‹C"))
+            {
+                AdventurerSpawner.TryFind(out AdventurerSpawner spawner);
+                foreach (Adventurer adventurer in spawner.Spawned)
+                {
+                    if (adventurer != null) adventurer.Damage("", "Madness", 0, default);
+                }
+            }
+        }
+
+        IEnumerator AutoRepeatingAsync()
+        {
+            while (true)
+            {
+                int r = Random.Range(0, 5);
+                if (r == 0)
+                {
+                    if (TryGetComponent(out CharacterPowerUpEvent powerUp))
+                    {
+                        powerUp.Execute();
+                    }
+                }
+                else if (r == 1)
+                {
+                    if (TryGetComponent(out DealingDamageEvent damage))
+                    {
+                        damage.Execute();
+                    }
+                }
+                else if (r == 2)
+                {
+                    if (TryGetComponent(out SendInformationEvent sendInformation))
+                    {
+                        sendInformation.Execute("‚Û‚ñ‚Û‚ñ‚Ø‚¢‚ñ");
+                    }
+                }
+                else if (r == 3)
+                {
+                    AdventurerSpawner.TryFind(out AdventurerSpawner spawner);
+                    foreach (Adventurer adventurer in spawner.Spawned)
+                    {
+                        if (adventurer != null) adventurer.Damage("", "Madness", 0, default);
+                    }
+                }
+                else if (r == 4)
+                {
+                    if (TryGetComponent(out MindReadingEvent mindReading))
+                    {
+                        mindReading.Execute();
+                    }
+                }
+
+                yield return new WaitForSeconds(1);
             }
         }
     }

@@ -28,9 +28,9 @@ namespace Game
             if (TryGetComponent(out LineApply line)) line.ShowLine(RequestLineType.Defeated);
 
             // ログに表示。
-            if (UiManager.TryFind(out UiManager ui))
+            if (GameLog.TryFind(out GameLog gameLog))
             {
-                ui.AddLog("システム", $"{_blackboard.AdventurerSheet.DisplayName}は力尽きた。", GameLogColor.Red);
+                gameLog.Add("システム", $"{_blackboard.AdventurerSheet.DisplayName}は力尽きた。", GameLogColor.Red);
             }
 
             // 演出の終了を待つ。

@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: -7025598394412800599}
   - component: {fileID: -285644260966268561}
   - component: {fileID: -4307264730161497977}
+  - component: {fileID: 56811748845212788}
   m_Layer: 0
   m_Name: Adventurer_BattleRoyaleMale
   m_TagString: Untagged
@@ -746,6 +747,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d97052a03487324d870a38e39743507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &56811748845212788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7138294684090235331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87a765c63bdf0f447945139253a98175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &205954747677267728

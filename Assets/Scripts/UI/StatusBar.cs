@@ -15,6 +15,12 @@ namespace Game
             _used = new bool[_statusBarUI.Length];
         }
 
+        public static bool TryFind(out StatusBar result)
+        {
+            result = GameObject.FindGameObjectWithTag("UiManager").GetComponent<StatusBar>();
+            return result != null;
+        }
+
         public int RegisterStatus(IStatusBarDisplayStatus status)
         {
             for (int i = 0; i < _used.Length; i++)

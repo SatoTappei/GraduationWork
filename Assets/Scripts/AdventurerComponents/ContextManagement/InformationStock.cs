@@ -19,7 +19,14 @@ namespace Game
         // 次に情報を更新するタイミングで保留中を含め全て削除する。
         bool _isRequestedDelete;
 
-        public BilingualString TalkTheme => _talkTheme.Text;
+        public BilingualString TalkTheme
+        {
+            get
+            {
+                if (_talkTheme == null) return new BilingualString(string.Empty, string.Empty);
+                else return _talkTheme.Text;
+            }
+        }
         public IReadOnlyList<string> Entries => _stock.Select(info => info.Text.English).ToArray();
         public IReadOnlyList<Information> Stock => _stock;
         public IEnumerable<Information> SharedStock => Stock.Where(info => info.IsShared);

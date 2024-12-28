@@ -6,24 +6,24 @@ namespace Game
 {
     public class CameraFocusTargetApply : MonoBehaviour
     {
-        UiManager _uiManager;
+        CameraFocus _cameraFocus;
         int _id;
 
         void Awake()
         {
-            UiManager.TryFind(out _uiManager);
+            CameraFocus.TryFind(out _cameraFocus);
         }
 
         public void Register()
         {
-            _id = _uiManager.RegisterCameraFocusTarget(gameObject);
+            _id = _cameraFocus.RegisterTarget(gameObject);
         }
 
         void OnDestroy()
         {
-            if (_uiManager != null)
+            if (_cameraFocus != null)
             {
-                _uiManager.DeleteCameraFocusTarget(_id);
+                _cameraFocus.DeleteTarget(_id);
             }
         }
     }

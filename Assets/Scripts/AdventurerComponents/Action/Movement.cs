@@ -48,7 +48,6 @@ namespace Game
         protected async UniTask MoveNextCellAsync(CancellationToken token)
         {
             // シリアライズしても良い。
-            const float MoveSpeed = 1.0f;
             const float RotateSpeed = 4.0f;
 
             Vector2Int nextCellCoords = _movementPath.Current.Coords;
@@ -78,7 +77,7 @@ namespace Game
                 Coords = nextCellCoords;
                 _dungeonManager.AddActorOnCell(Coords, _adventurer);
 
-                await (TranslateAsync(MoveSpeed * speedMag, nextCellPosition, token),
+                await (TranslateAsync(_blackboard.Speed * speedMag, nextCellPosition, token),
                     RotateAsync(RotateSpeed * speedMag, nextCellPosition, token));
 
                 // 移動に成功したことを記録。

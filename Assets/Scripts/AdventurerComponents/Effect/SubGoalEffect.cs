@@ -8,11 +8,11 @@ namespace Game
     {
         public void Play()
         {
-            if (UiManager.TryFind(out UiManager ui) && TryGetComponent(out SubGoalPath subGoalPath))
+            if (GameLog.TryFind(out GameLog gameLog) && TryGetComponent(out SubGoalPath subGoalPath))
             {
                 Blackboard blackboard = GetComponent<Blackboard>();
                 string log = $"{blackboard.DisplayName}が「{subGoalPath.Current.Text.Japanese}」を達成。";
-                ui.AddLog($"システム", log, GameLogColor.White);
+                gameLog.Add($"システム", log, GameLogColor.White);
             }
         }
     }

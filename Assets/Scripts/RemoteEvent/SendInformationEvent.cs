@@ -11,7 +11,7 @@ namespace Game
     {
         AIClient _ai;
         AdventurerSpawner _adventurerSpawner;
-        UiManager _uiManager;
+        GameLog _gameLog;
 
         bool _isRunning;
 
@@ -26,7 +26,7 @@ namespace Game
             _ai = new AIClient(prompt);
 
             AdventurerSpawner.TryFind(out _adventurerSpawner);
-            UiManager.TryFind(out _uiManager);
+            GameLog.TryFind(out _gameLog);
         }
 
         public void Execute(string text)
@@ -55,7 +55,7 @@ namespace Game
             }
 
             // イベント実行をログに表示
-            _uiManager.AddLog("システム", "何者かが冒険者に知恵を授けた。", GameLogColor.Green);
+            _gameLog.Add("システム", "何者かが冒険者に知恵を授けた。", GameLogColor.Green);
 
             _isRunning = false;
         }

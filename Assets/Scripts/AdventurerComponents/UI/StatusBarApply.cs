@@ -7,7 +7,7 @@ namespace Game
     public class StatusBarApply : MonoBehaviour, IStatusBarDisplayStatus
     {
         Blackboard _blackboard;
-        UiManager _uiManager;
+        StatusBar _statusBar;
         int _id;
         bool _isRegistered;
 
@@ -21,30 +21,30 @@ namespace Game
         void Awake()
         {
             _blackboard = GetComponent<Blackboard>();
-            UiManager.TryFind(out _uiManager);
+            StatusBar.TryFind(out _statusBar);
         }
 
         public void Register()
         {
-            _id = _uiManager.RegisterToStatusBar(this);
+            _id = _statusBar.RegisterStatus(this);
             _isRegistered = true;
         }
 
         public void Apply()
         {
-            if (_isRegistered) _uiManager.UpdateStatusBarStatus(_id, this);
+            if (_isRegistered) _statusBar.UpdateStatus(_id, this);
         }
 
         public void ShowLine(string line)
         {
-            if (_isRegistered) _uiManager.ShowLine(_id, line);
+            if (_isRegistered) _statusBar.ShowLine(_id, line);
         }
 
         void OnDestroy()
         {
-            if (_uiManager != null)
+            if (_statusBar != null)
             {
-                _uiManager.DeleteStatusBarStatus(_id);
+                _statusBar.DeleteStatus(_id);
                 _isRegistered = false;
             }
         }

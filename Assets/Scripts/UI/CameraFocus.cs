@@ -15,6 +15,12 @@ namespace Game
             _used = new bool[_cameraFocusUI.Length];
         }
 
+        public static bool TryFind(out CameraFocus result)
+        {
+            result = GameObject.FindGameObjectWithTag("UiManager").GetComponent<CameraFocus>();
+            return result != null;
+        }
+
         public int RegisterTarget(GameObject target)
         {
             for (int i = 0; i < _used.Length; i++)

@@ -13,14 +13,14 @@ namespace Game
         DealingDamageEffectPool _effectpool;
         AdventurerSpawner _adventurerSpawner;
         DungeonManager _dungeonManager;
-        UiManager _uiManager;
+        GameLog _gameLog;
 
         void Awake()
         {
             _effectpool = GetComponent<DealingDamageEffectPool>();
             AdventurerSpawner.TryFind(out _adventurerSpawner);
             DungeonManager.TryFind(out _dungeonManager);
-            UiManager.TryFind(out _uiManager);
+            GameLog.TryFind(out _gameLog);
         }
 
         void OnDrawGizmosSelected()
@@ -46,7 +46,7 @@ namespace Game
             }
 
             // イベント実行をログに表示。
-            _uiManager.AddLog("システム", "何者かが冒険者を砲撃した。", GameLogColor.Green);
+            _gameLog.Add("システム", "何者かが冒険者を砲撃した。", GameLogColor.Green);
         }
 
         // 目標とある程度離れた座標を返す。

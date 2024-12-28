@@ -16,9 +16,9 @@ namespace Game
             if (TryGetComponent(out LineApply line)) line.ShowLine(RequestLineType.Entry);
 
             // ゲーム進行ログに表示。
-            UiManager.TryFind(out UiManager uiManager);
+            GameLog.TryFind(out GameLog gameLog);
             Blackboard blackboard = GetComponent<Blackboard>();
-            uiManager.AddLog($"システム", $"{blackboard.DisplayName}がダンジョンにやってきた。", GameLogColor.White);
+            gameLog.Add($"システム", $"{blackboard.DisplayName}がダンジョンにやってきた。", GameLogColor.White);
         }
     }
 }

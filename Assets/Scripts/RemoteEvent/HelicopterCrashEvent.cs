@@ -10,14 +10,14 @@ namespace Game
         HelicopterCrashEffectPool _effectPool;
         AdventurerSpawner _adventurerSpawner;
         DungeonManager _dungeonManager;
-        UiManager _uiManager;
+        GameLog _gameLog;
 
         void Awake()
         {
             _effectPool = GetComponent<HelicopterCrashEffectPool>();
             AdventurerSpawner.TryFind(out _adventurerSpawner);
             DungeonManager.TryFind(out _dungeonManager);
-            UiManager.TryFind(out _uiManager);
+            GameLog.TryFind(out _gameLog);
         }
 
         public void Execute()
@@ -37,7 +37,7 @@ namespace Game
             }
 
             // イベント実行をログに表示。
-            _uiManager.AddLog("システム", "何者かがヘリコプターを要請した。", GameLogColor.Green);
+            _gameLog.Add("システム", "何者かがヘリコプターを要請した。", GameLogColor.Green);
         }
     }
 }

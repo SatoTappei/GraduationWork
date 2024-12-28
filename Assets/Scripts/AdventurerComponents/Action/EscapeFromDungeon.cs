@@ -38,8 +38,8 @@ namespace Game
             if (TryGetComponent(out LineApply line)) line.ShowLine(RequestLineType.Goal);
 
             // ゲーム進行ログに表示。
-            UiManager.TryFind(out UiManager uiManager);
-            uiManager.AddLog($"システム", $"{_blackboard.DisplayName}がダンジョンから脱出した。", GameLogColor.Yellow);
+            GameLog.TryFind(out GameLog gameLog);
+            gameLog.Add($"システム", $"{_blackboard.DisplayName}がダンジョンから脱出した。", GameLogColor.Yellow);
 
             // 演出の終了を待つ。
             await UniTask.WaitForSeconds(AnimationLength, cancellationToken: token);

@@ -56,7 +56,7 @@ namespace Game
             _blackboard.Coords = new Vector2Int(11, 8);
             // 上以外の向きの場合、回転させる処理が必要。
             _blackboard.Direction = Vector2Int.up;
-            
+
             _isInitialized = true;
         }
 

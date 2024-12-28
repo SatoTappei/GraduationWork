@@ -93,7 +93,7 @@ namespace Game
             string response = await _ai.RequestAsync(JsonUtility.ToJson(format), token);
             token.ThrowIfCancellationRequested();
 
-            return response;
+            return response.Trim('"');
         }
 
         void Initialize()

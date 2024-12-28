@@ -42,6 +42,12 @@ namespace Game
             StartCoroutine(DisplayBufferdRepeatingAsync());
         }
 
+        public static bool TryFind(out GameLog result)
+        {
+            result = GameObject.FindGameObjectWithTag("UiManager").GetComponent<GameLog>();
+            return result != null;
+        }
+
         public void Add(string label, string value, GameLogColor color)
         {
             _buffer.Enqueue(new LogContent() { Label = label, Value = value, Color = color });

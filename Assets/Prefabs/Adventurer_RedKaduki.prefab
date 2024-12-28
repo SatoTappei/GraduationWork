@@ -51,6 +51,7 @@ GameObject:
   - component: {fileID: -5802996002844098645}
   - component: {fileID: -2430256863866414731}
   - component: {fileID: 973020051266986482}
+  - component: {fileID: 7835252686109896548}
   m_Layer: 0
   m_Name: Adventurer_RedKaduki
   m_TagString: Untagged
@@ -678,6 +679,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4d97052a03487324d870a38e39743507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &7835252686109896548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 672973648090938317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87a765c63bdf0f447945139253a98175, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &6010722297974443621
