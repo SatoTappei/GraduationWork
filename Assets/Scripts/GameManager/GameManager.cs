@@ -32,7 +32,7 @@ namespace Game
             const int Max = 4;
 
             // "使用中"のスプレッドシートの内容を消す。
-            await SpawnedAdventurerSender.DeleteAsync(token);
+            //await SpawnedAdventurerSender.DeleteAsync(token);
 
             AdventurerSpawner.TryFind(out AdventurerSpawner spawner);
             while (!token.IsCancellationRequested)

@@ -6,28 +6,21 @@ namespace Game
 {
     public class AdventurerSheet
     {
-        // インスペクターなどで各種パラメータを設定する場合。
-        public AdventurerSheet(string fullName, string displayName, string sex, string age, string job,
-            string personality, string motivation, string weaknesses, string background, Sprite icon)
+        public AdventurerSheet(AdventurerData profile, AvatarCustomizeData avatarData)
         {
-            FullName = fullName;
-            DisplayName = displayName;
-            Sex = sex;
-            Age = age;
-            Job = job;
-            Personality = personality;
-            Motivation = motivation;
-            Weaknesses = weaknesses;
-            Background = background;
-            Level = 30;
-            Gold = 1000;
-            Icon = icon;
+            FullName = profile.Name;
+            DisplayName = profile.DisplayName;
+            Sex = profile.Gender;
+            Age = profile.Age.ToString();
+            Job = profile.Job;
+            Personality= profile.Personality;
+            Motivation = profile.Motivation;
+            Weaknesses = profile.Weaknesses;
+            Background = profile.Background;
+            Level = profile.Level;
+            Gold = profile.Gold;
+            Icon = avatarData.Icon;
         }
-
-        // スプレッドシートから、冒険者データを読み込んだ場合。
-        public AdventurerSheet(AdventurerSpreadSheetData profile, AvatarCustomizeData avatarData)
-            : this(profile.FullName, profile.DisplayName, profile.Sex, profile.Age, profile.Job,
-                  profile.Personality, profile.Motivation, profile.Weaknesses, profile.Background, avatarData.Icon) { }
 
         public string FullName { get; }
         public string DisplayName { get; }

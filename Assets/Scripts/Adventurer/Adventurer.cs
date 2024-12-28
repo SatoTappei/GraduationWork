@@ -37,7 +37,7 @@ namespace Game
         public void Initialize(AdventurerSheet adventurerSheet)
         {
             _blackboard.AdventurerSheet = adventurerSheet;
-            // レベルに応じて体力を設定。レベルは最大30と仮定。
+            // レベルに応じて体力を設定。
             _blackboard.MaxHp = CalculationFormula.GetHp(adventurerSheet.Level);
             _blackboard.CurrentHp = _blackboard.MaxHp;
             // 心情は生成時、自身へのコメントで上下する。
@@ -46,10 +46,10 @@ namespace Game
             // 疲労はターン経過で増加していく。
             _blackboard.MaxFatigue = 100;
             _blackboard.CurrentFatigue = 0;
-            // レベルに応じて攻撃力を設定。レベルは最大30と仮定。
+            // レベルに応じて攻撃力を設定。
             _blackboard.Attack = CalculationFormula.GetAttack(adventurerSheet.Level);
             _blackboard.AttackMagnification = 1.0f;
-            // レベルに応じて行動速度を設定。レベルは最大30と仮定。
+            // レベルに応じて行動速度を設定。
             _blackboard.Speed = CalculationFormula.GetSpeed(adventurerSheet.Level);
             _blackboard.SpeedMagnification = 1.0f;
             // ダンジョンの入り口が固定で1箇所。
