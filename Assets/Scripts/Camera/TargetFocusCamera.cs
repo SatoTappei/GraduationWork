@@ -39,27 +39,31 @@ namespace Game
             AdventurerSpawner.TryFind(out AdventurerSpawner adventurerSpawner);
             while (true)
             {
-                // 一定間隔でランダムな冒険者をフォーカスする。
-                Adventurer[] spawned = adventurerSpawner.Spawned.Where(a => a != null).ToArray();
-                if (spawned.Length > 0)
-                {
-                    yield return FocusRandomAdventurerAsync(spawned);
-                }
+                if (adventurerSpawner.Spawned == null) yield return null;
+                else if (adventurerSpawner.Spawned.Count == 0) yield return null;
 
-                yield return null;
+                // 一定間隔でランダムな冒険者をフォーカスする。
+                int random = Random.Range(0, adventurerSpawner.Spawned.Count);
+                Adventurer target = adventurerSpawner.Spawned[random];
+                yield return FocusAsync(target);
             }
         }
 
-        IEnumerator FocusRandomAdventurerAsync(Adventurer[] adventurers)
+        IEnumerator FocusAsync(Adventurer target)
         {
-            Adventurer target = adventurers[Random.Range(0, adventurers.Length)];
+            const float Duration = 5.0f;
+            const float RotateSpeed = 0.1f;
 
             // 冒険者が「移動」以外の行動をしている場合はズームする。
-            float zoom = 1.0f;
-            if (target.SelectedAction == "Attack Surrounding" ||
-                target.SelectedAction == "Attack Surrounding Adventurer" ||
-                target.SelectedAction == "Scavenge Surrounding" ||
-                target.SelectedAction == "Talk Surrounding")
+            float zoom;
+            if (target.SelectedAction == "Move North" ||
+                target.SelectedAction == "Move South" ||
+                target.SelectedAction == "Move East" ||
+                target.SelectedAction == "Move West")
+            {
+                zoom = 1.0f;
+            }
+            else
             {
                 zoom = 2.0f; // 倍率は適当に設定。
             }
@@ -70,16 +74,6 @@ namespace Game
             transposer.m_CameraDistance = baseDistance / zoom;
 
             // 一定時間、カメラが目標をフォーカスする。
-            yield return FocusAsync(target.transform);
-
-            transposer.m_CameraDistance = baseDistance;
-        }
-
-        IEnumerator FocusAsync(Transform target)
-        {
-            const float Duration = 5.0f;
-            const float RotateSpeed = 0.1f;
-
             for (float f = 0; f < Duration; f += Time.deltaTime)
             {
                 if (target == null) break;
@@ -89,6 +83,8 @@ namespace Game
 
                 yield return null;
             }
+
+            transposer.m_CameraDistance = baseDistance;
         }
     }
 }
