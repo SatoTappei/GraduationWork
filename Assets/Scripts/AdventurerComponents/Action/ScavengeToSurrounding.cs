@@ -10,11 +10,14 @@ namespace Game
     {
         Blackboard _blackboard;
         Animator _animator;
+        ItemInventory _inventory;
+        LineApply _line;
 
         void Awake()
         {
             _blackboard = GetComponent<Blackboard>();
             _animator = GetComponentInChildren<Animator>();
+            _line = GetComponent<LineApply>();
         }
 
         public async UniTask ScavengeAsync(CancellationToken token)
@@ -23,16 +26,79 @@ namespace Game
             const float RotateSpeed = 4.0f;
             const float PlayTime = 2.0f;
 
-            // 漁った結果によって行動ログに追加する内容が異なる。
-            string actionLogText = string.Empty;
-
             // 漁る際は宝箱を優先する。
-            if (TryGetTarget<Treasure>(out Actor target) || TryGetTarget<IScavengeable>(out target))
-            {
-                // 漁る前に目標に向く。
-                Vector3 targetPosition = DungeonManager.GetCell(target.Coords).Position;
-                await RotateAsync(RotateSpeed, targetPosition, token);
+            if (TryGetTarget<Treasure>(out Actor target) || TryGetTarget<IScavengeable>(out target)) { }
 
+            // 周囲に漁るものが無い場合。
+            if (target == null)
+            {
+                _actionLog.Add("There are no areas around that can be scavenged.");
+                return;
+            }
+
+            // 漁る前に目標に向く。
+            Vector3 targetPosition = DungeonManager.GetCell(target.Coords).Position;
+            await RotateAsync(RotateSpeed, targetPosition, token);
+
+            _animator.Play("Scav");
+
+            // アイテムを漁る。
+            Item foundItem;
+            if (target is IScavengeable targetEntity)
+            {
+                foundItem = targetEntity.Scavenge();
+            }
+
+            _inventory.Add(foundItem);
+
+            // 何かしら入手した場合、ログに表示。
+            if (foundItem == null)
+            {
+                // まだない
+            }
+            else if (foundItem.Name.English == "Treasure")
+            {
+                GameLog.Add("システム", $"{_blackboard.DisplayName}が宝物を入手。", GameLogColor.White);
+            }
+            else
+            {
+                GameLog.Add("システム", $"{_blackboard.DisplayName}がアイテムを入手。", GameLogColor.White);
+            }
+
+            // 漁った結果を行動ログに追加。
+            if (foundItem == null)
+            {
+                _actionLog.Add("I scavenged the surrounding boxes. There was nothing in them.");
+            }
+            else if (foundItem.Name.English == "Treasure")
+            {
+                _actionLog.Add("I scavenged the surrounding treasure chests. I got the treasure.");
+            }
+            else
+            {
+                _actionLog.Add($"I scavenged the surrounding boxes. I got the {foundItem}.");
+            }
+
+            // 漁った結果に応じた台詞。
+            if (foundItem == null)
+            {
+                _line.ShowLine(RequestLineType.GetItemFailure);
+            }
+            else if (foundItem.Name.English == "Treasure")
+            {
+                _line.ShowLine(RequestLineType.GetTreasureSuccess);
+            }
+            else
+            {
+                _line.ShowLine(RequestLineType.GetItemSuccess);
+            }
+
+            // 宝箱を獲得した場合
+
+            // アニメーションなどの演出を待つ。
+            await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
+
+            {
                 _animator.Play("Scav");
 
                 // 漁った結果に応じてゲーム進行ログと台詞に追加する内容が異なる。
@@ -98,6 +164,6 @@ namespace Game
             {
                 return "Empty";
             }
-        }
+        } 
     }
 }

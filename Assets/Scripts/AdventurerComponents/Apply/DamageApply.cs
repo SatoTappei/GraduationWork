@@ -6,7 +6,7 @@ namespace Game
 {
     public class DamageApply : MonoBehaviour
     {
-        public string Damage(string id, string weapon, int value, Vector2Int attackerCoords)
+        public string Damage(int value, Vector2Int attackerCoords, string effect)
         {
             TryGetComponent(out Blackboard blackboard);
 
@@ -14,13 +14,13 @@ namespace Game
             if (blackboard.IsDefeated) return "Corpse";
 
             // ダメージ演出を再生。
-            if (TryGetComponent(out DamageEffect effect))
+            if (TryGetComponent(out DamageEffect damageEffect))
             {
-                effect.Play(blackboard.Coords, attackerCoords);
+                damageEffect.Play(blackboard.Coords, attackerCoords);
             }
 
             // 狂気を付与する場合。
-            if (weapon == "Madness" && TryGetComponent(out MadnessApply madness))
+            if (effect == "Madness" && TryGetComponent(out MadnessApply madness))
             {
                 madness.Apply();
             }

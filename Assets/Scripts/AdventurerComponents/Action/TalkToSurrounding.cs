@@ -10,11 +10,21 @@ namespace Game
     {
         Adventurer _adventurer;
         Animator _animator;
+        ActionLog _actionLog;
+        LineApply _line;
+        TalkThemeSelectAI _talkTheme;
+        TalkEffect _effect;
+        TalkPartnerRecord _partner;
 
         void Awake()
         {
             _adventurer = GetComponent<Adventurer>();
             _animator = GetComponentInChildren<Animator>();
+            _actionLog = GetComponent<ActionLog>();
+            _line = GetComponent<LineApply>();
+            _talkTheme = GetComponent<TalkThemeSelectAI>();
+            _effect = GetComponent<TalkEffect>();
+            _partner = GetComponent<TalkPartnerRecord>();
         }
 
         public async UniTask TalkAsync(CancellationToken token)
@@ -23,50 +33,42 @@ namespace Game
             const float RotateSpeed = 4.0f;
             const float PlayTime = 3.28f;
 
-            // 会話する対象がいるかどうかで行動ログに追加する内容が異なる。
-            string actionLogText = string.Empty;
-
-            // 周囲に冒険者がいる場合は会話。
-            if (TryGetTarget<Adventurer>(out Actor target))
+            // 周囲に会話可能な冒険者がいない場合。
+            if (!TryGetTarget<Adventurer>(out Actor target))
             {
-                // 会話する前に目標に向く。
-                Vector3 targetPosition = DungeonManager.GetCell(target.Coords).Position;
-                await RotateAsync(RotateSpeed, targetPosition, token);
+                _actionLog.Add("I tried to talk with other adventurers, but there was no one around.");
+                return;
+            }
 
-                _animator.Play("Talk");
+            // 会話する前に目標に向く。
+            Vector3 targetPosition = DungeonManager.GetCell(target.Coords).Position;
+            await RotateAsync(RotateSpeed, targetPosition, token);
 
-                // 話しかける際の台詞を表示。会話内容とは別。
-                if (TryGetComponent(out LineApply line)) line.ShowLine(RequestLineType.Greeting);
-                
-                // 会話中のエフェクトを再生。
-                if (TryGetComponent(out TalkEffect effect)) effect.Play();
+            _animator.Play("Talk");
+            _line.ShowLine(RequestLineType.Greeting);
+            _effect.Play();
 
-                // 会話相手を記憶。
-                if (TryGetComponent(out TalkPartnerRecord partner)) partner.Record(target as Adventurer);
+            // 目標を向いている間に会話対象が消える可能性があるので事前にチェックする必要がある。
+            // 情報の中から会話内容として選んだものを相手に伝え、会話相手を記憶。
+            Adventurer targetAdventurer = target as Adventurer;
+            if (targetAdventurer != null)
+            {
+                targetAdventurer.Talk(_talkTheme.Selected, "Adventurer", _adventurer.Coords);
+                _partner.Record(targetAdventurer);
+            }
 
-                ApplyTalk(target as Adventurer);
-                
-                actionLogText = "I talked to the adventurers around me about what I knew.";
-
-                // 会話の演出が終わるまで待つ。
-                await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
+            // 会話できたかどうか、結果を行動ログに追加。
+            if (targetAdventurer == null)
+            {
+                _actionLog.Add("I tried to talk with other adventurers, but there was no one around.");
             }
             else
             {
-                actionLogText = "I tried to talk with other adventurers, but there was no one around.";
+                _actionLog.Add("I talked to the adventurers around me about what I knew.");
             }
 
-            // 攻撃の結果を行動ログに追加。
-            if (TryGetComponent(out ActionLog log)) log.Add(actionLogText);
-        }
-
-        void ApplyTalk(Adventurer target)
-        {
-            if (target == null) return;
-            if (!TryGetComponent(out TalkThemeSelectAI ai)) return;
-
-            // 情報の中から会話内容として選んだものを相手に伝える。
-            target.Talk(ai.Selected, "Adventurer", _adventurer.Coords);
+            // 会話の演出が終わるまで待つ。
+            await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
         }
     }
 }
