@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class FatigueDamageApply : MonoBehaviour, IStatusEffectDisplayable
+    public class FatigueDamageApply : MonoBehaviour
     {
         Blackboard _blackboard;
 
@@ -19,14 +19,14 @@ namespace Game
             _blackboard.CurrentHp -= 5;
         }
 
-        bool IStatusEffectDisplayable.IsEnabled()
-        {
-            return _blackboard.CurrentFatigue >= 100;
-        }
+        //bool IStatusEffectDisplayable.IsEnabled()
+        //{
+        //    return _blackboard.CurrentFatigue >= 100;
+        //}
 
-        string IStatusEffectDisplayable.GetEntry()
-        {
-            return "”æ˜J‚Å‘Ì—Í‚ªŒ¸‚è‘±‚¯‚éB";
-        }
+        //string IStatusEffectDisplayable.GetEntry()
+        //{
+        //    return "”æ˜J‚Å‘Ì—Í‚ªŒ¸‚è‘±‚¯‚éB";
+        //}
     }
 }

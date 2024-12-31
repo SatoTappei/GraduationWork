@@ -21,7 +21,7 @@ namespace Game
             return result != null;
         }
 
-        public int RegisterStatus(IProfileWindowDisplayStatus status)
+        public int RegisterStatus(IProfileWindowDisplayable status)
         {
             for (int i = 0; i < _used.Length; i++)
             {
@@ -38,7 +38,7 @@ namespace Game
             return -1;
         }
 
-        public void UpdateStatus(int id, IProfileWindowDisplayStatus status)
+        public void UpdateStatus(int id, IProfileWindowDisplayable status)
         {
             if (IsInArray(id))
             {

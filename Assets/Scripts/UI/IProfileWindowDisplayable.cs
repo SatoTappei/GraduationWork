@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public interface IProfileWindowDisplayStatus
+    public interface IProfileWindowDisplayable
     {
         public string FullName { get; }
         public string Job { get; }

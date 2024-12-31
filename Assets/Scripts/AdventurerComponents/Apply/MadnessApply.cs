@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class MadnessApply : MonoBehaviour, IStatusEffectDisplayable
+    public class MadnessApply : MonoBehaviour
     {
         static BilingualString Text = new BilingualString(
             "©•ªˆÈŠO‚Ì–`Œ¯Ò‚ğŠFE‚µ‚É‚µ‚æ‚¤B", 
@@ -13,6 +13,7 @@ namespace Game
 
         InformationStock _informationStock;
         AvailableActions _availableActions;
+        Blackboard _blackBoard;
 
         WaitForSeconds _waitInterval;
         bool _isEnabled;
@@ -21,6 +22,7 @@ namespace Game
         {
             _informationStock = GetComponent<InformationStock>();
             _availableActions = GetComponent<AvailableActions>();
+            _blackBoard = GetComponent<Blackboard>();
         }
 
         public void Apply()
@@ -33,6 +35,7 @@ namespace Game
         IEnumerator ApplyAsync()
         {
             _isEnabled = true;
+            _blackBoard.AddStatusEffect("“ª‚¨‚©‚µ‚¢B");
 
             // ˆê’èŠÔŠu‚ÅAI‚É–`Œ¯Ò‚ğUŒ‚‚·‚é‚æ‚¤‘£‚·î•ñ‚ğ’Ç‰ÁB‰ñ”‚ÆŠÔŠu‚Ì’l‚Í“K“–‚Éİ’èB
             for (int i = 0; i < 10; i++)
@@ -49,17 +52,8 @@ namespace Game
             //_availableActions.Add("Talk Surrounding");
             //_availableActions.Remove("Attack Surrounding Adventurer");
 
+            _blackBoard.RemoveStatusEffect("“ª‚¨‚©‚µ‚¢B");
             _isEnabled = false;
-        }
-
-        bool IStatusEffectDisplayable.IsEnabled()
-        {
-            return _isEnabled;
-        }
-
-        string IStatusEffectDisplayable.GetEntry()
-        {
-            return "“ª‚¨‚©‚µ‚¢B";
         }
     }
 }

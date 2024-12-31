@@ -34,11 +34,11 @@ namespace Game
             _isInitialized = true;
         }
 
-        public override string Damage(string id, string weapon, int value, Vector2Int coords)
+        public override string Damage(int value, Vector2Int coords, string effect = "")
         {
             if (_isInitialized && TryGetComponent(out EnemyDamageApply damage))
             {
-                return damage.Damage(id, weapon, value, coords);
+                return damage.Damage(value, coords, effect);
             }
             else return "Miss";
         }

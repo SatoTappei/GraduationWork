@@ -21,7 +21,7 @@ namespace Game
             return result != null;
         }
 
-        public int RegisterStatus(IStatusBarDisplayStatus status)
+        public int RegisterStatus(IStatusBarDisplayable status)
         {
             for (int i = 0; i < _used.Length; i++)
             {
@@ -38,7 +38,7 @@ namespace Game
             return -1;
         }
 
-        public void UpdateStatus(int id, IStatusBarDisplayStatus status)
+        public void UpdateStatus(int id, IStatusBarDisplayable status)
         {
             if (IsWithinArray(id))
             {

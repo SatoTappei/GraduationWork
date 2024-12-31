@@ -6,7 +6,7 @@ namespace Game
 {
     public abstract class Character : Actor, IDamageable
     {
-        public virtual string Damage(string id, string weapon, int value, Vector2Int coords)
+        public virtual string Damage(int value, Vector2Int coords, string effect = "")
         {
             return string.Empty;
         }

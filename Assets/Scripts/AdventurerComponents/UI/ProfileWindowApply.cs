@@ -3,15 +3,7 @@ using UnityEngine;
 
 namespace Game
 {
-    // ProfileWindowのEffectの欄に表示できる。
-    // ステータス効果が有効な場合、効果の概要を表示する。
-    public interface IStatusEffectDisplayable
-    {
-        bool IsEnabled();
-        string GetEntry();
-    }
-
-    public class ProfileWindowApply : MonoBehaviour, IProfileWindowDisplayStatus
+    public class ProfileWindowApply : MonoBehaviour, IProfileWindowDisplayable
     {
         Blackboard _blackboard;
         SubGoalPath _subGoalPath;
@@ -19,14 +11,15 @@ namespace Game
         InformationStock _informationStock;
         ProfileWindow _profileWindow;
         int _id;
+        bool _isRegistered;
 
-        string IProfileWindowDisplayStatus.FullName => _blackboard.FullName;
-        string IProfileWindowDisplayStatus.Job => _blackboard.Job;
-        string IProfileWindowDisplayStatus.Background => _blackboard.Background;
-        SubGoal IProfileWindowDisplayStatus.CurrentSubGoal => _subGoalPath.GetCurrent();
-        IEnumerable<ItemInventory.Entry> IProfileWindowDisplayStatus.Item => _itemInventory.GetEntries();
-        IEnumerable<string> IProfileWindowDisplayStatus.Effect => GetEnabledStatusEffects();
-        IReadOnlyList<Information> IProfileWindowDisplayStatus.Information => _informationStock.Stock;
+        string IProfileWindowDisplayable.FullName => _blackboard.FullName;
+        string IProfileWindowDisplayable.Job => _blackboard.Job;
+        string IProfileWindowDisplayable.Background => _blackboard.Background;
+        SubGoal IProfileWindowDisplayable.CurrentSubGoal => _subGoalPath.GetCurrent();
+        IReadOnlyList<Information> IProfileWindowDisplayable.Information => _informationStock.Stock;
+        IEnumerable<ItemInventory.Entry> IProfileWindowDisplayable.Item => _itemInventory.GetEntries();
+        IEnumerable<string> IProfileWindowDisplayable.Effect => _blackboard.StatusEffects;
 
         void Awake()
         {
@@ -40,28 +33,26 @@ namespace Game
         public void Register()
         {
             _id = _profileWindow.RegisterStatus(this);
+            _isRegistered = true;
         }
 
         public void Apply()
         {
-            _profileWindow.UpdateStatus(_id, this);
+            if (_isRegistered)
+            {
+                _profileWindow.UpdateStatus(_id, this);
+            }
+            else
+            {
+                Debug.LogWarning("登録していない状態で反映しようとした。");
+            }
         }
 
         void OnDestroy()
         {
-            if (_profileWindow != null)
-            {
-                _profileWindow.DeleteStatus(_id);
-            }
-        }
+            if (_profileWindow != null) _profileWindow.DeleteStatus(_id);
 
-        IEnumerable<string> GetEnabledStatusEffects()
-        {
-            IStatusEffectDisplayable[] statusEffects = GetComponents<IStatusEffectDisplayable>();
-            foreach (IStatusEffectDisplayable e in statusEffects)
-            {
-                if (e.IsEnabled()) yield return e.GetEntry();
-            }
+            _isRegistered = false;
         }
     }
 }

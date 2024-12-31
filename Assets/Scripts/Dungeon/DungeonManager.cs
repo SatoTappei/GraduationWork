@@ -22,7 +22,7 @@ namespace Game
 
         void OnDestroy()
         {
-            _instance = null;
+            if (_instance = this) _instance = null;
         }
 
         public static void AddActorOnCell(Vector2Int coords, Actor actor)

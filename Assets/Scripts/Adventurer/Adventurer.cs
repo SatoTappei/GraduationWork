@@ -71,31 +71,31 @@ namespace Game
         {
             if (_isInitialized && TryGetComponent(out TalkApply talk))
             {
-                talk.Talk(text, source);
+                talk.Talk(text, source, coords);
             }
         }
 
-        public void StatusBuff(float attack, float speed)
+        public void StatusBuff(string type, float value, Vector2Int coords)
         {
             if (_isInitialized && TryGetComponent(out StatusBuffApply statusBuff))
             {
-                statusBuff.Buff(attack, speed);
+                statusBuff.Buff(type, value, coords);
             }
         }
 
-        public void Heal(int value)
+        public void Heal(int value, Vector2Int coords)
         {
             if (_isInitialized && TryGetComponent(out HealApply heal))
             {
-                heal.Heal(value);
+                heal.Heal(value, coords);
             }
         }
 
-        public sealed override string Damage(string id, string weapon, int value, Vector2Int coords)
+        public sealed override string Damage(int value, Vector2Int coords, string effect = "")
         {
             if (_isInitialized && TryGetComponent(out DamageApply damage))
             {
-                return damage.Damage(id, weapon, value, coords);
+                return damage.Damage(value, coords, effect);
             }
             else return "Miss";
         }
@@ -132,7 +132,6 @@ namespace Game
             subGoalPath.Initialize(await SubGoalSelector.SelectAsync(AdventurerSheet, token));
 
             TryGetComponent(out FatigueDamageApply fatigueDamage);
-            //TryGetComponent(out GamePlayAI gamePlayAI);
             TryGetComponent(out InformationStock informationStock);
             TryGetComponent(out TalkThemeSelectAI talkThemeSelectAI);
             TryGetComponent(out MovementToDirection moveToDirection);

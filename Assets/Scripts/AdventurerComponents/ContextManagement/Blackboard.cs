@@ -6,7 +6,15 @@ namespace Game
 {
     public class Blackboard : MonoBehaviour
     {
+        List<string> _statusEffects;
+
+        void Awake()
+        {
+            _statusEffects = new List<string>();
+        }
+
         public AdventurerSheet AdventurerSheet { get; set; }
+        public IReadOnlyList<string> StatusEffects { get; }
 
         public Vector2Int Coords { get; set; }
         public Vector2Int Direction { get; set; }
@@ -40,5 +48,15 @@ namespace Game
         public string DisplayName => AdventurerSheet.DisplayName;
         public string Job => AdventurerSheet.Job;
         public string Background => AdventurerSheet.Background;
+
+        public void AddStatusEffect(string effect)
+        {
+            _statusEffects.Add(effect);
+        }
+
+        public void RemoveStatusEffect(string effect)
+        {
+            _statusEffects.Remove(effect);
+        }
     }
 }

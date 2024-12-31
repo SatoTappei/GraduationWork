@@ -28,7 +28,7 @@ namespace Game
             DeleteStatus();
         }
 
-        public void SetStatus(IProfileWindowDisplayStatus status)
+        public void SetStatus(IProfileWindowDisplayable status)
         {
             SetName(status.FullName);
             SetJob(status.Job);
@@ -39,7 +39,7 @@ namespace Game
             SetInfomation(status.Information);
         }
 
-        public void UpdateStatus(IProfileWindowDisplayStatus status)
+        public void UpdateStatus(IProfileWindowDisplayable status)
         {
             SetGoal(status.CurrentSubGoal);
             SetItem(status.Item);

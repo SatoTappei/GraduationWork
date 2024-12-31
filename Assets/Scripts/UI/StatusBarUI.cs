@@ -25,7 +25,7 @@ namespace Game
             DisableLine();
         }
 
-        public void SetStatus(IStatusBarDisplayStatus status)
+        public void SetStatus(IStatusBarDisplayable status)
         {
             SetProfile(status.Icon, status.DisplayName);
             SetHpGaugeScale(status.CurrentHp, status.MaxHp);
@@ -35,7 +35,7 @@ namespace Game
             StartCoroutine(PopAnimationAsync());
         }
 
-        public void UpdateStatus(IStatusBarDisplayStatus status)
+        public void UpdateStatus(IStatusBarDisplayable status)
         {
             SetHpGaugeScale(status.CurrentHp, status.MaxHp);
             SetEmotionGaugeScale(status.CurrentEmotion, status.MaxEmotion);

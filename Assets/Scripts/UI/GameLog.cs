@@ -49,7 +49,7 @@ namespace Game
 
         void OnDestroy()
         {
-            _instance = null;
+            if (_instance = this) _instance = null;
         }
 
         public static void Add(string label, string value, GameLogColor color)

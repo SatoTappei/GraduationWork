@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public interface IStatusBarDisplayStatus
+    public interface IStatusBarDisplayable
     {
         public Sprite Icon { get; }
         public string DisplayName { get; }
