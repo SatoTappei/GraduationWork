@@ -7,12 +7,10 @@ namespace Game
 {
     public class DoorOpenApply : MonoBehaviour
     {
-        DungeonManager _dungeonManager;
         Adventurer _adventurer;
 
         void Awake()
         {
-            DungeonManager.TryFind(out _dungeonManager);
             _adventurer = GetComponent<Adventurer>();
         }
 
@@ -20,7 +18,7 @@ namespace Game
         {
             // ダンジョン生成時、ドアを生成するセルは 上(8),下(2),左(4),右(6) で向きを指定している。
             bool isDoorPlaced = "2468".Contains(Blueprint.Doors[coords.y][coords.x]);
-            Actor actor = _dungeonManager.GetCell(coords).GetActors().Where(c => c.ID == "Door").FirstOrDefault();
+            Actor actor = DungeonManager.GetCell(coords).GetActors().Where(c => c.ID == "Door").FirstOrDefault();
             if (isDoorPlaced && actor is Door door)
             {
                 door.Interact(_adventurer);

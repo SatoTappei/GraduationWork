@@ -11,7 +11,6 @@ namespace Game
         [SerializeField] float _moveSpeed = 1.0f;
         [SerializeField] float _rotateSpeed = 4.0f;
 
-        DungeonManager _dungeonManager;
         Enemy _enemy;
         EnemyBlackboard _blackboard;
         Animator _animator;
@@ -29,7 +28,6 @@ namespace Game
 
         void Awake()
         {
-            DungeonManager.TryFind(out _dungeonManager);
             _enemy = GetComponent<Enemy>();
             _blackboard = GetComponent<EnemyBlackboard>();
             _animator = GetComponentInChildren<Animator>();
@@ -38,7 +36,7 @@ namespace Game
         public async UniTask MoveAsync(Vector2Int direction, CancellationToken token)
         {
             // 向きの値を次のセルの方向に更新。
-            Cell nextCell = _dungeonManager.GetCell(Coords + direction);
+            Cell nextCell = DungeonManager.GetCell(Coords + direction);
             Direction = nextCell.Coords - Coords;
 
             // 通行可能なセルの場合は移動、不可能の場合はそのセルの方向に回転のみ行う。
@@ -47,9 +45,9 @@ namespace Game
                 _animator.Play("Walk");
 
                 // 座標の値を次のセルの座標に更新。
-                _dungeonManager.RemoveActorOnCell(Coords, _enemy);
+                DungeonManager.RemoveActorOnCell(Coords, _enemy);
                 Coords = nextCell.Coords;
-                _dungeonManager.AddActorOnCell(Coords, _enemy);
+                DungeonManager.AddActorOnCell(Coords, _enemy);
 
                 await (TranslateAsync(_moveSpeed, nextCell.Position, token),
                     RotateAsync(_rotateSpeed, nextCell.Position, token));

@@ -96,7 +96,6 @@ GameObject:
   - component: {fileID: -6393175289186871006}
   - component: {fileID: -7169467649009008158}
   - component: {fileID: -7363925548413260991}
-  - component: {fileID: -1555155378355217467}
   - component: {fileID: 4316660227159170323}
   - component: {fileID: 9017715564648581796}
   - component: {fileID: 519164964673123020}
@@ -120,6 +119,11 @@ GameObject:
   - component: {fileID: -5364776672662464350}
   - component: {fileID: 3074114337178687801}
   - component: {fileID: -708015907587735691}
+  - component: {fileID: 8354075778813146617}
+  - component: {fileID: -2154614999692527361}
+  - component: {fileID: 3206037001289622575}
+  - component: {fileID: 8103233981791761941}
+  - component: {fileID: -1960366433638228714}
   m_Layer: 0
   m_Name: Adventurer_Kaduki
   m_TagString: Untagged
@@ -464,18 +468,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f80bf9305e2c08c43bb9432ed0e4845a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-1555155378355217467
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6972671287923862920}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6d6bf34595891904085f767c5e4a3b00, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &4316660227159170323
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -759,6 +751,66 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 87a765c63bdf0f447945139253a98175, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8354075778813146617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6972671287923862920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0836b18708939641abde2f3ccc90e39, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-2154614999692527361
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6972671287923862920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4d97052a03487324d870a38e39743507, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &3206037001289622575
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6972671287923862920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 249bff5ea75847648beee397da0c8f0d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &8103233981791761941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6972671287923862920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87898c2c8a8ea1a488f75424cd89c881, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-1960366433638228714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6972671287923862920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fd751015321c22245898c5f8dd48283e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &489531028917111896

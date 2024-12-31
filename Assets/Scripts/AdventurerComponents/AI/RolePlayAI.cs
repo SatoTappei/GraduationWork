@@ -23,39 +23,52 @@ namespace Game
         Greeting            // 他の冒険者に声をかける時の挨拶。
     }
 
-    // Awakeのタイミングで黒板の値を参照するので、黒板の初期化が完了次第このスクリプトをAddComponentする。
     public class RolePlayAI : MonoBehaviour
     {
-        Blackboard _blackboard;
         AIClient _ai;
 
-        void Awake()
+        public void Initialize()
         {
-            // キャラクターとして振る舞うAIは台詞や背景などをUIに表示するので日本語。
-            _blackboard = GetComponent<Blackboard>();
-            string age = _blackboard.AdventurerSheet.Age;
-            string job = _blackboard.AdventurerSheet.Job;
-            string background = _blackboard.AdventurerSheet.Background;
-            string prompt =
-                $"# 指示内容\n" +
-                $"- 以下のキャラクターになりきって各質問に答えてください。\n" +
-                $"'''\n" +
-                $"# キャラクター\n" +
-                $"- {age}歳の{job}。\n" +
-                $"- {background}\n";
+            TryGetComponent(out Blackboard blackboard);
 
-            _ai = new AIClient(prompt);
+            if (blackboard.AdventurerSheet == null)
+            {
+                Debug.LogWarning("冒険者のデータが読み込まれていない。");
+
+                _ai = new AIClient("適当なキャラクターになりきって各質問に答えてください。");
+            }
+            else
+            {
+                // キャラクターとして振る舞うAIは台詞や背景などをUIに表示するので日本語。
+                string age = blackboard.AdventurerSheet.Age;
+                string job = blackboard.AdventurerSheet.Job;
+                string background = blackboard.AdventurerSheet.Background;
+                string prompt =
+                    $"# 指示内容\n" +
+                    $"- 以下のキャラクターになりきって各質問に答えてください。\n" +
+                    $"'''\n" +
+                    $"# キャラクター\n" +
+                    $"- {age}歳の{job}。\n" +
+                    $"- {background}\n";
+
+                _ai = new AIClient(prompt);
+            }
         }
 
         public async UniTask<string> RequestLineAsync(RequestLineType type, CancellationToken token)
         {
-            (string content, string sample) instruction = GetContentAndSample(type);
+            // 初期化されずに呼ばれた場合。
+            if (_ai == null)
+            {
+                Debug.LogWarning("初期化せずに台詞をリクエストしたので、リクエスト前に初期化した。");
+                Initialize();
+            }
 
+            (string lineType, string sample) instruction = GetInstruction(type);
             string prompt =
                 $"# 指示内容\n" +
-                $"- 自身のキャラクターの設定を基に、{instruction.content}を考えてください。\n" +
+                $"- 自身のキャラクターの設定を基に、{instruction.lineType}を考えてください。\n" +
                 $"- 短い一言で台詞をお願いします。\n" +
-                $"- {GetLineEmotion()}\n" +
                 $"'''\n" +
                 $"# 出力形式\n" +
                 $"- 台詞のみをそのまま出力してください。\n" +
@@ -65,15 +78,18 @@ namespace Game
             string response = await _ai.RequestAsync(prompt, token);
             token.ThrowIfCancellationRequested();
 
+            // 出力例のフォーマットの解釈ミスで先頭に - が付いている場合。
             if (response[0] == '-')
             {
                 response = response[1..];
             }
 
+            // 出力例のフォーマットの解釈ミスで半角スペースが入っている場合。
+            // 台詞として扱うので「」付きにして出力する場合もある。
             return response.Trim().Trim('「', '」');
         }
 
-        static (string, string) GetContentAndSample(RequestLineType type)
+        static (string, string) GetInstruction(RequestLineType type)
         {
             if (type == RequestLineType.Entry) return ("登場時の台詞", "頑張るぞ！");
             if (type == RequestLineType.Defeated) return ("敵とのバトルで敗北した際の台詞", "もうだめぽ");
@@ -88,23 +104,6 @@ namespace Game
             if (type == RequestLineType.Greeting) return ("他の人に声をかける際の挨拶", "ねぇねぇ");
 
             return default;
-        }
-
-        string GetLineEmotion()
-        {
-            // 心情の値によって台詞の感情が変化する。閾値は適当に設定。
-            if (_blackboard.MaxEmotion / 10 * 7 <= _blackboard.CurrentEmotion)
-            {
-                return "普段より少しテンション高めでお願いします。";
-            }
-            else if (_blackboard.CurrentEmotion < _blackboard.MaxEmotion / 10 * 3)
-            {
-                return "普段よりテンション低めでお願いします。";
-            }
-            else
-            {
-                return "普段のテンションでお願いします。";
-            }
         }
     }
 }

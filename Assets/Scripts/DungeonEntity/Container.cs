@@ -25,8 +25,7 @@ namespace Game
 
         void Start()
         {
-            DungeonManager.TryFind(out DungeonManager dungeonManager);
-            dungeonManager.AddAvoidCell(Coords);
+            DungeonManager.AddAvoidCell(Coords);
         }
 
         public Item Scavenge()

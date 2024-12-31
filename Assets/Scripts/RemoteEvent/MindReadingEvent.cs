@@ -8,12 +8,10 @@ namespace Game
     public class MindReadingEvent : MonoBehaviour
     {
         AdventurerSpawner _adventurerSpawner;
-        GameLog _gameLog;
 
         void Awake()
         {
             AdventurerSpawner.TryFind(out _adventurerSpawner);
-            GameLog.TryFind(out _gameLog);
         }
 
         public void Execute()
@@ -39,7 +37,7 @@ namespace Game
             }
 
             // イベント実行をログに表示。
-            _gameLog.Add("システム", "何者かが冒険者の思考を盗聴している。", GameLogColor.Green);
+            GameLog.Add("システム", "何者かが冒険者の思考を盗聴している。", GameLogColor.Green);
         }
     }
 }

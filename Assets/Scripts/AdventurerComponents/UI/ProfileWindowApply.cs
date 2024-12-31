@@ -23,7 +23,7 @@ namespace Game
         string IProfileWindowDisplayStatus.FullName => _blackboard.FullName;
         string IProfileWindowDisplayStatus.Job => _blackboard.Job;
         string IProfileWindowDisplayStatus.Background => _blackboard.Background;
-        SubGoal IProfileWindowDisplayStatus.CurrentSubGoal => _subGoalPath.Current;
+        SubGoal IProfileWindowDisplayStatus.CurrentSubGoal => _subGoalPath.GetCurrent();
         IEnumerable<ItemInventory.Entry> IProfileWindowDisplayStatus.Item => _itemInventory.GetEntries();
         IEnumerable<string> IProfileWindowDisplayStatus.Effect => GetEnabledStatusEffects();
         IReadOnlyList<Information> IProfileWindowDisplayStatus.Information => _informationStock.Stock;

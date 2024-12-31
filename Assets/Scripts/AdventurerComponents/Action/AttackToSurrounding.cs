@@ -8,14 +8,12 @@ namespace Game
 {
     public class AttackToSurrounding : SurroundingAction
     {
-        DungeonManager _dungeonManager;
         Adventurer _adventurer;
         Blackboard _blackboard;
         Animator _animator;
 
         void Awake()
         {
-            DungeonManager.TryFind(out _dungeonManager);
             _adventurer = GetComponent<Adventurer>();
             _blackboard = GetComponent<Blackboard>();
             _animator = GetComponentInChildren<Animator>();
@@ -34,7 +32,7 @@ namespace Game
             if (TryGetTarget<TTarget>(out Actor target))
             {
                 // 攻撃する前に目標に向く。
-                Vector3 targetPosition = _dungeonManager.GetCell(target.Coords).Position;
+                Vector3 targetPosition = DungeonManager.GetCell(target.Coords).Position;
                 await RotateAsync(RotateSpeed, targetPosition, token);
 
                 _animator.Play("Attack");
@@ -48,12 +46,9 @@ namespace Game
                 {
                     // 撃破時の台詞。
                     if (line != null) line.ShowLine(RequestLineType.DefeatEnemy);
-                    
+
                     // ゲーム進行ログに表示。
-                    if (GameLog.TryFind(out GameLog gameLog))
-                    {
-                        gameLog.Add($"システム", $"{_blackboard.DisplayName}が敵を倒した。", GameLogColor.White);
-                    }
+                    GameLog.Add($"システム", $"{_blackboard.DisplayName}が敵を倒した。", GameLogColor.White);
 
                     actionLogText = "I attacked the enemy. I defeated the enemy.";
 

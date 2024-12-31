@@ -51,14 +51,12 @@ namespace Game
 
         IEnumerator KeepOpenAsync()
         {
-            DungeonManager.TryFind(out DungeonManager dungeonManager);
-
             // –`Œ¯Ò‚ªˆá‚¤ƒZƒ‹‚ÉˆÚ“®‚·‚é‚Ü‚Å‘Ò‚ÂB
             do
             {
                 yield return _keepOpen ??= new WaitForSeconds(1.0f); // 1~2•bŠÔŠu‚Å’²‚×‚ê‚Î\•ªB
 
-            } while (dungeonManager.GetActorsOnCell(Coords).Any(x => x is Adventurer));
+            } while (DungeonManager.GetActorsOnCell(Coords).Any(x => x is Adventurer));
         }
 
         static float Easing(float x)

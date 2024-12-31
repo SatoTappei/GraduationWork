@@ -13,13 +13,11 @@ namespace Game
         [SerializeField] int _damage = 10;
         [SerializeField] string _weapon = "パンチ";
 
-        DungeonManager _dungeonManager;
         Enemy _enemy;
         Animator _animator;
 
         void Awake()
         {
-            DungeonManager.TryFind(out _dungeonManager);
             _enemy = GetComponent<Enemy>();
             _animator = GetComponentInChildren<Animator>();
         }
@@ -30,7 +28,7 @@ namespace Game
             if (TryGetTarget<Adventurer>(out Actor target))
             {
                 // 攻撃する前に目標に向く。
-                Vector3 targetPosition = _dungeonManager.GetCell(target.Coords).Position;
+                Vector3 targetPosition = DungeonManager.GetCell(target.Coords).Position;
                 await RotateAsync(_rotateSpeed, targetPosition, token);
 
                 _animator.Play("Attack");

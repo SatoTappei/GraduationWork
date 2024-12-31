@@ -8,13 +8,11 @@ namespace Game
 {
     public class TalkToSurrounding : SurroundingAction
     {
-        DungeonManager _dungeonManager;
         Adventurer _adventurer;
         Animator _animator;
 
         void Awake()
         {
-            DungeonManager.TryFind(out _dungeonManager);
             _adventurer = GetComponent<Adventurer>();
             _animator = GetComponentInChildren<Animator>();
         }
@@ -32,7 +30,7 @@ namespace Game
             if (TryGetTarget<Adventurer>(out Actor target))
             {
                 // 会話する前に目標に向く。
-                Vector3 targetPosition = _dungeonManager.GetCell(target.Coords).Position;
+                Vector3 targetPosition = DungeonManager.GetCell(target.Coords).Position;
                 await RotateAsync(RotateSpeed, targetPosition, token);
 
                 _animator.Play("Talk");
@@ -65,10 +63,10 @@ namespace Game
         void ApplyTalk(Adventurer target)
         {
             if (target == null) return;
-            if (!TryGetComponent(out InformationStock information)) return;
+            if (!TryGetComponent(out TalkThemeSelectAI ai)) return;
 
             // 情報の中から会話内容として選んだものを相手に伝える。
-            target.Talk(information.TalkTheme, "Adventurer", _adventurer.Coords);
+            target.Talk(ai.Selected, "Adventurer", _adventurer.Coords);
         }
     }
 }

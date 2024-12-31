@@ -6,14 +6,14 @@ namespace Game
 {
     public class MovementPath : MonoBehaviour
     {
-        DungeonManager _dungeonManager;
+        Pathfinding _pathfinding;
         List<Cell> _path;
         string _target;
         int _currentIndex;
 
         void Awake()
         {
-            DungeonManager.TryFind(out _dungeonManager);
+            Pathfinding.TryFind(out _pathfinding);
             _path = new List<Cell>();
         }
 
@@ -23,7 +23,7 @@ namespace Game
         public void Finding(string target, Vector2Int start, Vector2Int goal)
         {
             _path.Clear();
-            _dungeonManager.Pathfinding(start, goal, _path);
+            _pathfinding.CalculatePath(start, goal, _path);
             _target = target;
             _currentIndex = 0;
         }

@@ -1,7 +1,6 @@
 using Cinemachine;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 namespace Game
@@ -56,10 +55,10 @@ namespace Game
 
             // 冒険者が「移動」以外の行動をしている場合はズームする。
             float zoom;
-            if (target.SelectedAction == "Move North" ||
-                target.SelectedAction == "Move South" ||
-                target.SelectedAction == "Move East" ||
-                target.SelectedAction == "Move West")
+            if (target.SelectedAction == "MoveNorth" ||
+                target.SelectedAction == "MoveSouth" ||
+                target.SelectedAction == "MoveEast" ||
+                target.SelectedAction == "MoveWest")
             {
                 zoom = 1.0f;
             }

@@ -49,9 +49,8 @@ namespace Game
             await UniTask.WaitUntil(() => _isInitialized, cancellationToken: token);
 
             // 生成したセル上に自身を移動と追加。
-            DungeonManager.TryFind(out DungeonManager dungeonManager);
-            dungeonManager.AddActorOnCell(Coords, this);
-            transform.position = dungeonManager.GetCell(Coords).Position;
+            DungeonManager.AddActorOnCell(Coords, this);
+            transform.position = DungeonManager.GetCell(Coords).Position;
 
             // 湧いた際の演出。
             if (TryGetComponent(out EnemySpawnEffect spawnEffect)) spawnEffect.Play();

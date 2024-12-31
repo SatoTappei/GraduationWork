@@ -8,7 +8,6 @@ using AI;
 
 namespace Game
 {
-    // Awakeのタイミングで黒板の値を参照するので、黒板の初期化が完了次第このスクリプトをAddComponentする。
     public class GamePlayAI : MonoBehaviour
     {
         [System.Serializable]
@@ -19,11 +18,10 @@ namespace Game
                 Surroundings = new Surroundings();
             }
 
-            public Vector2Int CurrentCoords;
             public string CurrentLocation;
             public Surroundings Surroundings;
             public string[] ActionLog;
-            public string[] DecisionSupportContext;
+            public string[] Information;
             public string[] AvailableActions;
             public string Goal;
         }
@@ -38,89 +36,109 @@ namespace Game
         }
 
         Adventurer _adventurer;
-        Blackboard _blackboard;
         ActionLog _actionLog;
         InformationStock _informationStock;
         AvailableActions _availableActions;
         SubGoalPath _subGoalPath;
         ExploreRecord _exploreRecord;
-        DungeonManager _dungeonManager;
         AIClient _ai;
 
-        // AIの挙動が気に入らない場合、次にリクエストする前に初期化する。
-        bool _isRequestedInitialize;
+        // 次にリクエストする際、事前にAIを初期化するフラグ。
+        bool _isPreInitialize;
 
         void Awake()
         {
             _adventurer = GetComponent<Adventurer>();
-            _blackboard = GetComponent<Blackboard>();
             _actionLog = GetComponent<ActionLog>();
             _informationStock = GetComponent<InformationStock>();
             _availableActions = GetComponent<AvailableActions>();
             _subGoalPath = GetComponent<SubGoalPath>();
             _exploreRecord = GetComponent<ExploreRecord>();
-            DungeonManager.TryFind(out _dungeonManager);
-
-            Initialize();
         }
 
-        public void RequestInitialize()
+        public void PreInitialize()
         {
-            _isRequestedInitialize = true;
+            _isPreInitialize = true;
         }
 
         public async UniTask<string> RequestNextActionAsync(CancellationToken token)
         {
+            // ここら辺、きちんとナルチェックとかしたほうが良いかも。
             RequestFormat format = new RequestFormat();
-            format.CurrentCoords = _adventurer.Coords;
-            format.CurrentLocation = _dungeonManager.GetCell(_adventurer.Coords).Location.ToString();
+            format.CurrentLocation = DungeonManager.GetCell(_adventurer.Coords).Location.ToString();
             format.Surroundings.North = GetCellInfo(_adventurer.Coords + Vector2Int.up);
             format.Surroundings.South = GetCellInfo(_adventurer.Coords + Vector2Int.down);
             format.Surroundings.East = GetCellInfo(_adventurer.Coords + Vector2Int.right);
             format.Surroundings.West = GetCellInfo(_adventurer.Coords + Vector2Int.left);
             format.ActionLog = _actionLog.Log.ToArray();
-            format.DecisionSupportContext = _informationStock.Entries.ToArray();
-            format.AvailableActions = _availableActions.Actions.ToArray();
-            format.Goal = _subGoalPath.Current.Text.English;
+            format.Information = _informationStock.Entries.ToArray();
+            format.AvailableActions = _availableActions.GetEntries().ToArray();
+            format.Goal = _subGoalPath.GetCurrent().Text.English;
 
             // 初期化を要求されていた場合。
-            if (_isRequestedInitialize)
+            if (_isPreInitialize)
             {
-                _isRequestedInitialize = false;
+                _isPreInitialize = false;
+                Initialize();
+            }
+            
+            // 初期化を忘れて呼ばれた場合。
+            if (_ai == null)
+            {
+                Debug.LogWarning("初期化せずに台詞をリクエストしたので、リクエスト前に初期化した。");
                 Initialize();
             }
 
             string response = await _ai.RequestAsync(JsonUtility.ToJson(format), token);
             token.ThrowIfCancellationRequested();
 
-            return response.Trim('"');
+            // 選択肢とスコアがスペース区切りで返ってくることを想定。
+            // ダブルクオーテーションが付いている場合もある。
+            string result = response.Split()[0].Trim('"');
+            
+            return result;
         }
 
         void Initialize()
         {
-            string personality = _blackboard.AdventurerSheet.Personality;
-            string motivation = _blackboard.AdventurerSheet.Motivation;
-            string weaknesses = _blackboard.AdventurerSheet.Weaknesses;
-            string prompt =
-                $"# Instructions\n" +
-                $"- Your character’s attributes are as follows. Consider these settings carefully when deciding the next action.\n" +
-                $"- **Character Profile**: {personality}, {motivation}, {weaknesses}\n" +
-                $"- Choose actions that align with the character’s personality, motivations, and typical behavior patterns. Avoid actions that go against their personality or expose their weaknesses.\n" +
+            TryGetComponent(out Blackboard blackboard);
+            if (blackboard.AdventurerSheet == null)
+            {
+                Debug.LogWarning("冒険者のデータが読み込まれていない。");
+
+                _ai = new AIClient($"Select one of the AvailableActions and output the value only.");
+            }
+            else
+            {
+                string prompt =
+                    $"# Instructions\n" +
+                    $"- Your character’s profiles are as follows.\n" +
+                    $"- Consider these profiles carefully when deciding the next action.\n" +
+                    $"- Avoid actions that go against their personality or expose their weaknesses.\n" +
+                    $"# CharacterProfiles(Japanese)\n" +
+                    $"- {blackboard.AdventurerSheet.Personality}\n" +
+                    $"- {blackboard.AdventurerSheet.Motivation}\n" +
+                    $"- {blackboard.AdventurerSheet.Weaknesses}\n" +
+                    $"# OutputFormat\n" +
 #if true
-                $"- Select one of the AvailableActions and output the value only.";
+                    $"- Select one of the AvailableActions and output the value only.";
 #else
                 // その行動を選択した理由、他に必要な情報が無いか確認する用途。
-                $"- Please select the next action from the AvailableActions and tell us why you made that choice.\n" +
-                $"- If you lack the information needed to select the next action, please tell us what information you want.";
+                $"- Select one of the AvailableActions.\n" +
+                $"- The reason for choosing that action is also output.\n" +
+                $"- Is there any other information you would like to know when choosing an action?";
 #endif
-            _ai = new AIClient(prompt);
+                _ai = new AIClient(prompt);
+            }
         }
 
         string GetCellInfo(Vector2Int coords)
         {
+            // 壁の場合。
             if (Blueprint.Base[coords.y][coords.x] == '#') return "Wall";
 
-            Cell cell = _dungeonManager.GetCell(coords);
+            // その座標に何がいるかを説明する。
+            Cell cell = DungeonManager.GetCell(coords);
             string info = "Floor";
             foreach (Actor actor in cell.GetActors())
             {
@@ -181,16 +199,25 @@ namespace Game
                 }
             }
 
-            return GetExploreRecordTag(coords) + info;
-        }
-
-        string GetExploreRecordTag(Vector2Int coords)
-        {
+            // 探索回数に応じたタグを付与する。
             int count = _exploreRecord.GetCount(coords);
-
-            // 探索回数に応じたタグを返す。
-            if (count == 0) return "[Unexplored] ";
-            else return $"[Exproled {count} times.] ";
+            if (count == 0)
+            {
+                return $"[Unexplored] {info}";
+            }
+            else if (count == 1)
+            {
+                return $"[Exproled {count} time] {info}";
+            }
+            else if (count > 1)
+            {
+                return $"[Exproled {count} times] {info}";
+            }
+            else
+            {
+                Debug.LogWarning($"探索回数の値がマイナスになっている。: {count}");
+                return info;
+            }
         }
     }
 }

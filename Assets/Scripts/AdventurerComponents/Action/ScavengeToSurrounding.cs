@@ -10,13 +10,11 @@ namespace Game
     {
         Blackboard _blackboard;
         Animator _animator;
-        DungeonManager _dungeonManager;
 
         void Awake()
         {
             _blackboard = GetComponent<Blackboard>();
             _animator = GetComponentInChildren<Animator>();
-            DungeonManager.TryFind(out _dungeonManager);
         }
 
         public async UniTask ScavengeAsync(CancellationToken token)
@@ -32,7 +30,7 @@ namespace Game
             if (TryGetTarget<Treasure>(out Actor target) || TryGetTarget<IScavengeable>(out target))
             {
                 // 漁る前に目標に向く。
-                Vector3 targetPosition = _dungeonManager.GetCell(target.Coords).Position;
+                Vector3 targetPosition = DungeonManager.GetCell(target.Coords).Position;
                 await RotateAsync(RotateSpeed, targetPosition, token);
 
                 _animator.Play("Scav");
@@ -64,9 +62,9 @@ namespace Game
                 }
 
                 // 表示する内容がある場合はゲーム進行ログに表示。
-                if (gameLogText != string.Empty && GameLog.TryFind(out GameLog gameLog))
+                if (gameLogText != string.Empty)
                 {
-                    gameLog.Add("システム", gameLogText, GameLogColor.White);
+                    GameLog.Add("システム", gameLogText, GameLogColor.White);
                 }
 
                 // 漁った結果に応じた台詞を表示。

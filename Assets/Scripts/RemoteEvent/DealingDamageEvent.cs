@@ -12,15 +12,11 @@ namespace Game
 
         DealingDamageEffectPool _effectpool;
         AdventurerSpawner _adventurerSpawner;
-        DungeonManager _dungeonManager;
-        GameLog _gameLog;
 
         void Awake()
         {
             _effectpool = GetComponent<DealingDamageEffectPool>();
             AdventurerSpawner.TryFind(out _adventurerSpawner);
-            DungeonManager.TryFind(out _dungeonManager);
-            GameLog.TryFind(out _gameLog);
         }
 
         void OnDrawGizmosSelected()
@@ -37,7 +33,7 @@ namespace Game
             // ランダムな冒険者に対し、狙うことが出来る座標のセル。
             Adventurer target = adventurers[Random.Range(0, adventurers.Length)];
             Vector2Int coords = GetOptimalCoords(target);
-            Cell placeCell = _dungeonManager.GetCell(coords);
+            Cell placeCell = DungeonManager.GetCell(coords);
 
             if (_effectpool.TryPop(out DealingDamageEffect effect))
             {
@@ -46,7 +42,7 @@ namespace Game
             }
 
             // イベント実行をログに表示。
-            _gameLog.Add("システム", "何者かが冒険者を砲撃した。", GameLogColor.Green);
+            GameLog.Add("システム", "何者かが冒険者を砲撃した。", GameLogColor.Green);
         }
 
         // 目標とある程度離れた座標を返す。
@@ -72,12 +68,10 @@ namespace Game
         // イベントの候補となる座標を描画する。
         void Draw()
         {
-            if (_dungeonManager == null) return;
-
             Gizmos.color = new Color(1, 0, 0, 0.5f);
             for (int i = 0; i < _candidateCoords.Length; i++)
             {
-                Cell cell = _dungeonManager.GetCell(_candidateCoords[i]);
+                Cell cell = DungeonManager.GetCell(_candidateCoords[i]);
                 Gizmos.DrawCube(cell.Position + Vector3.up, Vector3.one);
             }
         }

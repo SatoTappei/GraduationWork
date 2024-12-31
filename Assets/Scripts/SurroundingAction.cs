@@ -11,7 +11,6 @@ namespace Game
         public bool TryGetTarget<T>(out Actor target)
         {
             Actor blackboard = GetComponent<Actor>();
-            DungeonManager.TryFind(out DungeonManager dungeonManager);
 
             for (int i = -1; i <= 1; i++)
             {
@@ -22,7 +21,7 @@ namespace Game
 
                     // 指定した型にキャストできる場合は目標と判定する。
                     Vector2Int coords = blackboard.Coords + new Vector2Int(k, i);
-                    IReadOnlyList<Actor> actors = dungeonManager.GetCell(coords).GetActors();
+                    IReadOnlyList<Actor> actors = DungeonManager.GetCell(coords).GetActors();
                     foreach (Actor actor in actors)
                     {
                         if (actor is T) { target = actor; return true; }

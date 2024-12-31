@@ -8,7 +8,7 @@ using AI;
 
 namespace Game
 {
-    public class ScoreEvaluateAI : MonoBehaviour
+    public class ScoreEvaluateAI
     {
         [System.Serializable]
         class RequestFormat
@@ -19,24 +19,36 @@ namespace Game
 
         AIClient _ai;
 
-        void Awake()
+        public ScoreEvaluateAI()
         {
             // キャラクター性を反映していないので、選び方は全員同じ。
-            // 必要に応じてコンストラクタの引数からキャラクターの設定を取得し、反映するよう書き換える。
             string prompt =
                 $"# Instructions\n" +
                 $"- You are a player in a game of dungeon exploration.\n" +
-                $"- The combination of information and source is given in Json format.\n" +
-                $"- It determines if the information is reliable or not and outputs only the confidence level with a value between 0 and 1.\n" +
-                $"'''\n" +
+                $"- Information and the source of that information are given.\n" +
+                $"- Determine the reliability of the information.\n" +
+                $"# OutputFormat\n" +
+                $"- Output the confidence level of the information as a number between 0 and 1.\n" +
                 $"# OutputExample\n" +
                 $"- 0.2\n" +
                 $"- 1.0\n";
+
             _ai = new AIClient(prompt);
         }
 
         public async UniTask<float> EvaluateAsync(Information information, CancellationToken token)
         {
+            if (information == null)
+            {
+                Debug.LogWarning("評価しようとした情報がnull");
+                return 0;
+            }
+            else if (information.Text == null)
+            {
+                Debug.LogWarning("評価しようとした情報の文章がnull");
+                return 0;
+            }
+
             // SharedInformation型にはAIが判定するのに必要ない日本語の文章とスコア情報が含まれている。
             // リクエスト専用の型に必要な値をコピーし、その型でリクエストする。
             RequestFormat request = new RequestFormat();

@@ -11,15 +11,11 @@ namespace Game
         [SerializeField] bool _isDraw;
 
         TrapPool _trapPool;
-        DungeonManager _dungeonManager;
-        GameLog _gameLog;
         HashSet<Vector2Int> _placedCoords;
 
         void Awake()
         {
             _trapPool = GetComponent<TrapPool>();
-            DungeonManager.TryFind(out _dungeonManager);
-            GameLog.TryFind(out _gameLog);
             _placedCoords = new HashSet<Vector2Int>();
 
             // 先頭の座標から順に配置してもランダムに配置されるよう、並び替える。
@@ -47,18 +43,16 @@ namespace Game
             }
 
             // イベント実行をログに表示。
-            _gameLog.Add("システム", "何者かが罠を設置した。", GameLogColor.Green);
+            GameLog.Add("システム", "何者かが罠を設置した。", GameLogColor.Green);
         }
 
         // イベントの候補となる座標を描画する。
         void Draw()
         {
-            if (_dungeonManager == null) return;
-
             Gizmos.color = new Color(1, 0, 0, 0.5f);
             for (int i = 0; i < _candidateCoords.Length; i++)
             {
-                Cell cell = _dungeonManager.GetCell(_candidateCoords[i]);
+                Cell cell = DungeonManager.GetCell(_candidateCoords[i]);
                 Gizmos.DrawCube(cell.Position, Vector3.one);
             }
         }

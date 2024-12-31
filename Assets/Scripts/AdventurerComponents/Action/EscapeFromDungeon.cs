@@ -8,13 +8,11 @@ namespace Game
 {
     public class EscapeFromDungeon : BaseAction
     {
-        Adventurer _adventurer;
         Blackboard _blackboard;
         SubGoalPath _subGoalPath;
 
         void Awake()
         {
-            _adventurer = GetComponent<Adventurer>();
             _blackboard = GetComponent<Blackboard>();
             _subGoalPath = GetComponent<SubGoalPath>();
         }
@@ -23,12 +21,10 @@ namespace Game
         {
             const float AnimationLength = 1.0f * 2;
 
-            // 最後のサブゴールをクリアした状態かつ入口に立っている場合は脱出。
-            bool isLast = _subGoalPath.IsLast;
-            bool isEntrance = Blueprint.Interaction[_adventurer.Coords.y][_adventurer.Coords.x] == '<';
-            bool isCompleted = _subGoalPath.Current.IsCompleted();
-
-            if (!(isLast && isEntrance && isCompleted)) return false;
+            // 現在のサブゴールが「ダンジョンの入口に戻る。」かつ、サブゴールが完了したかチェック。
+            bool isLast = _subGoalPath.GetCurrent().Text.Japanese == ReturnToEntrance.JapaneseText;
+            bool isCompleted = _subGoalPath.GetCurrent().IsCompleted();
+            if (!(isLast && isCompleted)) return false;
 
             // 脱出の演出。
             Animator animator = GetComponentInChildren<Animator>();
@@ -38,16 +34,14 @@ namespace Game
             if (TryGetComponent(out LineApply line)) line.ShowLine(RequestLineType.Goal);
 
             // ゲーム進行ログに表示。
-            GameLog.TryFind(out GameLog gameLog);
-            gameLog.Add($"システム", $"{_blackboard.DisplayName}がダンジョンから脱出した。", GameLogColor.Yellow);
+            GameLog.Add($"システム", $"{_blackboard.DisplayName}がダンジョンから脱出した。", GameLogColor.Yellow);
 
             // 演出の終了を待つ。
             await UniTask.WaitForSeconds(AnimationLength, cancellationToken: token);
 
             // セルから削除。
             TryGetComponent(out Adventurer adventurer);
-            DungeonManager.TryFind(out DungeonManager dungeonManager);
-            dungeonManager.RemoveActorOnCell(adventurer.Coords, adventurer);
+            DungeonManager.RemoveActorOnCell(adventurer.Coords, adventurer);
 
             return true;
         }

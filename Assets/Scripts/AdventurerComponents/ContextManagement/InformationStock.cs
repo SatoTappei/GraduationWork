@@ -11,22 +11,11 @@ namespace Game
     {
         List<Information> _stock;
         Queue<Information> _pending;
-        TalkThemeSelectAI _talkThemeSelectAI;
         ScoreEvaluateAI _scoreEvaluateAI;
-        TurnEvaluateAI _turnEvaluateAI;
-        Information _talkTheme;
 
         // 次に情報を更新するタイミングで保留中を含め全て削除する。
         bool _isRequestedDelete;
 
-        public BilingualString TalkTheme
-        {
-            get
-            {
-                if (_talkTheme == null) return new BilingualString(string.Empty, string.Empty);
-                else return _talkTheme.Text;
-            }
-        }
         public IReadOnlyList<string> Entries => _stock.Select(info => info.Text.English).ToArray();
         public IReadOnlyList<Information> Stock => _stock;
         public IEnumerable<Information> SharedStock => Stock.Where(info => info.IsShared);
@@ -35,11 +24,13 @@ namespace Game
         {
             _stock = new List<Information>();
             _pending = new Queue<Information>();
+            _scoreEvaluateAI = new ScoreEvaluateAI();
         }
 
         public void AddPending(BilingualString text, string source, bool isShared = true)
         {
-            AddPending(new Information(text, source, isShared));
+            if (text == null) Debug.LogWarning("追加しようとした文章がnull");
+            else AddPending(new Information(text, source, isShared));
         }
 
         public void AddPending(Information info)
@@ -87,20 +78,31 @@ namespace Game
             }
             _pending.Clear();
 
-            // Adventurerクラスの初期化後に追加されるコンポーネントなので、AwakeやStartで取得せず、
-            // Adventurer側から最初に呼び出したタイミングで取得する。
-            _talkThemeSelectAI ??= GetComponent<TalkThemeSelectAI>();
-            _scoreEvaluateAI ??= GetComponent<ScoreEvaluateAI>();
-            _turnEvaluateAI ??= GetComponent<TurnEvaluateAI>();
-
             // 保留中の情報をAIが評価し、保持している情報に追加。
             foreach (Information newInfo in pendingCopy)
             {
-                // AIの評価でスコアと残りターンを決める。
+                // AIに情報を評価してもらい、有効ターンを決める。
+                // とりあえずスコアを基に1~10ターンの間で設定する。
                 newInfo.Score = await _scoreEvaluateAI.EvaluateAsync(newInfo, token);
-                newInfo.RemainingTurn = await _turnEvaluateAI.EvaluateAsync(newInfo, token);
+                newInfo.RemainingTurn = Mathf.RoundToInt(newInfo.Score * 10);
 
-                Replace(newInfo);
+                // 既に知っている情報の場合は、スコアと残りターンを更新する。
+                bool isReplaced = false;
+                foreach (Information info in _stock)
+                {
+                    if (info.Text.Japanese == newInfo.Text.Japanese)
+                    {
+                        info.Score = newInfo.Score;
+                        info.RemainingTurn = newInfo.RemainingTurn;
+                        isReplaced = true;
+                        break;
+                    }
+                }
+
+                if (isReplaced) continue;
+
+                // それ以外の場合は新しく追加する。
+                _stock.Add(newInfo);
             }
 
             // スコア順でソート。
@@ -109,26 +111,6 @@ namespace Game
             // 保持できる数を超えた場合はスコアが低いものを消す。
             const int Max = 4;
             if (_stock.Count > Max) _stock.RemoveAt(Max - 1);
-
-            // 会話する際に相手に伝える内容をAIが選ぶ。
-            _talkTheme = await _talkThemeSelectAI.SelectAsync(_stock, token);
-        }
-
-        void Replace(Information newInfo)
-        {
-            // 既に知っている情報の場合は、スコアと残りターンを更新する。
-            foreach (Information info in _stock)
-            {
-                if (info.Text.Japanese == newInfo.Text.Japanese)
-                {
-                    info.Score = newInfo.Score;
-                    info.RemainingTurn = newInfo.RemainingTurn;
-                    return;
-                }
-            }
-
-            // それ以外の場合は新しく追加する。
-            _stock.Add(newInfo);
         }
 
         static void Sort(List<Information> list, int left, int right)

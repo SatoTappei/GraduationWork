@@ -13,6 +13,8 @@ namespace Game
             public GameLogColor Color;
         }
 
+        static GameLog _instance;
+
         [SerializeField] GameLogUI[] _rows;
         [SerializeField] Vector3 _position;
         [SerializeField] float _height = 120.0f;
@@ -25,6 +27,9 @@ namespace Game
 
         void Awake()
         {
+            if (_instance == null) _instance = this;
+            else Destroy(this);
+
             _pool = new Queue<GameLogUI>();
             _used = new List<GameLogUI>();
             _buffer = new Queue<LogContent>();
@@ -42,15 +47,14 @@ namespace Game
             StartCoroutine(DisplayBufferdRepeatingAsync());
         }
 
-        public static bool TryFind(out GameLog result)
+        void OnDestroy()
         {
-            result = GameObject.FindGameObjectWithTag("UiManager").GetComponent<GameLog>();
-            return result != null;
+            _instance = null;
         }
 
-        public void Add(string label, string value, GameLogColor color)
+        public static void Add(string label, string value, GameLogColor color)
         {
-            _buffer.Enqueue(new LogContent() { Label = label, Value = value, Color = color });
+            _instance._buffer.Enqueue(new LogContent() { Label = label, Value = value, Color = color });
         }
 
         IEnumerator DisplayBufferdRepeatingAsync()

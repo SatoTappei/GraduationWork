@@ -10,16 +10,11 @@ namespace Game
     // そのため、派生クラスで経路の作成を行い、このクラスの移動処理を呼び出す。
     public class Movement : BaseAction
     {
-        DungeonManager _dungeonManager;
         MovementPath _movementPath;
         Adventurer _adventurer;
         Blackboard _blackboard;
         Animator _animator;
 
-        protected DungeonManager DungeonManager
-        {
-            get => _dungeonManager;
-        }
         protected MovementPath MovementPath
         {
             get => _movementPath;
@@ -37,7 +32,6 @@ namespace Game
 
         void Awake()
         {
-            DungeonManager.TryFind(out _dungeonManager);
             _adventurer = GetComponent<Adventurer>();
             _blackboard = GetComponent<Blackboard>();
             _movementPath = GetComponent<MovementPath>();
@@ -73,9 +67,9 @@ namespace Game
                 _animator.Play("Walk");
 
                 // 座標の値を次のセルの座標に更新。
-                _dungeonManager.RemoveActorOnCell(Coords, _adventurer);
+                DungeonManager.RemoveActorOnCell(Coords, _adventurer);
                 Coords = nextCellCoords;
-                _dungeonManager.AddActorOnCell(Coords, _adventurer);
+                DungeonManager.AddActorOnCell(Coords, _adventurer);
 
                 await (TranslateAsync(_blackboard.Speed * speedMag, nextCellPosition, token),
                     RotateAsync(RotateSpeed * speedMag, nextCellPosition, token));

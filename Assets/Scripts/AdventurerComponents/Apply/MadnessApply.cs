@@ -38,16 +38,16 @@ namespace Game
             for (int i = 0; i < 10; i++)
             {
                 _informationStock.AddPending(Text, "Myself", isShared: false);
-                _availableActions.Remove("Scavenge Surrounding");
-                _availableActions.Remove("Talk Surrounding");
-                _availableActions.Add("Attack Surrounding Adventurer");
-                
+                //_availableActions.Remove("Scavenge Surrounding");
+                //_availableActions.Remove("Talk Surrounding");
+                // _availableActions.Add("Attack Surrounding Adventurer");
+
                 yield return _waitInterval ??= new WaitForSeconds(3.0f);
             }
 
-            _availableActions.Add("Scavenge Surrounding");
-            _availableActions.Add("Talk Surrounding");
-            _availableActions.Remove("Attack Surrounding Adventurer");
+            //_availableActions.Add("Scavenge Surrounding");
+            //_availableActions.Add("Talk Surrounding");
+            //_availableActions.Remove("Attack Surrounding Adventurer");
 
             _isEnabled = false;
         }

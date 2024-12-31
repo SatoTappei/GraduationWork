@@ -2,7 +2,6 @@ using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using UnityEngine;
 
 namespace Game
 {
@@ -27,8 +26,7 @@ namespace Game
 
             // ƒZƒ‹‚©‚çíœB
             TryGetComponent(out Enemy enemy);
-            DungeonManager.TryFind(out DungeonManager dungeonManager);
-            dungeonManager.RemoveActorOnCell(enemy.Coords, enemy);
+            DungeonManager.RemoveActorOnCell(enemy.Coords, enemy);
 
             return true;
         }

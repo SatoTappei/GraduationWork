@@ -23,13 +23,7 @@ namespace Game
         [SerializeField] AudioSource _helicopterAudioSource;
         [SerializeField] AudioSource _missileAudioSource;
 
-        DungeonManager _dungeonManager;
         WaitForSeconds _waitHelicopterExplosion;
-
-        void Awake()
-        {
-            DungeonManager.TryFind(out _dungeonManager);
-        }
 
         public void Play(Vector3 position, Adventurer target)
         {
@@ -76,7 +70,7 @@ namespace Game
 
             // イベント演出時間が長いので、目標がイベント発生位置から離れている可能性がある。
             // なので、実際にイベント発生位置に冒険者がいるかチェック。
-            foreach (Actor actor in _dungeonManager.GetActorsOnCell(targetCoords))
+            foreach (Actor actor in DungeonManager.GetActorsOnCell(targetCoords))
             {
                 if (actor is Adventurer target)
                 {

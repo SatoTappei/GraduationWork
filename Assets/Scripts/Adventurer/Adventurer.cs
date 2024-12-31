@@ -1,5 +1,4 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
@@ -65,7 +64,7 @@ namespace Game
             if (TryGetComponent(out ActionLog log)) log.Delete();
             if (TryGetComponent(out ExploreRecord record)) record.Delete();
             if (TryGetComponent(out InformationStock information)) information.RequestDelete();
-            if (TryGetComponent(out GamePlayAI ai)) ai.RequestInitialize();
+            if (TryGetComponent(out GamePlayAI ai)) ai.PreInitialize();
         }
 
         public void Talk(BilingualString text, string source, Vector2Int coords)
@@ -106,18 +105,15 @@ namespace Game
             // 初期化が完了するまで待つ。
             await UniTask.WaitUntil(() => _isInitialized, cancellationToken: token);
 
-            // 初期化時に黒板に書き込まれる値を、AwakeやStartのタイミングで参照するコンポーネント群を追加。
-            gameObject.AddComponent<RolePlayAI>();
-            gameObject.AddComponent<GamePlayAI>();
-            gameObject.AddComponent<ScoreEvaluateAI>();
-            gameObject.AddComponent<TurnEvaluateAI>();
-            gameObject.AddComponent<TalkThemeSelectAI>();
-            gameObject.AddComponent<CommentReactionAI>();
+            // 各種AIを初期化。
+            TryGetComponent(out GamePlayAI gamePlayAI);
+            gamePlayAI.PreInitialize();
+            TryGetComponent(out RolePlayAI rolePlayAI);
+            rolePlayAI.Initialize();
 
             // 生成したセル上に自身を移動と追加。
-            DungeonManager.TryFind(out DungeonManager dungeonManager);
-            dungeonManager.AddActorOnCell(Coords, this);
-            transform.position = dungeonManager.GetCell(Coords).Position;
+            DungeonManager.AddActorOnCell(Coords, this);
+            transform.position = DungeonManager.GetCell(Coords).Position;
 
             // UIに反映。
             if (TryGetComponent(out StatusBarApply statusBar)) statusBar.Register();
@@ -133,11 +129,12 @@ namespace Game
 
             // サブゴールを決める。
             TryGetComponent(out SubGoalPath subGoalPath);
-            await subGoalPath.PlanningAsync(token);
+            subGoalPath.Initialize(await SubGoalSelector.SelectAsync(AdventurerSheet, token));
 
             TryGetComponent(out FatigueDamageApply fatigueDamage);
-            TryGetComponent(out GamePlayAI gamePlayAI);
+            //TryGetComponent(out GamePlayAI gamePlayAI);
             TryGetComponent(out InformationStock informationStock);
+            TryGetComponent(out TalkThemeSelectAI talkThemeSelectAI);
             TryGetComponent(out MovementToDirection moveToDirection);
             TryGetComponent(out MovementToTarget moveToTarget);
             TryGetComponent(out AttackToSurrounding attack);
@@ -147,7 +144,8 @@ namespace Game
             TryGetComponent(out EscapeFromDungeon escape);
             TryGetComponent(out FootTrapApply foot);
             TryGetComponent(out AvailableActions availableActions);
-            TryGetComponent(out SurroundingApply surroundingApply);
+            TryGetComponent(out ActionEvaluator actionEvaluator);
+            TerrainFeature.TryFind(out TerrainFeature terrainFeature);
             while (!token.IsCancellationRequested)
             {
                 // ターン数を更新。
@@ -165,17 +163,23 @@ namespace Game
 
                 // 現在いるセルについて、地形の特徴に関する情報がある場合、
                 // AIが次の行動を選択する際に、考慮する情報の候補として追加する。
-                if (dungeonManager.TryGetTerrainFeature(Coords, out Information feature))
+                if (terrainFeature.TryGetInformation(Coords, out IReadOnlyList<Information> features))
                 {
-                    informationStock.AddPending(feature);
+                    // プレイする度、行動にバラつきを持たせるため、複数ある場合はランダムで1つ選ぶ。
+                    int random = Random.Range(0, features.Count);
+                    informationStock.AddPending(features[random]);
                 }
 
-                // 周囲に冒険者がいるか調べ、このターンに選べる行動の選択肢に反映する。
-                surroundingApply.Check();
+                // 周囲の状況やゴール、ステータスを調べ、それぞれの選択肢にスコア付け。
+                foreach ((string action, float score) value in actionEvaluator.Evaluate())
+                {
+                    availableActions.SetScore(value.action, value.score);
+                }
 
                 // 保持している情報を更新。
                 // 新しい情報を知った場合、このタイミングで保持している情報に追加される。
                 await informationStock.RefreshAsync(token);
+                await talkThemeSelectAI.SelectAsync(token);
 
                 // 情報を更新したのでUIに反映。
                 if (profileWindow != null) profileWindow.Apply();
@@ -183,18 +187,20 @@ namespace Game
                 // AIが次の行動を選択し、実行。
                 _selectedAction = await gamePlayAI.RequestNextActionAsync(token);
                 if (_selectedAction == "Idle") await UniTask.Yield(cancellationToken: token);
-                if (_selectedAction == "Move North") await moveToDirection.MoveAsync(Vector2Int.up, token);
-                if (_selectedAction == "Move South") await moveToDirection.MoveAsync(Vector2Int.down, token);
-                if (_selectedAction == "Move East") await moveToDirection.MoveAsync(Vector2Int.right, token);
-                if (_selectedAction == "Move West") await moveToDirection.MoveAsync(Vector2Int.left, token);
-                if (_selectedAction == "Return To Entrance") await moveToTarget.MoveAsync("Entrance", token);
-                if (_selectedAction == "Attack Surrounding") await attack.AttackAsync<Enemy>(token);
-                if (_selectedAction == "Attack Surrounding Adventurer") await attack.AttackAsync<Adventurer>(token);
-                if (_selectedAction == "Scavenge Surrounding") await scavenge.ScavengeAsync(token);
-                if (_selectedAction == "Talk Surrounding") await talk.TalkAsync(token);
+                if (_selectedAction == "MoveNorth") await moveToDirection.MoveAsync(Vector2Int.up, token);
+                if (_selectedAction == "MoveSouth") await moveToDirection.MoveAsync(Vector2Int.down, token);
+                if (_selectedAction == "MoveEast") await moveToDirection.MoveAsync(Vector2Int.right, token);
+                if (_selectedAction == "MoveWest") await moveToDirection.MoveAsync(Vector2Int.left, token);
+                if (_selectedAction == "MoveToEntrance") await moveToTarget.MoveAsync("Entrance", token);
+                if (_selectedAction == "AttackToEnemy") await attack.AttackAsync<Enemy>(token);
+                if (_selectedAction == "AttackToAdventurer") await attack.AttackAsync<Adventurer>(token);
+                if (_selectedAction == "TalkWithAdventurer") await talk.TalkAsync(token);
+                if (_selectedAction == "Scavenge") await scavenge.ScavengeAsync(token);
 
                 // 足元に罠等がある場合に起動。
                 if (foot != null) foot.Activate();
+
+                // 行動結果による選択肢のスコア付け。
 
                 // 撃破されたもしくは脱出した場合。
                 if (await defeated.DefeatedAsync(token) || await escape.EscapeAsync(token))
@@ -205,15 +211,12 @@ namespace Game
                 }
 
                 // サブゴールを達成した場合、次のサブゴールを設定。
-                if (subGoalPath.Current.IsCompleted())
+                if (subGoalPath.IsAchieve())
                 {
                     // サブゴールを達成した際の演出。
                     if (TryGetComponent(out SubGoalEffect subGoalEffect)) subGoalEffect.Play();
 
-                    subGoalPath.HeadingNext();
-
-                    // 利用可能な行動の選択肢がある場合は追加。
-                    availableActions.Add(subGoalPath.Current.GetAdditionalActions());
+                    subGoalPath.SetNext();
                 }
 
                 await UniTask.Yield(cancellationToken: token);

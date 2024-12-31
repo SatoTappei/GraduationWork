@@ -10,14 +10,12 @@ namespace Game
     {
         [SerializeField] Vector2Int _spawnCoords;
 
-        DungeonManager _dungeonManager;
         List<Adventurer> _spawned;
 
         public IReadOnlyList<Adventurer> Spawned => _spawned;
 
         void Awake()
         {
-            DungeonManager.TryFind(out _dungeonManager);
             _spawned = new List<Adventurer>();
         }
 
@@ -45,7 +43,7 @@ namespace Game
 
         bool IsCellEmpty()
         {
-            foreach (Actor actor in _dungeonManager.GetActorsOnCell(_spawnCoords))
+            foreach (Actor actor in DungeonManager.GetActorsOnCell(_spawnCoords))
             {
                 if (actor is Adventurer _) return false;
             }

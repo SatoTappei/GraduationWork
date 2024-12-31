@@ -50,8 +50,7 @@ namespace Game
             // 退場時の演出が終わるまで待つ。演出の長さに合わせて時間を指定。
             yield return _waitExitEffect ??= new WaitForSeconds(1.5f);
 
-            DungeonManager.TryFind(out DungeonManager dungeonManager);
-            dungeonManager.RemoveActorOnCell(Coords, this);
+            DungeonManager.RemoveActorOnCell(Coords, this);
 
             // プールに戻す。
             gameObject.SetActive(false);

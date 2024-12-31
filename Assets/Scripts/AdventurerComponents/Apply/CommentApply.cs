@@ -26,14 +26,16 @@ namespace Game
             // 自身へのコメントが無い場合。
             if (comment == null || comment.Count == 0) return;
 
-            if (!TryGetComponent(out CommentReactionAI ai)) return;
+            //if (!TryGetComponent(out CommentReactionAI ai)) return;
 
             // 自身へのコメントに対する台詞と、そのコメントを受けての心情の変化をAIに出力させる。
-            CommentReactionAI.Response response = await ai.RequestReactionAsync(comment, token);
+            //CommentReactionAI.Response response = await ai.RequestReactionAsync(comment, token);
+
+            float score = 1; // コメントの仕様書が来るまで仮の値。
 
             // AIが特に暴言や誹謗中傷に対して-1ばかり出力することを想定して、心情への影響はほどほどにしておく。
             // とりあえず20%上下するようにしておく。必要に応じて調整。
-            float add = (blackboard.MaxEmotion / 100.0f) * (20.0f * response.Score);
+            float add = (blackboard.MaxEmotion / 100.0f) * (20.0f * score);
             blackboard.CurrentEmotion += Mathf.CeilToInt(add);
 
             // UIに反映。

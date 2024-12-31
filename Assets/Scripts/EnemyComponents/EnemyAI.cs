@@ -7,12 +7,10 @@ namespace Game
     public class EnemyAI : MonoBehaviour
     {
         EnemyBlackboard _blackboard;
-        DungeonManager _dungeonManager;
 
         void Awake()
         {
             _blackboard = GetComponent<EnemyBlackboard>();
-            DungeonManager.TryFind(out  _dungeonManager);
         }
 
         public string ChoiceNextAction()
@@ -25,7 +23,7 @@ namespace Game
                     if (i == 0 && k == 0) continue;
                     if (i != 0 && k != 0) continue;
 
-                    Cell cell = _dungeonManager.GetCell(_blackboard.Coords + new Vector2Int(k, i));
+                    Cell cell = DungeonManager.GetCell(_blackboard.Coords + new Vector2Int(k, i));
                     foreach (Actor actor in cell.GetActors())
                     {
                         if (actor is Adventurer) return "Attack Surrounding";
@@ -53,7 +51,7 @@ namespace Game
             // 候補となる座標のうち、通行不可能もしくは斜め方向の座標を除く。
             for (int i = candidate.Count - 1; i >= 0; i--)
             {
-                Cell cell = _dungeonManager.GetCell(candidate[i]);
+                Cell cell = DungeonManager.GetCell(candidate[i]);
                 if (cell.IsImpassable()) candidate.RemoveAt(i);
                 else if (1.4f <= Vector2Int.Distance(_blackboard.Coords, candidate[i])) candidate.RemoveAt(i);
             }

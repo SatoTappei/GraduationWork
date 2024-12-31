@@ -23,7 +23,7 @@ namespace Game
         public static void ReportAdventureResult(Adventurer adventurer, string result)
         {
             GameManager gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
-            gameManager.SetAdventureResult(adventurer, result);
+            gameManager._adventureResults.Add(adventurer, result);
         }
 
         async UniTask UpdateAsync(CancellationToken token)
@@ -54,11 +54,6 @@ namespace Game
                 // "使用中"のスプレッドシートの内容を消す。
                 //await SpawnedAdventurerSender.DeleteAsync(token);
             }
-        }
-
-        void SetAdventureResult(Adventurer adventurer, string result)
-        {
-            _adventureResults.Add(adventurer, result);
         }
     }
 }

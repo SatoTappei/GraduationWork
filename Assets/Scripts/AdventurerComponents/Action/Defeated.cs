@@ -28,18 +28,14 @@ namespace Game
             if (TryGetComponent(out LineApply line)) line.ShowLine(RequestLineType.Defeated);
 
             // ログに表示。
-            if (GameLog.TryFind(out GameLog gameLog))
-            {
-                gameLog.Add("システム", $"{_blackboard.AdventurerSheet.DisplayName}は力尽きた。", GameLogColor.Red);
-            }
+            GameLog.Add("システム", $"{_blackboard.AdventurerSheet.DisplayName}は力尽きた。", GameLogColor.Red);
 
             // 演出の終了を待つ。
             await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
 
             // セルから削除。
             TryGetComponent(out Adventurer adventurer);
-            DungeonManager.TryFind(out DungeonManager dungeonManager);
-            dungeonManager.RemoveActorOnCell(adventurer.Coords, adventurer);
+            DungeonManager.RemoveActorOnCell(adventurer.Coords, adventurer);
 
             return true;
         }

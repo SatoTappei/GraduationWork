@@ -9,15 +9,11 @@ namespace Game
     {
         HelicopterCrashEffectPool _effectPool;
         AdventurerSpawner _adventurerSpawner;
-        DungeonManager _dungeonManager;
-        GameLog _gameLog;
 
         void Awake()
         {
             _effectPool = GetComponent<HelicopterCrashEffectPool>();
             AdventurerSpawner.TryFind(out _adventurerSpawner);
-            DungeonManager.TryFind(out _dungeonManager);
-            GameLog.TryFind(out _gameLog);
         }
 
         public void Execute()
@@ -28,7 +24,7 @@ namespace Game
 
             // ランダムな冒険者に対し、狙うことが出来る座標のセル。
             Adventurer target = adventurers[Random.Range(0, adventurers.Length)];
-            Cell placeCell = _dungeonManager.GetCell(target.Coords);
+            Cell placeCell = DungeonManager.GetCell(target.Coords);
 
             if (_effectPool.TryPop(out HelicopterCrashEffect effect))
             {
@@ -37,7 +33,7 @@ namespace Game
             }
 
             // イベント実行をログに表示。
-            _gameLog.Add("システム", "何者かがヘリコプターを要請した。", GameLogColor.Green);
+            GameLog.Add("システム", "何者かがヘリコプターを要請した。", GameLogColor.Green);
         }
     }
 }

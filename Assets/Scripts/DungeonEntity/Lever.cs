@@ -19,8 +19,7 @@ namespace Game
 
         void Start()
         {
-            DungeonManager.TryFind(out DungeonManager dungeonManager);
-            dungeonManager.AddAvoidCell(Coords);
+            DungeonManager.AddAvoidCell(Coords);
         }
 
         // タルやコンテナと同じく、漁ることで仕掛けが動作する。
@@ -41,12 +40,11 @@ namespace Game
             yield return RotateAsync(_closeRotation, _openRotation);
 
             // このレバーで起動するオブジェクトの座標を取得。
-            DungeonManager.TryFind(out DungeonManager dungeonManager);
             IReadOnlyList<Vector2Int> targetCoords = LeverBinding.GetTargetCoords(Coords);
 
             // このレバーで起動するオブジェクトが複数ある場合、ランダムに1つ選ぶ。
             int random = Random.Range(0, targetCoords.Count);
-            foreach (Actor actor in dungeonManager.GetActorsOnCell(targetCoords[random]))
+            foreach (Actor actor in DungeonManager.GetActorsOnCell(targetCoords[random]))
             {
                 if (actor is FireBreath target) target.Play();
             }

@@ -12,14 +12,11 @@ namespace Game
         [SerializeField] Transform _parent;
         [SerializeField] ParticleSystem _particle;
 
-        DungeonManager _dungeonManager;
         WaitForSeconds _waitDuration;
         bool _isPlaying;
 
         void Start()
         {
-            DungeonManager.TryFind(out _dungeonManager);
-
             List<Vector2Int> candidate = new List<Vector2Int>();
             if (IsSpaceAvailable(Vector2Int.up)) candidate.Add(Vector2Int.up);
             if (IsSpaceAvailable(Vector2Int.down)) candidate.Add(Vector2Int.down);
@@ -39,7 +36,7 @@ namespace Game
             for (int i = 0; i <= Range; i++)
             {
                 Vector2Int coords = Coords + Direction * i;
-                Cell c = _dungeonManager.GetCell(coords);
+                Cell c = DungeonManager.GetCell(coords);
                 if (c.TerrainEffect == TerrainEffect.Flaming)
                 {
                     Gizmos.color = Color.red;
@@ -68,7 +65,7 @@ namespace Game
             for (int i = 0; i <= Range; i++)
             {
                 Vector2Int coords = Coords + Direction * i;
-                _dungeonManager.SetCellTerrainEffect(coords, TerrainEffect.Flaming);
+                DungeonManager.SetCellTerrainEffect(coords, TerrainEffect.Flaming);
             }
 
             // 炎が出ている時間。一定間隔でダメージを与える。
@@ -77,7 +74,7 @@ namespace Game
                 for (int k = 0; k <= Range; k++)
                 {
                     Vector2Int coords = Coords + Direction * k;
-                    foreach (Actor actor in _dungeonManager.GetActorsOnCell(coords))
+                    foreach (Actor actor in DungeonManager.GetActorsOnCell(coords))
                     {
                         if (actor is Adventurer adventurer)
                         {
@@ -98,7 +95,7 @@ namespace Game
             for (int i = 0; i <= Range; i++)
             {
                 Vector2Int coords = Coords + Direction * i;
-                _dungeonManager.DeleteCellTerrainEffect(coords);
+                DungeonManager.DeleteCellTerrainEffect(coords);
             }
 
             _particle.Stop();
@@ -110,7 +107,7 @@ namespace Game
             for (int i = 1; i <= Range; i++)
             {
                 Vector2Int coords = Coords + direction * i;
-                if (_dungeonManager.GetCell(coords).IsImpassable())
+                if (DungeonManager.GetCell(coords).IsImpassable())
                 {
                     return false;
                 }

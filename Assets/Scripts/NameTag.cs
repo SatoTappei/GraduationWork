@@ -21,18 +21,13 @@ namespace Game
 
         void Update()
         {
-            UpdatePosition();
+            Vector3 position = RectTransformUtility.WorldToScreenPoint(Camera.main, _follow.position);
+            _textTransform.position = position + _offset;
         }
 
         public void SetName(string name)
         {
             _text.text = name;
-        }
-
-        void UpdatePosition()
-        {
-            Vector3 position = RectTransformUtility.WorldToScreenPoint(Camera.main, _follow.position);
-            _textTransform.position = position + _offset;
         }
     }
 }

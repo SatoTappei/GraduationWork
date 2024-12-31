@@ -46,6 +46,12 @@ namespace Game
             if (_isDrawGizmos) Draw();
         }
 
+        public static bool TryFind(out TerrainFeature result)
+        {
+            result = GameObject.FindGameObjectWithTag("DungeonManager").GetComponent<TerrainFeature>();
+            return result != null;
+        }
+
         public bool TryGetInformation(Vector2Int coords, out IReadOnlyList<Information> result)
         {
             if (_table.TryGetValue(coords, out List<Information> list))
@@ -82,11 +88,10 @@ namespace Game
         void Draw()
         {
             if (_table == null) return;
-            if (!DungeonManager.TryFind(out DungeonManager dungeonManager)) return;
 
             foreach (var pair in _table)
             {
-                Cell cell = dungeonManager.GetCell(pair.Key);
+                Cell cell = DungeonManager.GetCell(pair.Key);
                 Gizmos.color = Color.red;
                 Gizmos.DrawCube(cell.Position, Vector3.one);
 
