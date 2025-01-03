@@ -11,7 +11,6 @@ namespace Game
         Adventurer _adventurer;
         Blackboard _blackboard;
         Animator _animator;
-        ActionLog _actionLog;
         LineDisplayer _line;
 
         void Awake()
@@ -19,11 +18,10 @@ namespace Game
             _adventurer = GetComponent<Adventurer>();
             _blackboard = GetComponent<Blackboard>();
             _animator = GetComponentInChildren<Animator>();
-            _actionLog = GetComponent<ActionLog>();
             _line = GetComponent<LineDisplayer>();
         }
 
-        public async UniTask PlayAsync<TTarget>(CancellationToken token) where TTarget : IDamageable
+        public async UniTask<string> PlayAsync<TTarget>(CancellationToken token) where TTarget : IDamageable
         {
             // シリアライズしても良い。
             const float RotateSpeed = 4.0f;
@@ -32,8 +30,7 @@ namespace Game
             // 周囲に攻撃可能な対象が居ない場合。
             if (!TryGetTarget<TTarget>(out Actor target))
             {
-                _actionLog.Add("There are no enemies around to attack.");
-                return;
+                return "There are no enemies around to attack.";
             }
 
             // 攻撃する前に目標に向く。
@@ -55,28 +52,6 @@ namespace Game
                 result = "Miss";
             }
 
-            // 攻撃結果を行動ログに追加。
-            if (result == "Defeat")
-            {
-                _actionLog.Add("I attacked the enemy. I defeated the enemy.");
-            }
-            else if (result == "Hit")
-            {
-                _actionLog.Add("I attacked the enemy. The enemy is still alive.");
-            }
-            else if (result == "Corpse")
-            {
-                _actionLog.Add("I tried to attack it, but it was already dead.");
-            }
-            else if (result == "Miss")
-            {
-                // まだない
-            }
-            else
-            {
-                Debug.LogWarning($"攻撃結果に対応する処理が無い。スペルミス？: {result}");
-            }
-
             // 攻撃のアニメーションの再生終了を待つ。
             await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
 
@@ -92,6 +67,30 @@ namespace Game
                 );
 
                 _blackboard.DefeatCount++;
+            }
+
+            // 攻撃結果を返す。
+            if (result == "Defeat")
+            {
+                return "I attacked the enemy. I defeated the enemy.";
+            }
+            else if (result == "Hit")
+            {
+                return "I attacked the enemy. The enemy is still alive.";
+            }
+            else if (result == "Corpse")
+            {
+                return "I tried to attack it, but it was already dead.";
+            }
+            else if (result == "Miss")
+            {
+                // まだない
+                return "I tried to attack it, but it was miss.";
+            }
+            else
+            {
+                Debug.LogWarning($"攻撃結果に対応する処理が無い。スペルミス？: {result}");
+                return string.Empty;
             }
         }
     }

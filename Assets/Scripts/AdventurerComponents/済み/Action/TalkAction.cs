@@ -12,7 +12,6 @@ namespace Game
 
         Adventurer _adventurer;
         Animator _animator;
-        ActionLog _actionLog;
         LineDisplayer _line;
         TalkThemeSelector _talkTheme;
         TalkPartnerRecord _partner;
@@ -21,13 +20,12 @@ namespace Game
         {
             _adventurer = GetComponent<Adventurer>();
             _animator = GetComponentInChildren<Animator>();
-            _actionLog = GetComponent<ActionLog>();
             _line = GetComponent<LineDisplayer>();
             _talkTheme = GetComponent<TalkThemeSelector>();
             _partner = GetComponent<TalkPartnerRecord>();
         }
 
-        public async UniTask PlayAsync(CancellationToken token)
+        public async UniTask<string> PlayAsync(CancellationToken token)
         {
             // シリアライズしても良い。
             const float RotateSpeed = 4.0f;
@@ -36,8 +34,7 @@ namespace Game
             // 周囲に会話可能な冒険者がいない場合。
             if (!TryGetTarget<Adventurer>(out Actor target))
             {
-                _actionLog.Add("I tried to talk with other adventurers, but there was no one around.");
-                return;
+                return "I tried to talk with other adventurers, but there was no one around.";
             }
 
             // 会話する前に目標に向く。
@@ -57,18 +54,18 @@ namespace Game
                 _partner.Record(targetAdventurer);
             }
 
-            // 会話できたかどうか、結果を行動ログに追加。
+            // 会話の演出が終わるまで待つ。
+            await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
+
+            // 会話できたかどうか、結果を返す。
             if (targetAdventurer == null)
             {
-                _actionLog.Add("I tried to talk with other adventurers, but there was no one around.");
+                return "I tried to talk with other adventurers, but there was no one around.";
             }
             else
             {
-                _actionLog.Add("I talked to the adventurers around me about what I knew.");
+                return "I talked to the adventurers around me about what I knew.";
             }
-
-            // 会話の演出が終わるまで待つ。
-            await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
         }
     }
 }

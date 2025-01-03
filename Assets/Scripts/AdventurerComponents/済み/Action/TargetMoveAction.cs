@@ -9,7 +9,7 @@ namespace Game
 {
     public class TargetMoveAction : MovementAction
     {
-        public async UniTask PlayAsync(string targetID, CancellationToken token)
+        public async UniTask<string> PlayAsync(string targetID, CancellationToken token)
         {
             // 同じ目標に対して移動し続けている限り、再度経路探索はしない。
             // ワープなどの強制的に位置を移動させるギミックを作る場合は破綻するので注意。
