@@ -25,14 +25,14 @@ namespace Game
 
         public void Place(Vector2Int coords, Vector2Int direction)
         {
-            DungeonManager.RemoveActorOnCell(Coords, this);
+            DungeonManager.RemoveActor(Coords, this);
 
             transform.position = new Vector3(coords.x, 0, coords.y);            
             transform.Rotate(GetEulers(direction));
             _currentCoords = coords;
             _currentDirection = direction;
 
-            DungeonManager.AddActorOnCell(Coords, this);
+            DungeonManager.AddActor(Coords, this);
         }
 
         Vector3 GetEulers(Vector2Int direction)

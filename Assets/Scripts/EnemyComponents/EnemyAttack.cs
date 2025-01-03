@@ -46,7 +46,7 @@ namespace Game
             if (target == null) return "Miss";
 
             // Defeat(Œ‚”j‚µ‚½)AHit(“–‚½‚Á‚½‚ª¶‘¶)ACorpse(Šù‚É€‚ñ‚Å‚¢‚é)AMiss(“–‚½‚ç‚È‚©‚Á‚½)
-            return target.Damage(_enemy.ID, weapon, damage, _enemy.Coords);
+            return target.Damage(damage, _enemy.Coords);
         }
     }
 }

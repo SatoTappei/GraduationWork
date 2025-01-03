@@ -20,6 +20,13 @@ namespace Game
         public Cell Current => _path[_currentIndex];
         public string Target => _target;
 
+        public void Clear()
+        {
+            _path.Clear();
+            _target = string.Empty;
+            _currentIndex = 0;
+        }
+
         public void Finding(string target, Vector2Int start, Vector2Int goal)
         {
             _path.Clear();
@@ -36,7 +43,7 @@ namespace Game
             _currentIndex = 0;
         }
 
-        public void HeadingNext()
+        public void SetNext()
         {
             _currentIndex++;
             _currentIndex = Mathf.Min(_currentIndex, _path.Count - 1);

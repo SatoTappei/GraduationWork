@@ -20,7 +20,8 @@ namespace Game
                 if (adventurer != null)
                 {
                     // バフ量を適当に設定。基準となる値に倍率をかける。
-                    adventurer.StatusBuff(attack: 1.2f, speed: 2.0f);
+                    adventurer.StatusBuff("Attack", 1.2f, default);
+                    adventurer.StatusBuff("Speed", 2.0f, default);
                 }
             }
 

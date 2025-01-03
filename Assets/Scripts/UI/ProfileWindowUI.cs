@@ -123,7 +123,7 @@ namespace Game
         {
             // 効果欄は最大3つ表示可能なデザインになっている。
             const int Max = 3;
-
+            
             _effect.text = string.Empty;
 
             if (effect == null)

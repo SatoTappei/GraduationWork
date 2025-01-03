@@ -37,7 +37,7 @@ namespace Game
             if (user != null && user.TryGetComponent(out IDamageable damage))
             {
                 // ダメージ量を適当に設定。
-                damage.Damage(nameof(Trap), nameof(Trap), 25, Coords);
+                damage.Damage(25, Coords);
             }
 
             // 槍が飛び出すアニメーションの再生完了を待つ。アニメーションの長さに合わせて時間を指定。
@@ -50,7 +50,7 @@ namespace Game
             // 退場時の演出が終わるまで待つ。演出の長さに合わせて時間を指定。
             yield return _waitExitEffect ??= new WaitForSeconds(1.5f);
 
-            DungeonManager.RemoveActorOnCell(Coords, this);
+            DungeonManager.RemoveActor(Coords, this);
 
             // プールに戻す。
             gameObject.SetActive(false);

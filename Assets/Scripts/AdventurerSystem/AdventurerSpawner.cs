@@ -43,7 +43,7 @@ namespace Game
 
         bool IsCellEmpty()
         {
-            foreach (Actor actor in DungeonManager.GetActorsOnCell(_spawnCoords))
+            foreach (Actor actor in DungeonManager.GetActors(_spawnCoords))
             {
                 if (actor is Adventurer _) return false;
             }

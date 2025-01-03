@@ -44,7 +44,7 @@ namespace Game
 
             // このレバーで起動するオブジェクトが複数ある場合、ランダムに1つ選ぶ。
             int random = Random.Range(0, targetCoords.Count);
-            foreach (Actor actor in DungeonManager.GetActorsOnCell(targetCoords[random]))
+            foreach (Actor actor in DungeonManager.GetActors(targetCoords[random]))
             {
                 if (actor is FireBreath target) target.Play();
             }

@@ -6,7 +6,7 @@ namespace Game
 {
     public class EnemyDamageApply : MonoBehaviour
     {
-        public string Damage(string id, string weapon, int value, Vector2Int attackerCoords)
+        public string Damage(int value, Vector2Int coords)
         {
             TryGetComponent(out EnemyBlackboard blackboard);
 
@@ -16,7 +16,7 @@ namespace Game
             // ダメージ演出を再生。
             if (TryGetComponent(out DamageEffect effect))
             {
-                effect.Play(blackboard.Coords, attackerCoords);
+                effect.Play(coords);
             }
 
             // 体力を操作するコンポーネント作る？

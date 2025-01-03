@@ -13,8 +13,7 @@ namespace Game
             _statusEffects = new List<string>();
         }
 
-        public AdventurerSheet AdventurerSheet { get; set; }
-        public IReadOnlyList<string> StatusEffects { get; }
+        public IReadOnlyList<string> StatusEffects => _statusEffects;
 
         public Vector2Int Coords { get; set; }
         public Vector2Int Direction { get; set; }
@@ -25,9 +24,9 @@ namespace Game
         // 心情。台詞のテンションに影響する。
         public int MaxEmotion { get; set; }
         public int CurrentEmotion { get; set; }
-        // 疲労。ターン経過で減少、0になると徐々に体力が減る。
-        public int MaxFatigue { get; set; }
-        public int CurrentFatigue { get; set; }
+        // 空腹。ターン経過で増加、最大になると徐々に体力が減る。
+        public int MaxHunger { get; set; }
+        public int CurrentHunger { get; set; }
         // 攻撃力。
         public int Attack { get; set; }
         public float AttackMagnification { get; set; }
@@ -41,13 +40,7 @@ namespace Game
 
         public bool IsDefeated => CurrentHp <= 0;
         public bool IsAlive => !IsDefeated;
-        public bool IsFatigueMax => CurrentFatigue >= MaxFatigue;
-
-        public Sprite Icon => AdventurerSheet.Icon;
-        public string FullName => AdventurerSheet.FullName;
-        public string DisplayName => AdventurerSheet.DisplayName;
-        public string Job => AdventurerSheet.Job;
-        public string Background => AdventurerSheet.Background;
+        public bool IsHungry => CurrentHunger >= MaxHunger;
 
         public void AddStatusEffect(string effect)
         {

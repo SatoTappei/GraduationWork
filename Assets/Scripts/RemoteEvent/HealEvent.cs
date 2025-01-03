@@ -21,7 +21,7 @@ namespace Game
             {
                 if (adventurer != null && adventurer.AdventurerSheet.FullName == name)
                 {
-                    adventurer.Heal(33); // 回復量は適当。
+                    adventurer.Heal(33, default); // 回復量は適当。
                 }
             }
         }

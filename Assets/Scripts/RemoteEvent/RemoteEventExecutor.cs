@@ -94,7 +94,7 @@ namespace Game
                 AdventurerSpawner.TryFind(out AdventurerSpawner spawner);
                 foreach (Adventurer adventurer in spawner.Spawned)
                 {
-                    if (adventurer != null) adventurer.Damage("", "Madness", 0, default);
+                    if (adventurer != null) adventurer.Damage(0, default, "Madness");
                 }
             }
         }
@@ -130,7 +130,7 @@ namespace Game
                     AdventurerSpawner.TryFind(out AdventurerSpawner spawner);
                     foreach (Adventurer adventurer in spawner.Spawned)
                     {
-                        if (adventurer != null) adventurer.Damage("", "Madness", 0, default);
+                        if (adventurer != null) adventurer.Damage(0, default, "Madness");
                     }
                 }
                 else if (r == 4)

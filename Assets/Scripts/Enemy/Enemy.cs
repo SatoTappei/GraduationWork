@@ -38,7 +38,7 @@ namespace Game
         {
             if (_isInitialized && TryGetComponent(out EnemyDamageApply damage))
             {
-                return damage.Damage(value, coords, effect);
+                return damage.Damage(value, coords);
             }
             else return "Miss";
         }
@@ -49,7 +49,7 @@ namespace Game
             await UniTask.WaitUntil(() => _isInitialized, cancellationToken: token);
 
             // 生成したセル上に自身を移動と追加。
-            DungeonManager.AddActorOnCell(Coords, this);
+            DungeonManager.AddActor(Coords, this);
             transform.position = DungeonManager.GetCell(Coords).Position;
 
             // 湧いた際の演出。

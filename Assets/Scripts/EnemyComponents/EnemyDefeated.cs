@@ -26,7 +26,7 @@ namespace Game
 
             // ƒZƒ‹‚©‚çíœB
             TryGetComponent(out Enemy enemy);
-            DungeonManager.RemoveActorOnCell(enemy.Coords, enemy);
+            DungeonManager.RemoveActor(enemy.Coords, enemy);
 
             return true;
         }

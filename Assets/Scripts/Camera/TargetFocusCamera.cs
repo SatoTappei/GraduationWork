@@ -38,13 +38,17 @@ namespace Game
             AdventurerSpawner.TryFind(out AdventurerSpawner adventurerSpawner);
             while (true)
             {
-                if (adventurerSpawner.Spawned == null) yield return null;
-                else if (adventurerSpawner.Spawned.Count == 0) yield return null;
-
-                // 一定間隔でランダムな冒険者をフォーカスする。
-                int random = Random.Range(0, adventurerSpawner.Spawned.Count);
-                Adventurer target = adventurerSpawner.Spawned[random];
-                yield return FocusAsync(target);
+                if (0 < adventurerSpawner.Spawned.Count)
+                {
+                    // 一定間隔でランダムな冒険者をフォーカスする。
+                    int random = Random.Range(0, adventurerSpawner.Spawned.Count);
+                    Adventurer target = adventurerSpawner.Spawned[random];
+                    yield return FocusAsync(target);
+                }
+                else
+                {
+                    yield return null;
+                }
             }
         }
 

@@ -7,11 +7,12 @@ namespace Game
 {
     public class Adventurer : Character
     {
+        AdventurerSheet _adventurerSheet;
         Blackboard _blackboard;
         string _selectedAction;
         bool _isInitialized;
         
-        public AdventurerSheet AdventurerSheet => _blackboard.AdventurerSheet;
+        public AdventurerSheet AdventurerSheet => _adventurerSheet;
         public override Vector2Int Coords => _blackboard.Coords;
         public override Vector2Int Direction => _blackboard.Direction;
         public string SelectedAction => _selectedAction;
@@ -26,25 +27,21 @@ namespace Game
             UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
-        void OnDestroy()
-        {
-            _isInitialized = false;
-        }
-
         // スプレッドシートから読み込んだデータを渡す。
         // もしくはデータをシリアライズしてインスペクターから触れるようにしても良い。
         public void Initialize(AdventurerSheet adventurerSheet)
         {
-            _blackboard.AdventurerSheet = adventurerSheet;
+            _adventurerSheet = adventurerSheet;
+            
             // レベルに応じて体力を設定。
             _blackboard.MaxHp = CalculationFormula.GetHp(adventurerSheet.Level);
             _blackboard.CurrentHp = _blackboard.MaxHp;
             // 心情は生成時、自身へのコメントで上下する。
             _blackboard.MaxEmotion = 100;
             _blackboard.CurrentEmotion = 50;            
-            // 疲労はターン経過で増加していく。
-            _blackboard.MaxFatigue = 100;
-            _blackboard.CurrentFatigue = 0;
+            // 空腹はターン経過で増加していく。
+            _blackboard.MaxHunger = 100;
+            _blackboard.CurrentHunger = 99;
             // レベルに応じて攻撃力を設定。
             _blackboard.Attack = CalculationFormula.GetAttack(adventurerSheet.Level);
             _blackboard.AttackMagnification = 1.0f;
@@ -59,46 +56,13 @@ namespace Game
             _isInitialized = true;
         }
 
-        public void Cleanup()
-        {
-            if (TryGetComponent(out ActionLog log)) log.Delete();
-            if (TryGetComponent(out ExploreRecord record)) record.Delete();
-            if (TryGetComponent(out InformationStock information)) information.RequestDelete();
-            if (TryGetComponent(out GamePlayAI ai)) ai.PreInitialize();
-        }
-
-        public void Talk(BilingualString text, string source, Vector2Int coords)
-        {
-            if (_isInitialized && TryGetComponent(out TalkApply talk))
-            {
-                talk.Talk(text, source, coords);
-            }
-        }
-
-        public void StatusBuff(string type, float value, Vector2Int coords)
-        {
-            if (_isInitialized && TryGetComponent(out StatusBuffApply statusBuff))
-            {
-                statusBuff.Buff(type, value, coords);
-            }
-        }
-
-        public void Heal(int value, Vector2Int coords)
-        {
-            if (_isInitialized && TryGetComponent(out HealApply heal))
-            {
-                heal.Heal(value, coords);
-            }
-        }
-
-        public sealed override string Damage(int value, Vector2Int coords, string effect = "")
-        {
-            if (_isInitialized && TryGetComponent(out DamageApply damage))
-            {
-                return damage.Damage(value, coords, effect);
-            }
-            else return "Miss";
-        }
+        //public void Cleanup()
+        //{
+        //    if (TryGetComponent(out ActionLog log)) log.Delete();
+        //    if (TryGetComponent(out ExploreRecord record)) record.Delete();
+        //    if (TryGetComponent(out InformationStock information)) information.RequestDelete();
+        //    if (TryGetComponent(out GamePlayAI ai)) ai.PreInitialize();
+        //}
 
         async UniTask UpdateAsync(CancellationToken token)
         {
@@ -108,40 +72,51 @@ namespace Game
             // 各種AIを初期化。
             TryGetComponent(out GamePlayAI gamePlayAI);
             gamePlayAI.PreInitialize();
-            TryGetComponent(out RolePlayAI rolePlayAI);
+            TryGetComponent(out RolePlay rolePlayAI);
             rolePlayAI.Initialize();
 
             // 生成したセル上に自身を移動と追加。
-            DungeonManager.AddActorOnCell(Coords, this);
+            DungeonManager.AddActor(Coords, this);
             transform.position = DungeonManager.GetCell(Coords).Position;
 
             // UIに反映。
-            if (TryGetComponent(out StatusBarApply statusBar)) statusBar.Register();
-            if (TryGetComponent(out ProfileWindowApply profileWindow)) profileWindow.Register();
-            if (TryGetComponent(out CameraFocusTargetApply cameraFocusTarget)) cameraFocusTarget.Register();
-            if (this.TryGetComponentInChildren(out NameTag nameTag)) nameTag.SetName(_blackboard.DisplayName);
+            if (TryGetComponent(out StatusBarBinder statusBar)) statusBar.Register();
+            if (TryGetComponent(out ProfileWindowBinder profileWindow)) profileWindow.Register();
+            if (TryGetComponent(out CameraFocusBinder cameraFocus)) cameraFocus.Register();
+            if (this.TryGetComponentInChildren(out NameTag nameTag)) nameTag.SetName(AdventurerSheet.DisplayName);
 
             // 登場時の演出。台詞を表示させるので、UIに自身を反映した後に呼ぶ。
-            if (TryGetComponent(out EntryToDungeon entry)) entry.Entry();
+            if (TryGetComponent(out EntryAction entry)) entry.Play();
 
-            // コメントを流し、その内容に対して反応する。
-            if (TryGetComponent(out CommentApply commentApply)) commentApply.Reaction();
+            // コメントを流し、心情の値を変化させる。
+            CommentDisplayer.TryFind(out CommentDisplayer commentDisplayer);
+            IReadOnlyCollection<CommentData> comment = commentDisplayer.Display(AdventurerSheet.FullName);
+            if (!(comment == null || comment.Count == 0))
+            {
+                float score = 1; // コメントの仕様書が来るまで仮の値。
+                float add = (_blackboard.MaxEmotion / 100.0f) * (20.0f * score);
+                _blackboard.CurrentEmotion += Mathf.CeilToInt(add);
+            }
+
+            // UIに反映。
+            if (statusBar != null) statusBar.Apply();
 
             // サブゴールを決める。
             TryGetComponent(out SubGoalPath subGoalPath);
             subGoalPath.Initialize(await SubGoalSelector.SelectAsync(AdventurerSheet, token));
 
-            TryGetComponent(out FatigueDamageApply fatigueDamage);
+            TryGetComponent(out HungryStatusEffect hungryStatusEffect);
+            TryGetComponent(out MadnessStatusEffect madnessStatusEffect);
+            TryGetComponent(out BuffStatusEffect buffStatusEffect);
             TryGetComponent(out InformationStock informationStock);
-            TryGetComponent(out TalkThemeSelectAI talkThemeSelectAI);
-            TryGetComponent(out MovementToDirection moveToDirection);
-            TryGetComponent(out MovementToTarget moveToTarget);
-            TryGetComponent(out AttackToSurrounding attack);
-            TryGetComponent(out ScavengeToSurrounding scavenge);
-            TryGetComponent(out TalkToSurrounding talk);
-            TryGetComponent(out Defeated defeated);
-            TryGetComponent(out EscapeFromDungeon escape);
-            TryGetComponent(out FootTrapApply foot);
+            TryGetComponent(out TalkThemeSelector talkThemeSelectAI);
+            TryGetComponent(out DirectionMoveAction moveToDirection);
+            TryGetComponent(out TargetMoveAction moveToTarget);
+            TryGetComponent(out AttackAction attack);
+            TryGetComponent(out ScavengeAction scavenge);
+            TryGetComponent(out TalkAction talk);
+            TryGetComponent(out DefeatedAction defeated);
+            TryGetComponent(out EscapeAction escape);
             TryGetComponent(out AvailableActions availableActions);
             TryGetComponent(out ActionEvaluator actionEvaluator);
             TerrainFeature.TryFind(out TerrainFeature terrainFeature);
@@ -150,15 +125,14 @@ namespace Game
                 // ターン数を更新。
                 _blackboard.ElapsedTurn++;
 
-                // 疲労を増加。
-                _blackboard.CurrentFatigue++;
+                // 空腹を増加。
+                _blackboard.CurrentHunger++;
 
-                // 疲労が最大の場合、毎ターン体力が減り続ける。
-                if (_blackboard.IsFatigueMax)
-                {
-                    fatigueDamage.Damage();
-                    if (statusBar != null) statusBar.Apply();
-                }
+                // 空腹が最大の場合、空腹のステータス効果を付与。
+                if (_blackboard.IsHungry) hungryStatusEffect.Apply();
+                else hungryStatusEffect.Remove();
+
+                statusBar.Apply();
 
                 // 現在いるセルについて、地形の特徴に関する情報がある場合、
                 // AIが次の行動を選択する際に、考慮する情報の候補として追加する。
@@ -185,26 +159,64 @@ namespace Game
 
                 // AIが次の行動を選択し、実行。
                 _selectedAction = await gamePlayAI.RequestNextActionAsync(token);
-                if (_selectedAction == "Idle") await UniTask.Yield(cancellationToken: token);
-                if (_selectedAction == "MoveNorth") await moveToDirection.MoveAsync(Vector2Int.up, token);
-                if (_selectedAction == "MoveSouth") await moveToDirection.MoveAsync(Vector2Int.down, token);
-                if (_selectedAction == "MoveEast") await moveToDirection.MoveAsync(Vector2Int.right, token);
-                if (_selectedAction == "MoveWest") await moveToDirection.MoveAsync(Vector2Int.left, token);
-                if (_selectedAction == "MoveToEntrance") await moveToTarget.MoveAsync("Entrance", token);
-                if (_selectedAction == "AttackToEnemy") await attack.AttackAsync<Enemy>(token);
-                if (_selectedAction == "AttackToAdventurer") await attack.AttackAsync<Adventurer>(token);
-                if (_selectedAction == "TalkWithAdventurer") await talk.TalkAsync(token);
-                if (_selectedAction == "Scavenge") await scavenge.ScavengeAsync(token);
+                string actionResult;
+                if (_selectedAction == "MoveNorth")
+                {
+                    actionResult = await moveToDirection.PlayAsync(Vector2Int.up, token);
+                }
+                else if (_selectedAction == "MoveSouth")
+                {
+                    actionResult = await moveToDirection.PlayAsync(Vector2Int.down, token);
+                }
+                else if (_selectedAction == "MoveEast")
+                {
+                    actionResult = await moveToDirection.PlayAsync(Vector2Int.right, token);
+                }
+                else if (_selectedAction == "MoveWest")
+                {
+                    actionResult = await moveToDirection.PlayAsync(Vector2Int.left, token);
+                }
+                else if (_selectedAction == "MoveToEntrance")
+                {
+                    actionResult = await moveToTarget.PlayAsync("Entrance", token);
+                }
+                else if (_selectedAction == "AttackToEnemy")
+                {
+                    actionResult = await attack.PlayAsync<Enemy>(token);
+                }
+                else if (_selectedAction == "AttackToAdventurer")
+                {
+                    actionResult = await attack.PlayAsync<Adventurer>(token);
+                }
+                else if (_selectedAction == "TalkWithAdventurer")
+                {
+                    actionResult = await talk.PlayAsync(token);
+                }
+                else if (_selectedAction == "Scavenge")
+                {
+                    actionResult = await scavenge.PlayAsync(token);
+                }
 
                 // 足元に罠等がある場合に起動。
-                if (foot != null) foot.Activate();
+                foreach (Actor actor in DungeonManager.GetActors(Coords))
+                {
+                    if (actor.ID == "Trap" && actor is DungeonEntity e)
+                    {
+                        e.Interact(this);
+                    }
+                }
+
+                // ステータス効果を反映。
+                hungryStatusEffect.Tick();
+                madnessStatusEffect.Tick();
+                buffStatusEffect.Tick();
 
                 // 行動結果による選択肢のスコア付け。
 
                 // 撃破されたもしくは脱出した場合。
-                if (await defeated.DefeatedAsync(token) || await escape.EscapeAsync(token))
+                if (await defeated.PlayAsync(token) || await escape.PlayAsync(token))
                 {
-                    TryGetComponent(out AdventureResultApply adventureResult);
+                    TryGetComponent(out AdventureResultReporter adventureResult);
                     adventureResult.Send();
                     break;
                 }
@@ -212,14 +224,20 @@ namespace Game
                 // サブゴールを達成した場合、次のサブゴールを設定。
                 if (subGoalPath.IsAchieve())
                 {
-                    // サブゴールを達成した際の演出。
-                    if (TryGetComponent(out SubGoalEffect subGoalEffect)) subGoalEffect.Play();
+                    GameLog.Add(
+                        $"システム",
+                        $"{AdventurerSheet.DisplayName}が「{subGoalPath.GetCurrent().Text.Japanese}」を達成。",
+                        GameLogColor.White
+                    );
 
                     subGoalPath.SetNext();
                 }
 
                 await UniTask.Yield(cancellationToken: token);
             }
+
+            // セルから削除。
+            DungeonManager.RemoveActor(Coords, this);
 
             Destroy(gameObject);
         }

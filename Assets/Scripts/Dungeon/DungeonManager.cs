@@ -25,13 +25,13 @@ namespace Game
             if (_instance = this) _instance = null;
         }
 
-        public static void AddActorOnCell(Vector2Int coords, Actor actor)
+        public static void AddActor(Vector2Int coords, Actor actor)
         {
             GetCell(coords).AddActor(actor);
             _instance._placedActors.Add(actor);
         }
 
-        public static void RemoveActorOnCell(Vector2Int coords, Actor actor)
+        public static void RemoveActor(Vector2Int coords, Actor actor)
         {
             GetCell(coords).RemoveActor(actor);
             _instance._placedActors.Remove(actor);
@@ -57,7 +57,7 @@ namespace Game
             GetCell(coords).IsAvoid = false;
         }
 
-        public static IReadOnlyList<Actor> GetActorsOnCell(Vector2Int coords)
+        public static IReadOnlyList<Actor> GetActors(Vector2Int coords)
         {
             return GetCell(coords).GetActors();
         }

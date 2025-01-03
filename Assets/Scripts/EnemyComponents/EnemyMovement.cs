@@ -45,9 +45,9 @@ namespace Game
                 _animator.Play("Walk");
 
                 // 座標の値を次のセルの座標に更新。
-                DungeonManager.RemoveActorOnCell(Coords, _enemy);
+                DungeonManager.RemoveActor(Coords, _enemy);
                 Coords = nextCell.Coords;
-                DungeonManager.AddActorOnCell(Coords, _enemy);
+                DungeonManager.AddActor(Coords, _enemy);
 
                 await (TranslateAsync(_moveSpeed, nextCell.Position, token),
                     RotateAsync(_rotateSpeed, nextCell.Position, token));

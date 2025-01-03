@@ -74,16 +74,11 @@ namespace Game
                 for (int k = 0; k <= Range; k++)
                 {
                     Vector2Int coords = Coords + Direction * k;
-                    foreach (Actor actor in DungeonManager.GetActorsOnCell(coords))
+                    foreach (Actor actor in DungeonManager.GetActors(coords))
                     {
                         if (actor is Adventurer adventurer)
                         {
-                            adventurer.Damage(
-                                nameof(FireBreath), 
-                                nameof(FireBreath), 
-                                Damage, 
-                                coords
-                            );
+                            adventurer.Damage(Damage, coords);
                         }
                     }
                 }

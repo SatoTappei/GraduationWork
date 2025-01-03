@@ -11,7 +11,7 @@ namespace Game
     {
         List<Information> _stock;
         Queue<Information> _pending;
-        ScoreEvaluateAI _scoreEvaluateAI;
+        InformationEvaluator _scoreEvaluateAI;
 
         // 次に情報を更新するタイミングで保留中を含め全て削除する。
         bool _isRequestedDelete;
@@ -24,7 +24,7 @@ namespace Game
         {
             _stock = new List<Information>();
             _pending = new Queue<Information>();
-            _scoreEvaluateAI = new ScoreEvaluateAI();
+            _scoreEvaluateAI = new InformationEvaluator();
         }
 
         public void AddPending(BilingualString text, string source, bool isShared = true)

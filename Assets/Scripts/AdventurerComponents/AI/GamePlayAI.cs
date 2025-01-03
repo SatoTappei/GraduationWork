@@ -101,8 +101,7 @@ namespace Game
 
         void Initialize()
         {
-            TryGetComponent(out Blackboard blackboard);
-            if (blackboard.AdventurerSheet == null)
+            if (_adventurer.AdventurerSheet == null)
             {
                 Debug.LogWarning("冒険者のデータが読み込まれていない。");
 
@@ -116,9 +115,9 @@ namespace Game
                     $"- Consider these profiles carefully when deciding the next action.\n" +
                     $"- Avoid actions that go against their personality or expose their weaknesses.\n" +
                     $"# CharacterProfiles(Japanese)\n" +
-                    $"- {blackboard.AdventurerSheet.Personality}\n" +
-                    $"- {blackboard.AdventurerSheet.Motivation}\n" +
-                    $"- {blackboard.AdventurerSheet.Weaknesses}\n" +
+                    $"- {_adventurer.AdventurerSheet.Personality}\n" +
+                    $"- {_adventurer.AdventurerSheet.Motivation}\n" +
+                    $"- {_adventurer.AdventurerSheet.Weaknesses}\n" +
                     $"# OutputFormat\n" +
 #if true
                     $"- Select one of the AvailableActions and output the value only.";

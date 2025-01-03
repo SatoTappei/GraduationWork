@@ -70,16 +70,11 @@ namespace Game
 
             // イベント演出時間が長いので、目標がイベント発生位置から離れている可能性がある。
             // なので、実際にイベント発生位置に冒険者がいるかチェック。
-            foreach (Actor actor in DungeonManager.GetActorsOnCell(targetCoords))
+            foreach (Actor actor in DungeonManager.GetActors(targetCoords))
             {
                 if (actor is Adventurer target)
                 {
-                    target.Damage(
-                        nameof(HelicopterCrashEffect),
-                        nameof(HelicopterCrashEffect),
-                        33, // ダメージ量を適当に設定。
-                        targetCoords
-                    );
+                    target.Damage(33, targetCoords); // ダメージ量は適当。
                 }
             }
 
