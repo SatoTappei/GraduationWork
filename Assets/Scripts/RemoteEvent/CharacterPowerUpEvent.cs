@@ -17,11 +17,11 @@ namespace Game
         {
             foreach (Adventurer adventurer in _adventurerSpawner.Spawned)
             {
-                if (adventurer != null)
+                if (adventurer != null && adventurer.TryGetComponent(out BuffStatusEffect buff))
                 {
                     // バフ量を適当に設定。基準となる値に倍率をかける。
-                    adventurer.StatusBuff("Attack", 1.2f, default);
-                    adventurer.StatusBuff("Speed", 2.0f, default);
+                    buff.Apply("Attack", 1.2f);
+                    buff.Apply("Speed", 2.0f);
                 }
             }
 

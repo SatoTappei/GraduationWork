@@ -47,24 +47,28 @@ namespace Game
 
             // 目標を向いている間に会話対象が消える可能性があるので事前にチェックする必要がある。
             // 情報の中から会話内容として選んだものを相手に伝え、会話相手を記憶。
-            Adventurer targetAdventurer = target as Adventurer;
-            if (targetAdventurer != null)
+            bool isTalked = true;
+            if (target != null && target.TryGetComponent(out TalkReceiver talk))
             {
-                targetAdventurer.Talk(_talkTheme.Selected, "Adventurer", _adventurer.Coords);
-                _partner.Record(targetAdventurer);
+                talk.Talk(_talkTheme.Selected, "Adventurer", _adventurer.Coords);
+                _partner.Record(target as Adventurer);
+            }
+            else
+            {
+                isTalked = false;
             }
 
             // 会話の演出が終わるまで待つ。
             await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
 
             // 会話できたかどうか、結果を返す。
-            if (targetAdventurer == null)
+            if (isTalked)
             {
-                return "I tried to talk with other adventurers, but there was no one around.";
+                return "I talked to the adventurers around me about what I knew.";
             }
             else
             {
-                return "I talked to the adventurers around me about what I knew.";
+                return "I tried to talk with other adventurers, but there was no one around.";
             }
         }
     }

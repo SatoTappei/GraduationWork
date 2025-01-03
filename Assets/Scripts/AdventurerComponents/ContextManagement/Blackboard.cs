@@ -15,9 +15,6 @@ namespace Game
 
         public IReadOnlyList<string> StatusEffects => _statusEffects;
 
-        public Vector2Int Coords { get; set; }
-        public Vector2Int Direction { get; set; }
-        
         // ‘Ì—ÍB0‚É‚È‚é‚Æ—Ís‚«‚éB
         public int MaxHp {get; set; }
         public int CurrentHp { get; set; }

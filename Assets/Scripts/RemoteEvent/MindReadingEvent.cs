@@ -33,7 +33,11 @@ namespace Game
             foreach (Adventurer adventurer in spawned)
             {
                 Information info = temp[Random.Range(0, temp.Count)];
-                adventurer.Talk(info.Text, nameof(MindReadingEvent), adventurer.Coords);
+
+                if (adventurer.TryGetComponent(out TalkReceiver talk))
+                {
+                    talk.Talk(info.Text, nameof(MindReadingEvent), adventurer.Coords);
+                }
             }
 
             // イベント実行をログに表示。

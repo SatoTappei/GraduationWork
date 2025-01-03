@@ -8,7 +8,7 @@ namespace Game
 {
     public class DirectionMoveAction : MovementAction
     {
-        public async UniTask PlayAsync(Vector2Int direction, CancellationToken token)
+        public async UniTask<string> PlayAsync(Vector2Int direction, CancellationToken token)
         {
             // —×Ú‚µ‚Ä‚¢‚È‚¢ƒZƒ‹‚É‚ÍˆÚ“®‚µ‚È‚¢‚æ‚¤‚É‚·‚éB
             int x = System.Math.Sign(direction.x);
@@ -19,7 +19,7 @@ namespace Game
             Cell cell = DungeonManager.GetCell(targetCoords);
             MovementPath.CreateManually(direction.ToString(), cell);
 
-            await MoveNextAsync(token);
+            return await MoveNextAsync(token);
         }
     }
 }

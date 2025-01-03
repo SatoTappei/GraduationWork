@@ -19,9 +19,12 @@ namespace Game
 
             foreach (Adventurer adventurer in _adventurerSpawner.Spawned)
             {
-                if (adventurer != null && adventurer.AdventurerSheet.FullName == name)
+                if (adventurer == null) continue;
+                else if (adventurer.AdventurerSheet.FullName != name) continue;
+
+                if(adventurer.TryGetComponent(out HealReceiver heal))
                 {
-                    adventurer.Heal(33, default); // 回復量は適当。
+                    heal.Heal(33, default); // 回復量は適当。
                 }
             }
         }

@@ -20,16 +20,6 @@ namespace Game
         {
             get => _movementPath;
         }
-        protected Vector2Int Coords 
-        { 
-            get => _blackboard.Coords; 
-            private set => _blackboard.Coords = value; 
-        }
-        protected Vector2Int Direction 
-        { 
-            get => _blackboard.Direction; 
-            private set => _blackboard.Direction = value; 
-        }
 
         void Awake()
         {
@@ -47,7 +37,7 @@ namespace Game
             const float RotateSpeed = 4.0f;
 
             // 向きの値を次のセルの方向に更新。
-            _blackboard.Direction = _movementPath.Current.Coords - _blackboard.Coords;
+            _adventurer.SetDirection(_movementPath.Current.Coords - _adventurer.Coords);
 
             // 目の前に扉がある場合は開ける。
             // ダンジョン生成時、扉を生成するセルは 上(8),下(2),左(4),右(6) で向きを指定している。
@@ -105,8 +95,14 @@ namespace Game
             else if (Direction == Vector2Int.down) direction = "south";
             else if (Direction == Vector2Int.left) direction = "west";
             else if (Direction == Vector2Int.right) direction = "east";
-            
-            // 移動結果を行動ログに追加。            
+
+            // 移動出来た場合、探索したセルとして更新。
+            if (_movementPath.Current.IsPassable())
+            {
+                _record.IncreaseCount(Coords);
+            }
+
+            // 移動結果を返す。
             if (_movementPath.Current.IsPassable())
             {
                 return $"Successfully moved to the {direction}.";
@@ -114,12 +110,6 @@ namespace Game
             else
             {
                 return $"Failed to move to the {direction}. Cannot move in this direction.";
-            }
-
-            // 移動出来た場合、探索したセルとして更新。
-            if (_movementPath.Current.IsPassable())
-            {
-                _record.IncreaseCount(Coords);
             }
         }
     }

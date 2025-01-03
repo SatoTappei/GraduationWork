@@ -63,7 +63,16 @@ namespace Game
             foreach (Adventurer adventurer in _adventurerSpawner.Spawned)
             {
                 if (adventurer == null) continue;
-                adventurer.Talk(new BilingualString(japanese, english), nameof(SendInformationEvent), Vector2Int.zero);
+
+                if (adventurer.TryGetComponent(out TalkReceiver talk))
+                {
+                    talk.Talk(
+                        new BilingualString(japanese, english),
+                        "Player", 
+                        default,
+                        nameof(SendInformationEvent)
+                    );
+                }
             }
         }
     }

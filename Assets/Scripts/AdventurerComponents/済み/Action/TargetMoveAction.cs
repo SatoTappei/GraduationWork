@@ -43,10 +43,18 @@ namespace Game
             }
 
             // 経路が存在する場合は移動。
-            if (MovementPath.Current != null)
+            if (MovementPath.Current == null)
             {
-                await MoveNextAsync(token);
+                Debug.LogWarning("移動先となるセルが存在しない。");
+
+                return $"Failed to move to target position. Cannot move in this direction.";
+            }
+            else
+            {
+                string result = await MoveNextAsync(token);
                 MovementPath.SetNext();
+
+                return result;
             }
         }
     }

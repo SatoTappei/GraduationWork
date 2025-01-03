@@ -9,12 +9,14 @@ namespace Game
     {
         AdventurerSheet _adventurerSheet;
         Blackboard _blackboard;
+        Vector2Int _currentCoords;
+        Vector2Int _currentDirection;
         string _selectedAction;
         bool _isInitialized;
         
         public AdventurerSheet AdventurerSheet => _adventurerSheet;
-        public override Vector2Int Coords => _blackboard.Coords;
-        public override Vector2Int Direction => _blackboard.Direction;
+        public override Vector2Int Coords => _currentCoords;
+        public override Vector2Int Direction => _currentDirection;
         public string SelectedAction => _selectedAction;
 
         void Awake()
@@ -56,13 +58,17 @@ namespace Game
             _isInitialized = true;
         }
 
-        //public void Cleanup()
-        //{
-        //    if (TryGetComponent(out ActionLog log)) log.Delete();
-        //    if (TryGetComponent(out ExploreRecord record)) record.Delete();
-        //    if (TryGetComponent(out InformationStock information)) information.RequestDelete();
-        //    if (TryGetComponent(out GamePlayAI ai)) ai.PreInitialize();
-        //}
+        public void SetCoords(Vector2Int coords) => _currentCoords = coords;
+        public void SetDirection(Vector2Int direction) => _currentDirection = direction;
+
+        // これも後でリファクタする。
+        public void Cleanup()
+        {
+            if (TryGetComponent(out ActionLog log)) log.Delete();
+            if (TryGetComponent(out ExploreRecord record)) record.Delete();
+            if (TryGetComponent(out InformationStock information)) information.RequestDelete();
+            if (TryGetComponent(out GamePlayAI ai)) ai.PreInitialize();
+        }
 
         async UniTask UpdateAsync(CancellationToken token)
         {
