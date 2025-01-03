@@ -14,7 +14,6 @@ namespace Game
         Adventurer _adventurer;
         Blackboard _blackboard;
         Animator _animator;
-        ActionLog _actionLog;
         ExploreRecord _record;
 
         protected MovementPath MovementPath
@@ -38,10 +37,11 @@ namespace Game
             _blackboard = GetComponent<Blackboard>();
             _movementPath = GetComponent<MovementPath>();
             _animator = GetComponentInChildren<Animator>();
+            _record = GetComponent<ExploreRecord>();
         }
 
         // 派生クラスから呼び出す移動処理。
-        protected async UniTask MoveNextAsync(CancellationToken token)
+        protected async UniTask<string> MoveNextAsync(CancellationToken token)
         {
             // シリアライズしても良い。
             const float RotateSpeed = 4.0f;
@@ -109,11 +109,11 @@ namespace Game
             // 移動結果を行動ログに追加。            
             if (_movementPath.Current.IsPassable())
             {
-                _actionLog.Add($"Successfully moved to the {direction}.");
+                return $"Successfully moved to the {direction}.";
             }
             else
             {
-                _actionLog.Add($"Failed to move to the {direction}. Cannot move in this direction.");
+                return $"Failed to move to the {direction}. Cannot move in this direction.";
             }
 
             // 移動出来た場合、探索したセルとして更新。

@@ -15,10 +15,10 @@ namespace Game
             // ワープなどの強制的に位置を移動させるギミックを作る場合は破綻するので注意。
             if (MovementPath.Target == targetID)
             {
-                await MoveNextAsync(token);
+                string result = await MoveNextAsync(token);
                 MovementPath.SetNext();
 
-                return;
+                return result;
             }
 
             // 目標への経路探索。
