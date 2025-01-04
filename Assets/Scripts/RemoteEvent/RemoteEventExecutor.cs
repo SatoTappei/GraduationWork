@@ -86,7 +86,7 @@ namespace Game
                 AdventurerSpawner.TryFind(out AdventurerSpawner spawner);
                 foreach (Adventurer adventurer in spawner.Spawned)
                 {
-                    if (adventurer != null) adventurer.Cleanup();
+                    if (adventurer != null) adventurer.Reboot();
                 }
             }
             if (GUI.Button(new Rect(1600, 0, 160, 70), $"‹¶‹C"))

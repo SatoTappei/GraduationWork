@@ -87,7 +87,7 @@ namespace Game
         void SetGoal(SubGoal goal)
         {
             if (goal == default) _goal.text = "--";
-            else _goal.text = goal.Text.Japanese;
+            else _goal.text = goal.Description.Japanese;
         }
 
         void SetItem(IEnumerable<ItemInventory.Entry> item)

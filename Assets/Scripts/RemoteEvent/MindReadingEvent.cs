@@ -21,9 +21,9 @@ namespace Game
             Adventurer[] spawned = _adventurerSpawner.Spawned.Where(a => a != null).ToArray();
             foreach (Adventurer adventurer in spawned)
             {
-                if (adventurer.TryGetComponent(out InformationStock informationStock))
+                if (adventurer.TryGetComponent(out HoldInformation informationStock))
                 {
-                    temp.AddRange(informationStock.SharedStock);
+                    temp.AddRange(informationStock.Information.Where(info => info.IsShared));
                 }
             }
 

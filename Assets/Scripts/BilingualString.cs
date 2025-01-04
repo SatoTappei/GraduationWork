@@ -15,7 +15,7 @@ namespace Game
             _japanese = japanese;
             _english = english;
         }
-
+        
         public string Japanese => _japanese;
         public string English => _english;
     }

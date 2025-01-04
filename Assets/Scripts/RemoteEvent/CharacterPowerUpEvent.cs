@@ -20,8 +20,8 @@ namespace Game
                 if (adventurer != null && adventurer.TryGetComponent(out BuffStatusEffect buff))
                 {
                     // バフ量を適当に設定。基準となる値に倍率をかける。
-                    buff.Apply("Attack", 1.2f);
-                    buff.Apply("Speed", 2.0f);
+                    buff.Set("Attack", 1.2f);
+                    buff.Set("Speed", 2.0f);
                 }
             }
 

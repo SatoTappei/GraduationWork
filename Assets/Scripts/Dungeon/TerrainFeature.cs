@@ -52,7 +52,7 @@ namespace Game
             return result != null;
         }
 
-        public bool TryGetInformation(Vector2Int coords, out IReadOnlyList<Information> result)
+        public bool TryGet(Vector2Int coords, out IReadOnlyList<Information> result)
         {
             if (_table.TryGetValue(coords, out List<Information> list))
             {

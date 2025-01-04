@@ -1,0 +1,29 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace Game
+{
+    public class DefeatAdventurerGoal : SubGoal
+    {
+        BilingualString _text;
+        Adventurer _adventurer;
+
+        void Awake()
+        {
+            _text = new BilingualString(
+                "ëºÇÃñ`åØé“Çì|Ç∑ÅB", 
+                "Defeat the adventurers."
+            );
+            _adventurer = GetComponent<Adventurer>();
+        }
+
+        public override BilingualString Description => _text;
+
+        public override bool IsCompleted()
+        {
+            // ìØéûÇ…èoÇƒÇ≠ÇÈñ`åØé“ÇÕç≈ëÂ4êlÇ»ÇÃÇ≈ÅA1ëÃì|ÇπÇŒè\ï™ÅB
+            return _adventurer.Status.DefeatCount >= 1;
+        }
+    }
+}

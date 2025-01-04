@@ -8,20 +8,74 @@ namespace Game
     public class Adventurer : Character
     {
         AdventurerSheet _adventurerSheet;
-        Blackboard _blackboard;
+        Status _status;
         Vector2Int _currentCoords;
         Vector2Int _currentDirection;
         string _selectedAction;
         bool _isInitialized;
+
+        GamePlay _gamePlay;
+        RolePlay _rolePlay;
+        TalkThemeSelector _talkTheme;
         
+        StatusBarBinder _statusBar;
+        ProfileWindowBinder _profileWindow;
+        CameraFocusBinder _cameraFocus;
+        
+        EntryAction _entry;
+        DirectionMoveAction _directionMove;
+        TargetMoveAction _targetMove;
+        AttackAction _attack;
+        TalkAction _talk;
+        ScavengeAction _scavenge;
+        DefeatedAction _defeated;
+        EscapeAction _escape;
+
+        AvailableActions _availableActions;
+        ActionEvaluator _actionEvaluator;
+
+        SubGoalPath _subGoal;
+        HoldInformation _information;
+        HungryStatusEffect _hungry;
+        AdventureResultReporter _result;
+
+        StatusEffect[] _statusEffects;
+
+        CommentDisplayer _commentDisplayer;       
+        TerrainFeature _terrainFeature;
+
         public AdventurerSheet AdventurerSheet => _adventurerSheet;
+        public Status Status => _status;
         public override Vector2Int Coords => _currentCoords;
         public override Vector2Int Direction => _currentDirection;
         public string SelectedAction => _selectedAction;
 
         void Awake()
         {
-            _blackboard = GetComponent<Blackboard>();
+            _gamePlay = GetComponent<GamePlay>();
+            _rolePlay = GetComponent<RolePlay>();
+            _talkTheme = GetComponent<TalkThemeSelector>();
+            _statusBar = GetComponent<StatusBarBinder>();
+            _profileWindow = GetComponent<ProfileWindowBinder>();
+            _cameraFocus = GetComponent<CameraFocusBinder>();
+            _entry = GetComponent<EntryAction>();
+            _directionMove = GetComponent<DirectionMoveAction>();
+            _targetMove = GetComponent<TargetMoveAction>();
+            _attack = GetComponent<AttackAction>();
+            _talk = GetComponent<TalkAction>();
+            _scavenge = GetComponent<ScavengeAction>();
+            _defeated = GetComponent<DefeatedAction>();
+            _escape = GetComponent<EscapeAction>();
+            _availableActions = GetComponent<AvailableActions>();
+            _actionEvaluator = GetComponent<ActionEvaluator>();
+            _subGoal = GetComponent<SubGoalPath>();
+            _information = GetComponent<HoldInformation>();
+            _hungry = GetComponent<HungryStatusEffect>();
+            _result = GetComponent<AdventureResultReporter>();
+            _statusEffects = GetComponents<StatusEffect>();
+
+            CommentDisplayer.TryFind(out _commentDisplayer);
+            TerrainFeature.TryFind(out _terrainFeature);
         }
 
         void Start()
@@ -29,45 +83,32 @@ namespace Game
             UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
-        // スプレッドシートから読み込んだデータを渡す。
-        // もしくはデータをシリアライズしてインスペクターから触れるようにしても良い。
         public void Initialize(AdventurerSheet adventurerSheet)
         {
             _adventurerSheet = adventurerSheet;
-            
-            // レベルに応じて体力を設定。
-            _blackboard.MaxHp = CalculationFormula.GetHp(adventurerSheet.Level);
-            _blackboard.CurrentHp = _blackboard.MaxHp;
-            // 心情は生成時、自身へのコメントで上下する。
-            _blackboard.MaxEmotion = 100;
-            _blackboard.CurrentEmotion = 50;            
-            // 空腹はターン経過で増加していく。
-            _blackboard.MaxHunger = 100;
-            _blackboard.CurrentHunger = 99;
-            // レベルに応じて攻撃力を設定。
-            _blackboard.Attack = CalculationFormula.GetAttack(adventurerSheet.Level);
-            _blackboard.AttackMagnification = 1.0f;
-            // レベルに応じて行動速度を設定。
-            _blackboard.Speed = CalculationFormula.GetSpeed(adventurerSheet.Level);
-            _blackboard.SpeedMagnification = 1.0f;
+            _status = new Status(adventurerSheet.Level);
+
             // ダンジョンの入り口が固定で1箇所。
-            _blackboard.Coords = new Vector2Int(11, 8);
+            _currentCoords = new Vector2Int(11, 8);
             // 上以外の向きの場合、回転させる処理が必要。
-            _blackboard.Direction = Vector2Int.up;
+            _currentDirection = Vector2Int.up;
 
             _isInitialized = true;
         }
 
+        // オーバーライドしたgetterに派生クラスでsetterを追加できない。
+        // とりあえず値をセットするメソッドを作った。
         public void SetCoords(Vector2Int coords) => _currentCoords = coords;
         public void SetDirection(Vector2Int direction) => _currentDirection = direction;
 
-        // これも後でリファクタする。
-        public void Cleanup()
+        // AIの挙動がおかしい場合に呼び出す。
+        // とりあえずここに書いているが、なんか良い感じのクラスがあればそっちに移す。
+        public void Reboot()
         {
-            if (TryGetComponent(out ActionLog log)) log.Delete();
-            if (TryGetComponent(out ExploreRecord record)) record.Delete();
-            if (TryGetComponent(out InformationStock information)) information.RequestDelete();
-            if (TryGetComponent(out GamePlayAI ai)) ai.PreInitialize();
+            _status.ActionLog.Delete();
+            _status.ExploreRecord.Delete();
+            _information.RequestDelete();
+            _gamePlay.PreInitialize();
         }
 
         async UniTask UpdateAsync(CancellationToken token)
@@ -75,133 +116,127 @@ namespace Game
             // 初期化が完了するまで待つ。
             await UniTask.WaitUntil(() => _isInitialized, cancellationToken: token);
 
-            // 各種AIを初期化。
-            TryGetComponent(out GamePlayAI gamePlayAI);
-            gamePlayAI.PreInitialize();
-            TryGetComponent(out RolePlay rolePlayAI);
-            rolePlayAI.Initialize();
+            // 初回のリクエスト前に、冒険者のデータを使って初期化する必要があるAIを初期化。
+            _gamePlay.PreInitialize();
+            _rolePlay.Initialize();
 
             // 生成したセル上に自身を移動と追加。
             DungeonManager.AddActor(Coords, this);
             transform.position = DungeonManager.GetCell(Coords).Position;
 
-            // UIに反映。
-            if (TryGetComponent(out StatusBarBinder statusBar)) statusBar.Register();
-            if (TryGetComponent(out ProfileWindowBinder profileWindow)) profileWindow.Register();
-            if (TryGetComponent(out CameraFocusBinder cameraFocus)) cameraFocus.Register();
-            if (this.TryGetComponentInChildren(out NameTag nameTag)) nameTag.SetName(AdventurerSheet.DisplayName);
+            // 各UIに自身を登録。
+            _statusBar.Register();
+            _profileWindow.Register();
+            _cameraFocus.Register();
+            
+            // キャラクターの頭上に表示されるネームタグの表示名を反映。
+            if (this.TryGetComponentInChildren(out NameTag nameTag))
+            {
+                nameTag.SetName(AdventurerSheet.DisplayName);
+            }
 
-            // 登場時の演出。台詞を表示させるので、UIに自身を反映した後に呼ぶ。
-            if (TryGetComponent(out EntryAction entry)) entry.Play();
+            // 登場時の演出。台詞を表示させるので、UIに自身を登録した後に呼ぶ。
+            _entry.Play();
 
             // コメントを流し、心情の値を変化させる。
-            CommentDisplayer.TryFind(out CommentDisplayer commentDisplayer);
-            IReadOnlyCollection<CommentData> comment = commentDisplayer.Display(AdventurerSheet.FullName);
+            IReadOnlyCollection<CommentData> comment = _commentDisplayer.Display(AdventurerSheet.FullName);
             if (!(comment == null || comment.Count == 0))
             {
                 float score = 1; // コメントの仕様書が来るまで仮の値。
-                float add = (_blackboard.MaxEmotion / 100.0f) * (20.0f * score);
-                _blackboard.CurrentEmotion += Mathf.CeilToInt(add);
+                float add = (_status.MaxEmotion / 100.0f) * (20.0f * score);
+                _status.CurrentEmotion += Mathf.CeilToInt(add);
             }
 
-            // UIに反映。
-            if (statusBar != null) statusBar.Apply();
+            // 変化した心情をUIに反映。
+            _statusBar.Apply();
 
             // サブゴールを決める。
-            TryGetComponent(out SubGoalPath subGoalPath);
-            subGoalPath.Initialize(await SubGoalSelector.SelectAsync(AdventurerSheet, token));
+            _subGoal.Initialize(await SubGoalSelector.SelectAsync(AdventurerSheet, token));
 
-            TryGetComponent(out HungryStatusEffect hungryStatusEffect);
-            TryGetComponent(out MadnessStatusEffect madnessStatusEffect);
-            TryGetComponent(out BuffStatusEffect buffStatusEffect);
-            TryGetComponent(out InformationStock informationStock);
-            TryGetComponent(out TalkThemeSelector talkThemeSelectAI);
-            TryGetComponent(out DirectionMoveAction moveToDirection);
-            TryGetComponent(out TargetMoveAction moveToTarget);
-            TryGetComponent(out AttackAction attack);
-            TryGetComponent(out ScavengeAction scavenge);
-            TryGetComponent(out TalkAction talk);
-            TryGetComponent(out DefeatedAction defeated);
-            TryGetComponent(out EscapeAction escape);
-            TryGetComponent(out AvailableActions availableActions);
-            TryGetComponent(out ActionEvaluator actionEvaluator);
-            TerrainFeature.TryFind(out TerrainFeature terrainFeature);
+            // ここまでが1ターン目開始までの処理。以降の処理は毎ターン繰り返される。
             while (!token.IsCancellationRequested)
             {
-                // ターン数を更新。
-                _blackboard.ElapsedTurn++;
-
-                // 空腹を増加。
-                _blackboard.CurrentHunger++;
+                // 経過ターン数、空腹を増加。
+                _status.ElapsedTurn++;
+                _status.CurrentHunger++;
 
                 // 空腹が最大の場合、空腹のステータス効果を付与。
-                if (_blackboard.IsHungry) hungryStatusEffect.Apply();
-                else hungryStatusEffect.Remove();
+                if (_status.IsHungry) _hungry.Set();
+                else _hungry.Remove();
 
-                statusBar.Apply();
+                // ステータスの変化をUIに反映。
+                _statusBar.Apply();
 
                 // 現在いるセルについて、地形の特徴に関する情報がある場合、
-                // AIが次の行動を選択する際に、考慮する情報の候補として追加する。
-                if (terrainFeature.TryGetInformation(Coords, out IReadOnlyList<Information> features))
+                // AIが次の行動を選択する際に、考慮する情報として追加する。
+                if (_terrainFeature.TryGet(Coords, out IReadOnlyList<Information> features))
                 {
                     // プレイする度、行動にバラつきを持たせるため、複数ある場合はランダムで1つ選ぶ。
                     int random = Random.Range(0, features.Count);
-                    informationStock.AddPending(features[random]);
+                    _information.AddPending(features[random]);
                 }
 
                 // 周囲の状況やゴール、ステータスを調べ、それぞれの選択肢にスコア付け。
-                foreach ((string action, float score) value in actionEvaluator.Evaluate())
+                foreach ((string action, float score) value in _actionEvaluator.Evaluate())
                 {
-                    availableActions.SetScore(value.action, value.score);
+                    _availableActions.SetScore(value.action, value.score);
                 }
 
                 // 保持している情報を更新。
                 // 新しい情報を知った場合、このタイミングで保持している情報に追加される。
-                await informationStock.RefreshAsync(token);
-                await talkThemeSelectAI.SelectAsync(token);
+                await _information.UpdateAsync(token);
+                await _talkTheme.SelectAsync(token);
 
-                // 情報を更新したのでUIに反映。
-                if (profileWindow != null) profileWindow.Apply();
+                // 保持している情報を更新したのでUIに反映。
+                _profileWindow.Apply();
 
                 // AIが次の行動を選択し、実行。
-                _selectedAction = await gamePlayAI.RequestNextActionAsync(token);
+                string selectedAction = await _gamePlay.RequestAsync(token);
                 string actionResult;
-                if (_selectedAction == "MoveNorth")
+                if (selectedAction == "MoveNorth")
                 {
-                    actionResult = await moveToDirection.PlayAsync(Vector2Int.up, token);
+                    actionResult = await _directionMove.PlayAsync(Vector2Int.up, token);
                 }
-                else if (_selectedAction == "MoveSouth")
+                else if (selectedAction == "MoveSouth")
                 {
-                    actionResult = await moveToDirection.PlayAsync(Vector2Int.down, token);
+                    actionResult = await _directionMove.PlayAsync(Vector2Int.down, token);
                 }
-                else if (_selectedAction == "MoveEast")
+                else if (selectedAction == "MoveEast")
                 {
-                    actionResult = await moveToDirection.PlayAsync(Vector2Int.right, token);
+                    actionResult = await _directionMove.PlayAsync(Vector2Int.right, token);
                 }
-                else if (_selectedAction == "MoveWest")
+                else if (selectedAction == "MoveWest")
                 {
-                    actionResult = await moveToDirection.PlayAsync(Vector2Int.left, token);
+                    actionResult = await _directionMove.PlayAsync(Vector2Int.left, token);
                 }
-                else if (_selectedAction == "MoveToEntrance")
+                else if (selectedAction == "MoveToEntrance")
                 {
-                    actionResult = await moveToTarget.PlayAsync("Entrance", token);
+                    actionResult = await _targetMove.PlayAsync("Entrance", token);
                 }
-                else if (_selectedAction == "AttackToEnemy")
+                else if (selectedAction == "AttackToEnemy")
                 {
-                    actionResult = await attack.PlayAsync<Enemy>(token);
+                    actionResult = await _attack.PlayAsync<Enemy>(token);
                 }
-                else if (_selectedAction == "AttackToAdventurer")
+                else if (selectedAction == "AttackToAdventurer")
                 {
-                    actionResult = await attack.PlayAsync<Adventurer>(token);
+                    actionResult = await _attack.PlayAsync<Adventurer>(token);
                 }
-                else if (_selectedAction == "TalkWithAdventurer")
+                else if (selectedAction == "TalkWithAdventurer")
                 {
-                    actionResult = await talk.PlayAsync(token);
+                    actionResult = await _talk.PlayAsync(token);
                 }
-                else if (_selectedAction == "Scavenge")
+                else if (selectedAction == "Scavenge")
                 {
-                    actionResult = await scavenge.PlayAsync(token);
+                    actionResult = await _scavenge.PlayAsync(token);
                 }
+                else
+                {
+                    Debug.LogWarning($"行動を選ぶAIの出力が、指定した形式と違う。: {selectedAction}");
+                    await UniTask.Yield(cancellationToken: token);
+                }
+
+                // インスペクター上で確認できるよう、適当なメンバ変数に反映させておく。
+                _selectedAction = selectedAction;
 
                 // 足元に罠等がある場合に起動。
                 foreach (Actor actor in DungeonManager.GetActors(Coords))
@@ -213,30 +248,25 @@ namespace Game
                 }
 
                 // ステータス効果を反映。
-                hungryStatusEffect.Tick();
-                madnessStatusEffect.Tick();
-                buffStatusEffect.Tick();
-
-                // 行動結果による選択肢のスコア付け。
+                foreach (StatusEffect e in _statusEffects) e.Apply();
 
                 // 撃破されたもしくは脱出した場合。
-                if (await defeated.PlayAsync(token) || await escape.PlayAsync(token))
+                if (await _defeated.PlayAsync(token) || await _escape.PlayAsync(token))
                 {
-                    TryGetComponent(out AdventureResultReporter adventureResult);
-                    adventureResult.Send();
+                    _result.Send();
                     break;
                 }
 
                 // サブゴールを達成した場合、次のサブゴールを設定。
-                if (subGoalPath.IsAchieve())
+                if (_subGoal.IsAchieve())
                 {
                     GameLog.Add(
                         $"システム",
-                        $"{AdventurerSheet.DisplayName}が「{subGoalPath.GetCurrent().Text.Japanese}」を達成。",
+                        $"{AdventurerSheet.DisplayName}が「{_subGoal.GetCurrent().Description.Japanese}」を達成。",
                         GameLogColor.White
                     );
 
-                    subGoalPath.SetNext();
+                    _subGoal.SetNext();
                 }
 
                 await UniTask.Yield(cancellationToken: token);
