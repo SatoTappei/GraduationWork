@@ -52,6 +52,20 @@ namespace Game
             StartCoroutine(PlayAsync());
         }
 
+        bool IsSpaceAvailable(Vector2Int direction)
+        {
+            for (int i = 1; i <= Range; i++)
+            {
+                Vector2Int coords = Coords + direction * i;
+                if (DungeonManager.GetCell(coords).IsImpassable())
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
         IEnumerator PlayAsync()
         {
             const int Duration = 30;
@@ -65,7 +79,7 @@ namespace Game
             for (int i = 0; i <= Range; i++)
             {
                 Vector2Int coords = Coords + Direction * i;
-                DungeonManager.SetCellTerrainEffect(coords, TerrainEffect.Flaming);
+                DungeonManager.SetTerrainEffect(coords, TerrainEffect.Flaming);
             }
 
             // 炎が出ている時間。一定間隔でダメージを与える。
@@ -76,9 +90,9 @@ namespace Game
                     Vector2Int coords = Coords + Direction * k;
                     foreach (Actor actor in DungeonManager.GetActors(coords))
                     {
-                        if (actor is Adventurer adventurer)
+                        if (actor != null && actor.TryGetComponent(out IDamageable damage))
                         {
-                            adventurer.Damage(Damage, coords);
+                            damage.Damage(Damage, coords);
                         }
                     }
                 }
@@ -90,25 +104,11 @@ namespace Game
             for (int i = 0; i <= Range; i++)
             {
                 Vector2Int coords = Coords + Direction * i;
-                DungeonManager.DeleteCellTerrainEffect(coords);
+                DungeonManager.DeleteTerrainEffect(coords);
             }
 
             _particle.Stop();
             _isPlaying = false;
-        }
-
-        bool IsSpaceAvailable(Vector2Int direction)
-        {
-            for (int i = 1; i <= Range; i++)
-            {
-                Vector2Int coords = Coords + direction * i;
-                if (DungeonManager.GetCell(coords).IsImpassable())
-                {
-                    return false;
-                }
-            }
-
-            return true;
         }
     }
 }

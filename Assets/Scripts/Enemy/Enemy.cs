@@ -3,20 +3,36 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Game.EnemyComponent;
 
 namespace Game
 {
-    public class Enemy : Character
+    public class Enemy : Actor
     {
-        EnemyBlackboard _blackboard;
+        [SerializeField] ParticleSystem _spawnParticle;
+
+        EnemyComponent.Status _status;
+        Vector2Int _spawnCoords;
+        Vector2Int _currentCoords;
+        Vector2Int _currentDirection;
         bool _isInitialized;
 
-        public override Vector2Int Coords => _blackboard.Coords;
-        public override Vector2Int Direction => _blackboard.Direction;
+        ActionSelector _actionSelector;
+        EnemyComponent.MovementAction _movement;
+        EnemyComponent.AttackAction _attack;
+        EnemyComponent.DefeatedAction _defeated;
+
+        public EnemyComponent.Status Status => _status;
+        public Vector2Int SpawnCoords => _spawnCoords;
+        public override Vector2Int Coords => _currentCoords;
+        public override Vector2Int Direction => _currentDirection;
 
         void Awake()
         {
-            _blackboard = GetComponent<EnemyBlackboard>();
+            _actionSelector = GetComponent<ActionSelector>();
+            _movement = GetComponent<EnemyComponent.MovementAction>();
+            _attack = GetComponent<EnemyComponent.AttackAction>();
+            _defeated = GetComponent<EnemyComponent.DefeatedAction>();
         }
 
         void Start()
@@ -26,22 +42,19 @@ namespace Game
 
         public void Initialize(Vector2Int coords)
         {
-            _blackboard.CurrentHp = _blackboard.MaxHp;
-            _blackboard.SpawnCoords = coords;
-            _blackboard.Coords = coords;
-            _blackboard.Direction = Vector2Int.up; // 上以外の向きの場合、回転させる処理が必要。
+            _status = new EnemyComponent.Status();
+            _spawnCoords = coords;
+            _currentCoords = coords;
+            // 上以外の向きの場合、回転させる処理が必要。
+            _currentDirection = Vector2Int.up;
 
             _isInitialized = true;
         }
 
-        public override string Damage(int value, Vector2Int coords, string effect = "")
-        {
-            if (_isInitialized && TryGetComponent(out EnemyDamageApply damage))
-            {
-                return damage.Damage(value, coords);
-            }
-            else return "Miss";
-        }
+        // オーバーライドしたgetterに派生クラスでsetterを追加できない。
+        // とりあえず値をセットするメソッドを作った。
+        public void SetCoords(Vector2Int coords) => _currentCoords = coords;
+        public void SetDirection(Vector2Int direction) => _currentDirection = direction;
 
         async UniTask UpdateAsync(CancellationToken token)
         {
@@ -53,28 +66,51 @@ namespace Game
             transform.position = DungeonManager.GetCell(Coords).Position;
 
             // 湧いた際の演出。
-            if (TryGetComponent(out EnemySpawnEffect spawnEffect)) spawnEffect.Play();
+            _spawnParticle.Play();
 
-            TryGetComponent(out EnemyAI enemyAI);
-            TryGetComponent(out EnemyMovement movement);
-            TryGetComponent(out EnemyAttack attack);
-            TryGetComponent(out EnemyDefeated defeated);
+            // ここまでが1ターン目開始までの処理。以降の処理は毎ターン繰り返される。
             while (!token.IsCancellationRequested)
             {
                 // 次の行動を選択し、実行。
-                string choice = enemyAI.ChoiceNextAction();
-                if (choice == "Idle") await UniTask.Yield(cancellationToken: token);
-                else if (choice == "Move North") await movement.MoveAsync(Vector2Int.up, token);
-                else if (choice == "Move South") await movement.MoveAsync(Vector2Int.down, token);
-                else if (choice == "Move East") await movement.MoveAsync(Vector2Int.right, token);
-                else if (choice == "Move West") await movement.MoveAsync(Vector2Int.left, token);
-                else if (choice == "Attack Surrounding") await attack.AttackAsync(token);
+                string selectedAction = _actionSelector.Select();
+                if (selectedAction == "Idle")
+                {
+                    await UniTask.Yield(cancellationToken: token);
+                }
+                else if (selectedAction == "MoveNorth")
+                {
+                    await _movement.MoveAsync(Vector2Int.up, token);
+                }
+                else if (selectedAction == "MoveSouth")
+                {
+                    await _movement.MoveAsync(Vector2Int.down, token);
+                }
+                else if (selectedAction == "MoveEast")
+                {
+                    await _movement.MoveAsync(Vector2Int.right, token);
+                }
+                else if (selectedAction == "MoveWest")
+                {
+                    await _movement.MoveAsync(Vector2Int.left, token);
+                }
+                else if (selectedAction == "Attack")
+                {
+                    await _attack.AttackAsync(token);
+                }
+                else
+                {
+                    Debug.LogWarning($"対応する行動が無い。スペルミス？: {selectedAction}");
+                    await UniTask.Yield(cancellationToken: token);
+                }
 
                 // 撃破された場合。
-                if (await defeated.DefeatedAsync(token)) break;
+                if (await _defeated.PlayAsync(token)) break;
 
                 await UniTask.Yield(cancellationToken: token);
             }
+
+            // セルから削除。
+            DungeonManager.RemoveActor(Coords, this);
 
             Destroy(gameObject);
         }

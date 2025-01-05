@@ -20,8 +20,14 @@ namespace Game
         [SerializeField] float _refillInterval = 10.0f;
         [SerializeField] ParticleSystem _particle;
 
+        AudioSource _audioSource;
         WaitForSeconds _waitRefill;
         bool _isEmpty;
+
+        void Awake()
+        {
+            _audioSource = GetComponent<AudioSource>();
+        }
 
         void Start()
         {
@@ -30,28 +36,29 @@ namespace Game
 
         public Item Scavenge()
         {
-            PlaySE();
+            _audioSource.Play();
             _particle.Play();
 
-            if (_isEmpty) return null;
-            else _isEmpty = true;
+            if (_isEmpty)
+            {
+                return null;
+            }
+            else
+            {
+                // 一定時間後、空っぽフラグを立てておく。
+                StartCoroutine(RefillAsync());
 
-            StartCoroutine(RefillAsync());
-
-            // ランダムなアイテム。
-            BilingualString str = Table[Random.Range(0, Table.Length)];
-            return new Item(str.Japanese, str.English);
+                // ランダムなアイテム。
+                BilingualString str = Table[Random.Range(0, Table.Length)];
+                return new Item(str.Japanese, str.English);
+            }
         }
 
         IEnumerator RefillAsync()
         {
+            _isEmpty = true;
             yield return _waitRefill ??= new WaitForSeconds(_refillInterval);
             _isEmpty = false;
-        }
-
-        void PlaySE()
-        {
-            if (TryGetComponent(out AudioSource source)) source.Play();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Game
 
         void Awake()
         {
-            CameraFocus.TryFind(out _cameraFocus);
+            _cameraFocus = CameraFocus.Find();
         }
 
         public void Register()

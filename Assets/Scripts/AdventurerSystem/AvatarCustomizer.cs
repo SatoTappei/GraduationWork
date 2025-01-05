@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Game
 {
     [System.Serializable]
-    public class AvatarCustomizeData
+    public class AvatarData
     {
         [SerializeField] Sprite _icon;
         [SerializeField] Adventurer _prefab;
@@ -16,9 +16,9 @@ namespace Game
 
     public class AvatarCustomizer : MonoBehaviour
     {
-        [SerializeField] AvatarCustomizeData[] _avatars;
+        [SerializeField] AvatarData[] _avatars;
 
-        public AvatarCustomizeData GetCustomizedData(AdventurerData profile)
+        public AvatarData GetData(AdventurerData profile)
         {
             // アバターは全12種類。
             if (0 <= profile.AvatarType && profile.AvatarType < 12)

@@ -2,20 +2,20 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Old
+namespace Game.Unused
 {
     public class CommentPlacer
     {
         class Row
         {
             public float Height { get; set; }
-            public float PositionX { get; set; }
+            public float X { get; set; }
 
-            public Vector2 Position => new Vector2(PositionX, Height);
+            public Vector2 Position => new Vector2(X, Height);
         }
 
         Row[] _rows;
-        List<DisplayedComment> _placed;
+        List<CommentUI> _placed;
 
         public CommentPlacer()
         {
@@ -30,31 +30,38 @@ namespace Game.Old
                 _rows[i].Height = LineSpace * i + LineOffset;
             }
 
-            ResetPositionX();
+            ResetPosition();
 
-            _placed = new List<DisplayedComment>();
+            _placed = new List<CommentUI>();
         }
 
         // コメント同士が被らないかつ、ランダムな位置に配置する。
-        public void Set(DisplayedComment comment)
+        public void Set(CommentUI comment)
         {
-            Row row = _rows[Random.Range(0, _rows.Length)];
-            comment.SetPosition(row.Position);
-            row.PositionX += comment.TextSize + 55.0f;
+            if (comment == null)
+            {
+                Debug.LogWarning("配置しようとしたコメントがnullだった。");
+            }
+            else
+            {
+                Row row = _rows[Random.Range(0, _rows.Length)];
+                comment.SetPosition(row.Position);
+                row.X += comment.TextSize + 55.0f;
 
-            _placed.Add(comment);
+                _placed.Add(comment);
+            }
         }
 
         // 配置したコメントを流す。
         public void Play()
         {
-            _placed.ForEach(c => c.Play());
+            _placed.ForEach(c => c.Flow());
             _placed.Clear();
 
-            ResetPositionX();
+            ResetPosition();
         }
 
-        void ResetPositionX()
+        void ResetPosition()
         {
             // 右側の画面外。
             const float OffScreen = 2000.0f;
@@ -63,7 +70,7 @@ namespace Game.Old
 
             foreach (Row row in _rows)
             {
-                row.PositionX = OffScreen + Random.Range(0, RandomOffset);
+                row.X = OffScreen + Random.Range(0, RandomOffset);
             }
         }
     }

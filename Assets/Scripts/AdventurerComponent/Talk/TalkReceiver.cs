@@ -6,25 +6,25 @@ namespace Game
 {
     public class TalkReceiver : MonoBehaviour
     {
-        HoldInformation _informationInventory;
-        ReceiveInformationEffect _receiveInformationEffect;
+        HoldInformation _information;
+        RevelationEffect _revelationEffect;
         TinfoilHatEffect _tinfoilHatEffect;
 
         void Awake()
         {
-            _informationInventory = GetComponent<HoldInformation>();
-            _receiveInformationEffect = GetComponent<ReceiveInformationEffect>();
+            _information = GetComponent<HoldInformation>();
+            _revelationEffect = GetComponent<RevelationEffect>();
             _tinfoilHatEffect =GetComponent<TinfoilHatEffect>();
         }
 
         public void Talk(BilingualString text, string source, Vector2Int coords, string effect = "")
         {
-            _informationInventory.AddPending(text, source);
+            _information.AddPending(text, source);
 
             // 各種イベントの場合、それぞれ専用の演出を再生する。
-            if (effect == nameof(SendInformationEvent))
+            if (effect == nameof(RevelationEvent))
             {
-                _receiveInformationEffect.Play();
+                _revelationEffect.Play();
             }
             else if (effect == nameof(MindReadingEvent))
             {

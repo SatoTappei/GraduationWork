@@ -23,7 +23,7 @@ namespace Game
         }
 
         // 派生クラスから呼び出す移動処理。
-        protected async UniTask<string> MoveNextAsync(CancellationToken token)
+        protected async UniTask<string> MoveAsync(CancellationToken token)
         {
             // シリアライズしても良い。
             const float RotateSpeed = 4.0f;

@@ -7,10 +7,12 @@ namespace Game
 {
     public class GameManager : MonoBehaviour
     {
+        AdventurerSpawner _adventurerSpawner;
         Dictionary<Adventurer, string> _adventureResults;
         
         void Awake()
         {
+            _adventurerSpawner = AdventurerSpawner.Find();
             _adventureResults = new Dictionary<Adventurer, string>();
         }
 
@@ -34,13 +36,12 @@ namespace Game
             // "使用中"のスプレッドシートの内容を消す。
             //await SpawnedAdventurerSender.DeleteAsync(token);
 
-            AdventurerSpawner.TryFind(out AdventurerSpawner spawner);
             while (!token.IsCancellationRequested)
             {
                 _adventureResults.Clear();
 
                 // 一定間隔で冒険者を生成。
-                int spawnedCount = await spawner.SpawnAsync(Max, token);
+                int spawnedCount = await _adventurerSpawner.SpawnAsync(Max, token);
 
                 // 生成した冒険者を"使用中"のスプレッドシートに書き込み。
                 //await SpawnedAdventurerSender.WriteAsync(spawner.Spawned, token);

@@ -10,19 +10,20 @@ namespace Game
     {
         [SerializeField] Vector2Int _spawnCoords;
 
+        AvatarCustomizer _avatarCustomizer;
         List<Adventurer> _spawned;
 
         public IReadOnlyList<Adventurer> Spawned => _spawned;
 
         void Awake()
         {
+            _avatarCustomizer = GetComponent<AvatarCustomizer>();
             _spawned = new List<Adventurer>();
         }
 
-        public static bool TryFind(out AdventurerSpawner result)
+        public static AdventurerSpawner Find()
         {
-            result = GameObject.FindGameObjectWithTag("AdventurerSpawner").GetComponent<AdventurerSpawner>();
-            return result != null;
+            return GameObject.FindGameObjectWithTag("AdventurerSpawner").GetComponent<AdventurerSpawner>();
         }
 
         public async UniTask<int> SpawnAsync(int count, CancellationToken token)
@@ -53,10 +54,8 @@ namespace Game
 
         void Spawn(AdventurerData profile)
         {
-            TryGetComponent(out AvatarCustomizer avatarCustomizer);
-            AvatarCustomizeData avatarData = avatarCustomizer.GetCustomizedData(profile);
-
             // 冒険者側に自身のプロフィールとコメント、アバターの情報を渡して初期化する。
+            AvatarData avatarData = _avatarCustomizer.GetData(profile);
             AdventurerSheet adventurerSheet = new AdventurerSheet(profile, avatarData);
             Adventurer adventurer = Instantiate(avatarData.Prefab);
             adventurer.Initialize(adventurerSheet);

@@ -4,6 +4,10 @@ using UnityEngine;
 
 namespace AI
 {
+    /// <summary>
+    /// 適当な空のオブジェクトにアタッチして使う。
+    /// 再生中に消費したトークン数をインスペクター上に表示する。
+    /// </summary>
     public class TokenCalculator : MonoBehaviour
     {
         static TokenCalculator _instance;

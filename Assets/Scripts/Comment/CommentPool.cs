@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.Old
+namespace Game.Unused
 {
-    public class CommentPool : UiObjectPool<DisplayedComment>
+    public class CommentPool : UiObjectPool<CommentUI>
     {
     }
 }

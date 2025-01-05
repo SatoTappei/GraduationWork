@@ -10,8 +10,16 @@ namespace Game
         [SerializeField] AudioClip _openSE;
         [SerializeField] AudioClip _closeSE;
 
-        bool _isPlaying;
+        Transform _rotateAxis;
+        AudioSource _audioSource;
         WaitForSeconds _keepOpen;
+        bool _isPlaying;
+
+        void Awake()
+        {
+            _rotateAxis = transform.Find("RotateAxis");
+            _audioSource = GetComponent<AudioSource>();
+        }
 
         public override void Interact(Actor user)
         {
@@ -28,10 +36,15 @@ namespace Game
 
             _isPlaying = true;
 
-            PlayOpenSE();
+            _audioSource.clip = _openSE;
+            _audioSource.Play();
+
             yield return AnimationAsync(ClosedAngle, OpenAngle);
             yield return KeepOpenAsync();
-            PlayCloseSE();
+
+            _audioSource.clip = _closeSE;
+            _audioSource.Play();
+
             yield return AnimationAsync(OpenAngle, ClosedAngle);
 
             _isPlaying = false;
@@ -39,11 +52,10 @@ namespace Game
 
         IEnumerator AnimationAsync(float beginAngle, float endAngle)
         {
-            Transform axis = transform.Find("RotateAxis");
             for (float t = 0; t <= 1; t += Time.deltaTime)
             {
                 float angle = Mathf.Lerp(beginAngle, endAngle, Easing(t));
-                axis.localRotation = Quaternion.Euler(new Vector3(0, angle, 0));
+                _rotateAxis.localRotation = Quaternion.Euler(new Vector3(0, angle, 0));
 
                 yield return null;
             }
@@ -54,7 +66,8 @@ namespace Game
             // –`Œ¯ŽÒ‚ªˆá‚¤ƒZƒ‹‚ÉˆÚ“®‚·‚é‚Ü‚Å‘Ò‚ÂB
             do
             {
-                yield return _keepOpen ??= new WaitForSeconds(1.0f); // 1~2•bŠÔŠu‚Å’²‚×‚ê‚Î\•ªB
+                // 1~2•bŠÔŠu‚Å’²‚×‚ê‚Î\•ªB
+                yield return _keepOpen ??= new WaitForSeconds(1.0f);
 
             } while (DungeonManager.GetActors(Coords).Any(x => x is Adventurer));
         }
@@ -69,18 +82,6 @@ namespace Game
             {
                 float f = -2 * x + 2;
                 return 1 - f * f * f / 2;
-            }
-        }
-
-        void PlayOpenSE() => PlaySE(_openSE);
-        void PlayCloseSE() => PlaySE(_closeSE);
-
-        void PlaySE(AudioClip clip)
-        {
-            if (TryGetComponent(out AudioSource source))
-            {
-                source.clip = clip;
-                source.Play();
             }
         }
     }

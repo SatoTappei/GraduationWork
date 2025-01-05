@@ -13,7 +13,7 @@ namespace Game
 
         void Awake()
         {
-            Pathfinding.TryFind(out _pathfinding);
+            _pathfinding = Pathfinding.Find();
             _path = new List<Cell>();
         }
 

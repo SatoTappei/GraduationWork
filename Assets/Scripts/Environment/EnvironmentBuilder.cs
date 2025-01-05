@@ -54,7 +54,10 @@ namespace Game
                     GameObject tile = Instantiate(prefab);
                     tile.transform.position = new Vector3(k, 0, i);
 
-                    if (tile.TryGetComponent(out Environment e)) e.Initialize(blueprint, k, i);
+                    if (tile.TryGetComponent(out Environment e))
+                    {
+                        e.Initialize(blueprint, k, i);
+                    }
 
                     float angle = 0;
                     if (symbol == up) angle = 0;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class DamageReceiver : MonoBehaviour
+    public class DamageReceiver : MonoBehaviour, IDamageable
     {
         Adventurer _adventurer;
         DamageEffect _effect;
@@ -21,7 +21,7 @@ namespace Game
             _statusBar = GetComponent<StatusBarBinder>();
         }
 
-        public string Damage(int value, Vector2Int coords, string effect)
+        public string Damage(int value, Vector2Int coords, string effect = "")
         {
             // Šù‚É€–S‚µ‚Ä‚¢‚éê‡B
             if (_adventurer.Status.IsDefeated) return "Corpse";

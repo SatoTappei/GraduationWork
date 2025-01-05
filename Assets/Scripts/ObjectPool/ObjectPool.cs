@@ -27,6 +27,7 @@ namespace Game
             }
         }
 
+        // このクラスを継承してUIバージョンのプールを作る想定。
         protected virtual Transform CreateParent()
         {
             return new GameObject().transform;

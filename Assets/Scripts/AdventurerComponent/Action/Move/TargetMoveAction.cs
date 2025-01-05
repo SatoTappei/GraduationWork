@@ -15,7 +15,7 @@ namespace Game
             // ワープなどの強制的に位置を移動させるギミックを作る場合は破綻するので注意。
             if (MovementPath.Target == targetID)
             {
-                string result = await MoveNextAsync(token);
+                string result = await MoveAsync(token);
                 MovementPath.SetNext();
 
                 return result;
@@ -24,7 +24,7 @@ namespace Game
             // 目標への経路探索。
             if (targetID == "Treasure")
             {
-                Cell cell = DungeonManager.GetCells(targetID).FirstOrDefault();
+                Cell cell = DungeonManager.GetPlacedCells(targetID).FirstOrDefault();
                 Actor treasure = cell.GetActors().Where(a => a.ID == targetID).FirstOrDefault();
                 // 宝箱のマスへは経路探索が出来ないので、正面の位置までの経路探索。
                 MovementPath.Finding(
@@ -36,7 +36,7 @@ namespace Game
             }
             else if (targetID == "Entrance")
             {
-                Cell cell = DungeonManager.GetCells(targetID).FirstOrDefault();
+                Cell cell = DungeonManager.GetPlacedCells(targetID).FirstOrDefault();
                 MovementPath.Finding(
                     targetID, 
                     Adventurer.Coords, 
@@ -59,7 +59,7 @@ namespace Game
             }
             else
             {
-                string result = await MoveNextAsync(token);
+                string result = await MoveAsync(token);
                 MovementPath.SetNext();
 
                 return result;

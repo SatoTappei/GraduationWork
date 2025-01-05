@@ -1,0 +1,78 @@
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+namespace Game
+{
+    public class DealingDamageEvent : MonoBehaviour
+    {
+        [SerializeField] Vector2Int[] _candidateCoords;
+        [SerializeField] bool _isDraw;
+
+        DealingDamageEffectPool _effectpool;
+        AdventurerSpawner _spawner;
+
+        void Awake()
+        {
+            _effectpool = GetComponent<DealingDamageEffectPool>();
+            _spawner = AdventurerSpawner.Find();
+        }
+
+        void OnDrawGizmosSelected()
+        {
+            if (Application.isPlaying && _isDraw) Draw();
+        }
+
+        public void Execute()
+        {
+            if (_spawner.Spawned.Count == 0) return;
+
+            // ランダムな冒険者に対を選び、狙うことが出来るセルに配置する。
+            int random = Random.Range(0, _spawner.Spawned.Count);
+            Adventurer target = _spawner.Spawned[random];
+            Vector2Int coords = GetOptimalCoords(target);
+            Cell placeCell = DungeonManager.GetCell(coords);
+
+            if (_effectpool.TryPop(out DealingDamageEffect effect))
+            {
+                // 壁の上に生成する。
+                effect.Play(placeCell.Position + Vector3.up, target);
+            }
+
+            // イベント実行をログに表示。
+            GameLog.Add("システム", "何者かが冒険者を砲撃した。", GameLogColor.Green);
+        }
+
+        // 目標とある程度離れた座標を返す。
+        Vector2Int GetOptimalCoords(Adventurer target)
+        {
+            const float Threshold = 5.0f;
+
+            float minDistance = float.MaxValue;
+            Vector2Int minCoords = default;
+            for (int i = 0; i < _candidateCoords.Length; i++)
+            {
+                float distance = Vector2.Distance(target.Coords, _candidateCoords[i]);
+                if (distance > Threshold && distance < minDistance)
+                {
+                    minDistance = distance;
+                    minCoords = _candidateCoords[i];
+                }
+            }
+
+            return minCoords;
+        }
+
+        // 候補となる座標を描画する。
+        void Draw()
+        {
+            Gizmos.color = new Color(1, 0, 0, 0.5f);
+            for (int i = 0; i < _candidateCoords.Length; i++)
+            {
+                Cell cell = DungeonManager.GetCell(_candidateCoords[i]);
+                Gizmos.DrawCube(cell.Position + Vector3.up, Vector3.one);
+            }
+        }
+    }
+}

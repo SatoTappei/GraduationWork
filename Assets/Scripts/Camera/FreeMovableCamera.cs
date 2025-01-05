@@ -23,10 +23,9 @@ namespace Game
             Rotate();
         }
 
-        public static bool TryFind(out FreeMovableCamera result)
+        public static FreeMovableCamera Find()
         {
-            result = GameObject.FindGameObjectWithTag("BirdsEyeViewCamera").GetComponent<FreeMovableCamera>();
-            return result != null;
+            return GameObject.FindGameObjectWithTag("BirdsEyeViewCamera").GetComponent<FreeMovableCamera>();
         }
 
         public void SetPosition(Vector3 position)

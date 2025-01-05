@@ -7,22 +7,21 @@ namespace Game
     public class MeshTransformer : MonoBehaviour
     {
         [SerializeField] MeshFilter _source;
+        [SerializeField] float _height = 0.9f;
+        [SerializeField] float _width = 0.3f;
 
         void Start()
         {
-            const float Height = 0.9f;
-            const float Width = 0.3f;
-
             Mesh mesh = new Mesh();
             mesh.name = "CopiedMesh";
 
-            // 腕と脚と胴体のメッシュを圧縮する。
+            // 頂点をずらして直方体の範囲に収まるようにする。
             Vector3[] vertices = _source.sharedMesh.vertices;
             for (int i = 0; i < vertices.Length; i++)
             {
-                if (vertices[i].y <= Height) vertices[i].y = Height;
-                if (vertices[i].x >= Width) vertices[i].x = Width;
-                if (vertices[i].x <= -Width) vertices[i].x = -Width;
+                if (vertices[i].y <= _height) vertices[i].y = _height;
+                if (vertices[i].x >= _width) vertices[i].x = _width;
+                if (vertices[i].x <= -_width) vertices[i].x = -_width;
             }
 
             mesh.Clear();

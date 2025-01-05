@@ -21,7 +21,7 @@ namespace Game
         void Awake()
         {
             _adventurer = GetComponent<Adventurer>();
-            StatusBar.TryFind(out _statusBar);
+            _statusBar = StatusBar.Find();
         }
 
         public void Register()

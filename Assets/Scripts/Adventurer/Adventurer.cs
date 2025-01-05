@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class Adventurer : Character
+    public class Adventurer : Actor
     {
         AdventurerSheet _adventurerSheet;
         Status _status;
@@ -73,9 +73,8 @@ namespace Game
             _hungry = GetComponent<HungryStatusEffect>();
             _result = GetComponent<AdventureResultReporter>();
             _statusEffects = GetComponents<StatusEffect>();
-
-            CommentDisplayer.TryFind(out _commentDisplayer);
-            TerrainFeature.TryFind(out _terrainFeature);
+            _commentDisplayer = CommentDisplayer.Find();
+            _terrainFeature = TerrainFeature.Find();
         }
 
         void Start()

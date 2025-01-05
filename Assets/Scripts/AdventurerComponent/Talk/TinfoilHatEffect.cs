@@ -7,7 +7,7 @@ namespace Game
     public class TinfoilHatEffect : MonoBehaviour
     {
         [SerializeField] GameObject _prefab;
-        [SerializeField] AudioClip _se;
+        [SerializeField] AudioClip _tinfoilHatSE;
         [SerializeField] ParticleSystem _particle;
 
         AudioSource _audioSource;
@@ -34,7 +34,7 @@ namespace Game
             _prefab.SetActive(true);
             _particle.Play();
 
-            _audioSource.clip = _se;
+            _audioSource.clip = _tinfoilHatSE;
             _audioSource.Play();
 
             yield return _waitDuration ??= new WaitForSeconds(10.0f);

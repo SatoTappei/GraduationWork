@@ -19,7 +19,7 @@ namespace Game
             Cell cell = DungeonManager.GetCell(targetCoords);
             MovementPath.Create(direction.ToString(), cell);
 
-            return await MoveNextAsync(token);
+            return await MoveAsync(token);
         }
     }
 }

@@ -57,7 +57,7 @@ namespace Game
             _itemInventory = GetComponent<ItemInventory>();
             _information = GetComponent<HoldInformation>();
             _statusEffects = GetComponents<StatusEffect>();
-            ProfileWindow.TryFind(out _profileWindow);
+            _profileWindow = ProfileWindow.Find();
         }
 
         public void Register()

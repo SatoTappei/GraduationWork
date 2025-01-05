@@ -6,7 +6,7 @@ namespace Game
 {
     public class AdventurerSheet
     {
-        public AdventurerSheet(AdventurerData profile, AvatarCustomizeData avatarData)
+        public AdventurerSheet(AdventurerData profile, AvatarData avatarData)
         {
             FullName = profile.Name;
             DisplayName = profile.DisplayName;

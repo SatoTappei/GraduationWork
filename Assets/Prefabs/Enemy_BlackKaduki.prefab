@@ -43,14 +43,11 @@ GameObject:
   - component: {fileID: 3924456028767373755}
   - component: {fileID: -6776341456355948812}
   - component: {fileID: -911883579432021379}
-  - component: {fileID: 8042883282999419130}
   - component: {fileID: 1053666073836179224}
   - component: {fileID: 2915455591153358112}
   - component: {fileID: 1343995972099547694}
   - component: {fileID: 4129146930288098071}
   - component: {fileID: -684663236930695111}
-  - component: {fileID: -2120452643082629455}
-  - component: {fileID: 3493954462358360160}
   - component: {fileID: -6086971446906293687}
   m_Layer: 0
   m_Name: Enemy_BlackKaduki
@@ -184,19 +181,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44820086b2f3ad9478f14f3bb1eb289a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &8042883282999419130
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5999171470868063323}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dc94ac818a97654d82a9043a597cce0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxHp: 100
+  _spawnParticle: {fileID: 8554313976681482867}
 --- !u!114 &1053666073836179224
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,6 +236,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c0506214ddfda448aba04024d31e6ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _defeatedSE: {fileID: 8300000, guid: a9a75d7b75acab547b3fd6754b8cf436, type: 3}
+  _particle: {fileID: 7239953851142516169}
+  _renderers:
+  - {fileID: 6374788426443208861}
+  - {fileID: 8190389015927078994}
 --- !u!114 &-684663236930695111
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -263,36 +253,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0154f8ad4b084e14f9335ca264cbdab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &-2120452643082629455
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5999171470868063323}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a3617cb82816774eaa12d06f631ae41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _defeatedSE: {fileID: 8300000, guid: a9a75d7b75acab547b3fd6754b8cf436, type: 3}
-  _particle: {fileID: 7239953851142516169}
-  _renderers:
-  - {fileID: 6374788426443208861}
-  - {fileID: 8190389015927078994}
---- !u!114 &3493954462358360160
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5999171470868063323}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a1200484b5d504693f7e4567329697, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _particle: {fileID: 8554313976681482867}
 --- !u!114 &-6086971446906293687
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -608,6 +568,10 @@ PrefabInstance:
     - target: {fileID: 1000010339001878, guid: 1bfbbc6538377cc4682f7075bb62c057, type: 3}
       propertyPath: m_Name
       value: KadukiSailorSuitBlackHairPrefab
+      objectReference: {fileID: 0}
+    - target: {fileID: 1000010999801476, guid: 1bfbbc6538377cc4682f7075bb62c057, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4000013041788538, guid: 1bfbbc6538377cc4682f7075bb62c057, type: 3}
       propertyPath: m_LocalPosition.x

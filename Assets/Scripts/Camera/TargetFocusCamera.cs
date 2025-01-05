@@ -5,21 +5,17 @@ using UnityEngine;
 
 namespace Game
 {
-    public enum CameraFocusPriority
-    {
-        Critical,
-        High,
-        Normal,
-        Low,
-    }
-
     public class TargetFocusCamera : MonoBehaviour
     {
         CinemachineVirtualCamera _vcam;
+        CinemachineFramingTransposer _transposer;
+        AdventurerSpawner _spawner;
 
         void Awake()
         {
             _vcam = GetComponent<CinemachineVirtualCamera>();
+            _transposer = _vcam.GetCinemachineComponent<CinemachineFramingTransposer>();
+            _spawner = AdventurerSpawner.Find();
         }
 
         void Start()
@@ -27,22 +23,20 @@ namespace Game
             StartCoroutine(UpdateAsync());
         }
 
-        public static bool TryFind(out TargetFocusCamera result)
+        public static TargetFocusCamera Find()
         {
-            result = GameObject.FindGameObjectWithTag("BirdsEyeViewCamera").GetComponent<TargetFocusCamera>();
-            return result != null;
+            return GameObject.FindGameObjectWithTag("BirdsEyeViewCamera").GetComponent<TargetFocusCamera>();
         }
 
         IEnumerator UpdateAsync()
         {
-            AdventurerSpawner.TryFind(out AdventurerSpawner adventurerSpawner);
             while (true)
             {
-                if (0 < adventurerSpawner.Spawned.Count)
+                if (0 < _spawner.Spawned.Count)
                 {
                     // 一定間隔でランダムな冒険者をフォーカスする。
-                    int random = Random.Range(0, adventurerSpawner.Spawned.Count);
-                    Adventurer target = adventurerSpawner.Spawned[random];
+                    int random = Random.Range(0, _spawner.Spawned.Count);
+                    Adventurer target = _spawner.Spawned[random];
                     yield return FocusAsync(target);
                 }
                 else
@@ -72,9 +66,8 @@ namespace Game
             }
 
             // 目標をズームする。
-            CinemachineFramingTransposer transposer = _vcam.GetCinemachineComponent<CinemachineFramingTransposer>();
-            float baseDistance = transposer.m_CameraDistance;
-            transposer.m_CameraDistance = baseDistance / zoom;
+            float baseDistance = _transposer.m_CameraDistance;
+            _transposer.m_CameraDistance = baseDistance / zoom;
 
             // 一定時間、カメラが目標をフォーカスする。
             for (float f = 0; f < Duration; f += Time.deltaTime)
@@ -87,7 +80,7 @@ namespace Game
                 yield return null;
             }
 
-            transposer.m_CameraDistance = baseDistance;
+            _transposer.m_CameraDistance = baseDistance;
         }
     }
 }

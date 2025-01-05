@@ -19,7 +19,7 @@ namespace Game
             _line = GetComponent<LineDisplayer>();
         }
 
-        public async UniTask<string> PlayAsync<TTarget>(CancellationToken token) where TTarget : IDamageable
+        public async UniTask<string> PlayAsync<TTarget>(CancellationToken token) where TTarget : class
         {
             // シリアライズしても良い。
             const float RotateSpeed = 4.0f;
@@ -40,10 +40,10 @@ namespace Game
 
             // ダメージを与える。
             string result = string.Empty;
-            if (target != null && target is Character targetCharacter)
+            if (target != null && TryGetComponent(out IDamageable damage))
             {
                 // Defeat(撃破した)、Hit(当たったが生存)、Corpse(既に死んでいる)、Miss(当たらなかった)
-                result = targetCharacter.Damage(_adventurer.Status.TotalAttack, _adventurer.Coords);
+                result = damage.Damage(_adventurer.Status.TotalAttack, _adventurer.Coords);
             }
             else
             {

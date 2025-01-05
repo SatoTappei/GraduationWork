@@ -9,14 +9,14 @@ namespace Game
         [SerializeField] AudioClip _damageSE;
         [SerializeField] ParticleSystem _particle;
 
-        Adventurer _adventurer;
+        Actor _actor;
         AudioSource _audioSource;
         Transform _fbx;
         bool _isKnockback;
 
         void Awake()
         {
-            _adventurer = GetComponent<Adventurer>();
+            _actor = GetComponent<Actor>();
             _audioSource = GetComponent<AudioSource>();
             _fbx = transform.FindChildRecursive("FBX");
         }
@@ -25,7 +25,7 @@ namespace Game
         {
             if (_isKnockback) return;
 
-            StartCoroutine(PlayAsync(_adventurer.Coords, coords));
+            StartCoroutine(PlayAsync(_actor.Coords, coords));
         }
 
         IEnumerator PlayAsync(Vector2Int myselfCoords, Vector2Int attackerCoords)

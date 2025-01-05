@@ -46,14 +46,11 @@ GameObject:
   - component: {fileID: 6503424607481972428}
   - component: {fileID: -642438715165406071}
   - component: {fileID: 2850559631838084954}
-  - component: {fileID: 1481673322093410209}
   - component: {fileID: -5765286709238059600}
   - component: {fileID: 8738839943397932429}
   - component: {fileID: -3720714416283048381}
   - component: {fileID: 7216057516264772799}
   - component: {fileID: 5936980147642376256}
-  - component: {fileID: 2409555040360609025}
-  - component: {fileID: 4061618339390969125}
   - component: {fileID: 8674127258179986259}
   m_Layer: 0
   m_Name: Enemy_Golem
@@ -187,19 +184,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9097162585ea366409537f5bf854ce47, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &1481673322093410209
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5476495503916814673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3dc94ac818a97654d82a9043a597cce0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _maxHp: 300
+  _spawnParticle: {fileID: 9178366295490038290}
 --- !u!114 &-5765286709238059600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -254,6 +239,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c0506214ddfda448aba04024d31e6ea, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _defeatedSE: {fileID: 8300000, guid: a9a75d7b75acab547b3fd6754b8cf436, type: 3}
+  _particle: {fileID: 8163726049417094223}
+  _renderers:
+  - {fileID: 6893415171881587225}
+  - {fileID: 5597757532790291151}
+  - {fileID: 7541312405576156078}
+  - {fileID: 6090567213694643985}
 --- !u!114 &5936980147642376256
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -266,38 +258,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0154f8ad4b084e14f9335ca264cbdab0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2409555040360609025
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5476495503916814673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5a3617cb82816774eaa12d06f631ae41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _defeatedSE: {fileID: 8300000, guid: a9a75d7b75acab547b3fd6754b8cf436, type: 3}
-  _particle: {fileID: 8163726049417094223}
-  _renderers:
-  - {fileID: 6893415171881587225}
-  - {fileID: 5597757532790291151}
-  - {fileID: 7541312405576156078}
-  - {fileID: 6090567213694643985}
---- !u!114 &4061618339390969125
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5476495503916814673}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 67a1200484b5d504693f7e4567329697, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _particle: {fileID: 9178366295490038290}
 --- !u!114 &8674127258179986259
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -520,6 +480,11 @@ PrefabInstance:
     - target: {fileID: 8468617057500289297, guid: 4534b9cc6330aed499be54b02abf5283,
         type: 3}
       propertyPath: m_ConstrainProportionsScale
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9066576789631251579, guid: 4534b9cc6330aed499be54b02abf5283,
+        type: 3}
+      propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9066576789631251579, guid: 4534b9cc6330aed499be54b02abf5283,

@@ -30,29 +30,33 @@ namespace Game
             bool isEnemyExistSouth = false;
             bool isEnemyExistEast = false;
             bool isEnemyExistWest = false;
-            bool isDungeonEntityExistNorth = false;
-            bool isDungeonEntityExistSouth = false;
-            bool isDungeonEntityExistEast = false;
-            bool isDungeonEntityExistWest = false;
+            bool isScavengeableNorth = false;
+            bool isScavengeableSouth = false;
+            bool isScavengeableEast = false;
+            bool isScavengeableWest = false;
             foreach (Actor a in northActors)
             {
                 if (a is Adventurer) isAdventurerExistNorth = true;
                 if (a is Enemy) isEnemyExistNorth = true;
+                if (a is IScavengeable) isScavengeableNorth = true;
             }
             foreach (Actor a in southActors)
             {
                 if (a is Adventurer) isAdventurerExistSouth = true;
                 if (a is Enemy) isEnemyExistSouth = true;
+                if (a is IScavengeable) isScavengeableSouth = true;
             }
             foreach (Actor a in eastActors)
             {
                 if (a is Adventurer) isAdventurerExistEast = true;
                 if (a is Enemy) isEnemyExistEast = true;
+                if (a is IScavengeable) isScavengeableEast = true;
             }
             foreach (Actor a in westActors)
             {
                 if (a is Adventurer) isAdventurerExistWest = true;
                 if (a is Enemy) isEnemyExistWest = true;
+                if (a is IScavengeable) isScavengeableWest = true;
             }
 
             // それぞれの方向に冒険者がいる場合、その方向に移動できない。
@@ -60,6 +64,24 @@ namespace Game
             yield return ("MoveSouth", isAdventurerExistSouth ? -1.0f : 0);
             yield return ("MoveEast", isAdventurerExistEast ? -1.0f : 0);
             yield return ("MoveWest", isAdventurerExistWest ? -1.0f : 0);
+
+            // 壁判定。
+            if (DungeonManager.GetCell(_adventurer.Coords + Vector2Int.up).IsImpassable())
+            {
+                yield return ("MoveNorth", -1.0f);
+            }
+            if (DungeonManager.GetCell(_adventurer.Coords + Vector2Int.down).IsImpassable())
+            {
+                yield return ("MoveSouth", -1.0f);
+            }
+            if (DungeonManager.GetCell(_adventurer.Coords + Vector2Int.right).IsImpassable())
+            {
+                yield return ("MoveEast", -1.0f);
+            }
+            if (DungeonManager.GetCell(_adventurer.Coords + Vector2Int.left).IsImpassable())
+            {
+                yield return ("MoveWest", -1.0f);
+            }
 
             // 「入口に移動する。」の選択肢。
             // 現在のサブゴールが「ダンジョンの入口に戻る。」の場合、移動よりスコアが高い。
@@ -109,10 +131,10 @@ namespace Game
 
             // 何れかの方向に宝箱やレバーなどインタラクトできる対象がある場合は、周囲を漁ることが出来る。
             // スコアは移動より上。
-            if(isDungeonEntityExistNorth || 
-               isDungeonEntityExistSouth || 
-               isDungeonEntityExistEast ||
-               isDungeonEntityExistWest)
+            if(isScavengeableNorth || 
+               isScavengeableSouth || 
+               isScavengeableEast ||
+               isScavengeableWest)
             {
                 yield return ("Scavenge", 0.5f);
             }
