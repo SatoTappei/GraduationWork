@@ -6,11 +6,11 @@ namespace Game
 {
     public class DungeonEntity : Actor
     {
-        Vector2Int _currentCoords;
-        Vector2Int _currentDirection;
+        Vector2Int _coords;
+        Vector2Int _direction;
 
-        public override Vector2Int Coords => _currentCoords;
-        public override Vector2Int Direction => _currentDirection;
+        public override Vector2Int Coords => _coords;
+        public override Vector2Int Direction => _direction;
 
         public virtual void Interact(Actor user) 
         {
@@ -29,8 +29,8 @@ namespace Game
 
             transform.position = new Vector3(coords.x, 0, coords.y);            
             transform.Rotate(GetEulers(direction));
-            _currentCoords = coords;
-            _currentDirection = direction;
+            _coords = coords;
+            _direction = direction;
 
             DungeonManager.AddActor(Coords, this);
         }

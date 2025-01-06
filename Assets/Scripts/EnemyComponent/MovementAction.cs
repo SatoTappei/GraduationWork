@@ -20,21 +20,15 @@ namespace Game.EnemyComponent
             _animator = GetComponentInChildren<Animator>();
         }
 
-        public async UniTask MoveAsync(Vector2Int direction, CancellationToken token)
+        public async UniTask<ActionResult> MoveAsync(Vector2Int direction, CancellationToken token)
         {
-            // 向きの値を次のセルの方向に更新。
             Cell nextCell = DungeonManager.GetCell(_enemy.Coords + direction);
-            _enemy.SetDirection(nextCell.Coords - _enemy.Coords);
+            Vector2Int nextDirection = nextCell.Coords - _enemy.Coords;
 
             // 通行可能なセルの場合は移動、不可能の場合はそのセルの方向に回転のみ行う。
             if (nextCell.IsPassable())
             {
                 _animator.Play("Walk");
-
-                // 座標の値を次のセルの座標に更新。
-                DungeonManager.RemoveActor(_enemy.Coords, _enemy);
-                _enemy.SetCoords(nextCell.Coords);
-                DungeonManager.AddActor(_enemy.Coords, _enemy);
 
                 await (
                     TranslateAsync(_moveSpeed, nextCell.Position, token),
@@ -47,6 +41,12 @@ namespace Game.EnemyComponent
             {
                 await RotateAsync(_rotateSpeed, nextCell.Position, token);
             }
+
+            return new ActionResult(
+                string.Empty,
+                nextCell.Coords,
+                nextDirection
+            );
         }
     }
 }

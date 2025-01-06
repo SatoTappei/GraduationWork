@@ -23,7 +23,7 @@ namespace Game
             _talkTheme = GetComponent<TalkThemeSelector>();
         }
 
-        public async UniTask<string> PlayAsync(CancellationToken token)
+        public async UniTask<ActionResult> PlayAsync(CancellationToken token)
         {
             // シリアライズしても良い。
             const float RotateSpeed = 4.0f;
@@ -32,7 +32,11 @@ namespace Game
             // 周囲に会話可能な冒険者がいない場合。
             if (!TryGetTarget<Adventurer>(out Actor target))
             {
-                return "I tried to talk with other adventurers, but there was no one around.";
+                return new ActionResult(
+                    "I tried to talk with other adventurers, but there was no one around.",
+                    _adventurer.Coords,
+                    _adventurer.Direction
+                );
             }
 
             // 会話する前に目標に向く。
@@ -62,11 +66,19 @@ namespace Game
             // 会話できたかどうか、結果を返す。
             if (isTalked)
             {
-                return "I talked to the adventurers around me about what I knew.";
+                return new ActionResult(
+                    "I talked to the adventurers around me about what I knew.",
+                    _adventurer.Coords,
+                    _adventurer.Direction
+                );
             }
             else
             {
-                return "I tried to talk with other adventurers, but there was no one around.";
+                return new ActionResult(
+                    "I tried to talk with other adventurers, but there was no one around.", 
+                    _adventurer.Coords, 
+                    _adventurer.Direction
+                );
             }
         }
     }

@@ -9,13 +9,13 @@ namespace Game
 {
     public class TargetMoveAction : MovementAction
     {
-        public async UniTask<string> PlayAsync(string targetID, CancellationToken token)
+        public async UniTask<ActionResult> PlayAsync(string targetID, CancellationToken token)
         {
             // 同じ目標に対して移動し続けている限り、再度経路探索はしない。
             // ワープなどの強制的に位置を移動させるギミックを作る場合は破綻するので注意。
             if (MovementPath.Target == targetID)
             {
-                string result = await MoveAsync(token);
+                ActionResult result = await MoveAsync(token);
                 MovementPath.SetNext();
 
                 return result;
@@ -55,11 +55,15 @@ namespace Game
             {
                 Debug.LogWarning("移動先となるセルが存在しない。");
 
-                return $"Failed to move to target position. Cannot move in this direction.";
+                return new ActionResult(
+                    $"Failed to move to target position. Cannot move in this direction.",
+                    Adventurer.Coords,
+                    Adventurer.Direction
+                );
             }
             else
             {
-                string result = await MoveAsync(token);
+                ActionResult result = await MoveAsync(token);
                 MovementPath.SetNext();
 
                 return result;

@@ -98,7 +98,22 @@ namespace Game
         public void Draw()
         {
             Gizmos.color = IsPassable() ? Color.green : Color.red;
-            Gizmos.DrawCube(Position, Vector3.one * 0.75f);
+
+            foreach(Actor a in GetActors())
+            {
+                if (a is Adventurer)
+                {
+                    Gizmos.color = Color.blue;
+                    break;
+                }
+                else if (a is Enemy)
+                {
+                    Gizmos.color = Color.yellow;
+                    break;
+                }
+            }
+
+            Gizmos.DrawCube(Position, Vector3.one * 0.5f);
         }
     }
 }

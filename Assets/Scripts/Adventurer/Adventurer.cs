@@ -9,8 +9,8 @@ namespace Game
     {
         AdventurerSheet _adventurerSheet;
         Status _status;
-        Vector2Int _currentCoords;
-        Vector2Int _currentDirection;
+        Vector2Int _coords;
+        Vector2Int _direction;
         string _selectedAction;
         bool _isInitialized;
 
@@ -46,8 +46,8 @@ namespace Game
 
         public AdventurerSheet AdventurerSheet => _adventurerSheet;
         public Status Status => _status;
-        public override Vector2Int Coords => _currentCoords;
-        public override Vector2Int Direction => _currentDirection;
+        public override Vector2Int Coords => _coords;
+        public override Vector2Int Direction => _direction;
         public string SelectedAction => _selectedAction;
 
         void Awake()
@@ -88,17 +88,12 @@ namespace Game
             _status = new Status(adventurerSheet.Level);
 
             // ダンジョンの入り口が固定で1箇所。
-            _currentCoords = new Vector2Int(11, 8);
+            _coords = new Vector2Int(11, 8);
             // 上以外の向きの場合、回転させる処理が必要。
-            _currentDirection = Vector2Int.up;
+            _direction = Vector2Int.up;
 
             _isInitialized = true;
         }
-
-        // オーバーライドしたgetterに派生クラスでsetterを追加できない。
-        // とりあえず値をセットするメソッドを作った。
-        public void SetCoords(Vector2Int coords) => _currentCoords = coords;
-        public void SetDirection(Vector2Int direction) => _currentDirection = direction;
 
         // AIの挙動がおかしい場合に呼び出す。
         // とりあえずここに書いているが、なんか良い感じのクラスがあればそっちに移す。
@@ -191,7 +186,7 @@ namespace Game
 
                 // AIが次の行動を選択し、実行。
                 string selectedAction = await _gamePlay.RequestAsync(token);
-                string actionResult;
+                ActionResult actionResult = null;
                 if (selectedAction == "MoveNorth")
                 {
                     actionResult = await _directionMove.PlayAsync(Vector2Int.up, token);
@@ -232,6 +227,18 @@ namespace Game
                 {
                     Debug.LogWarning($"行動を選ぶAIの出力が、指定した形式と違う。: {selectedAction}");
                     await UniTask.Yield(cancellationToken: token);
+                }
+
+                // 行動結果を反映。
+                if (actionResult != null)
+                {
+                    DungeonManager.RemoveActor(Coords, this);
+                    _coords = actionResult.Coords;
+                    DungeonManager.AddActor(_coords, this);
+
+                    _direction = actionResult.Direction;
+
+                    Status.ActionLog.Add(actionResult.Log);
                 }
 
                 // インスペクター上で確認できるよう、適当なメンバ変数に反映させておく。

@@ -21,7 +21,7 @@ namespace Game
             _line = GetComponent<LineDisplayer>();
         }
 
-        public async UniTask<string> PlayAsync(CancellationToken token)
+        public async UniTask<ActionResult> PlayAsync(CancellationToken token)
         {
             // シリアライズしても良い。
             const float RotateSpeed = 4.0f;
@@ -33,7 +33,11 @@ namespace Game
             // 周囲に漁るものが無い場合。
             if (target == null)
             {
-                return "There are no areas around that can be scavenged.";
+                return new ActionResult(
+                    "There are no areas around that can be scavenged.",
+                    _adventurer.Coords,
+                    _adventurer.Direction
+                );
             }
 
             // 漁る前に目標に向く。
@@ -96,19 +100,26 @@ namespace Game
             // アニメーションなどの演出を待つ。
             await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
 
-            // 漁った結果を返す。
+            // 漁った結果ごとの行動ログに追加する文章。
+            string actionLog;
             if (foundItem == null)
             {
-                return "I scavenged the surrounding boxes. There was nothing in them.";
+                actionLog = "I scavenged the surrounding boxes. There was nothing in them.";
             }
             else if (foundItem.Name.English == "Treasure")
             {
-                return "I scavenged the surrounding treasure chests. I got the treasure.";
+                actionLog = "I scavenged the surrounding treasure chests. I got the treasure.";
             }
             else
             {
-                return $"I scavenged the surrounding boxes. I got the {foundItem}.";
+                actionLog = $"I scavenged the surrounding boxes. I got the {foundItem}.";
             }
+
+            return new ActionResult(
+                actionLog,
+                _adventurer.Coords,
+                _adventurer.Direction
+            );
         } 
     }
 }

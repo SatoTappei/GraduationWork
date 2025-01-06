@@ -1,6 +1,4 @@
 using Cysharp.Threading.Tasks;
-using System.Collections;
-using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -19,7 +17,7 @@ namespace Game.EnemyComponent
         void Awake()
         {
             _enemy = GetComponent<Enemy>();
-            _animator = GetComponent<Animator>();
+            _animator = GetComponentInChildren<Animator>();
             _audioSource = GetComponent<AudioSource>();
         }
 

@@ -19,7 +19,7 @@ namespace Game
             _line = GetComponent<LineDisplayer>();
         }
 
-        public async UniTask<string> PlayAsync<TTarget>(CancellationToken token) where TTarget : class
+        public async UniTask<ActionResult> PlayAsync<TTarget>(CancellationToken token) where TTarget : class
         {
             // シリアライズしても良い。
             const float RotateSpeed = 4.0f;
@@ -28,7 +28,11 @@ namespace Game
             // 周囲に攻撃可能な対象が居ない場合。
             if (!TryGetTarget<TTarget>(out Actor target))
             {
-                return "There are no enemies around to attack.";
+                return new ActionResult(
+                    "There are no enemies around to attack.",
+                    _adventurer.Coords,
+                    _adventurer.Direction
+                );
             }
 
             // 攻撃する前に目標に向く。
@@ -39,7 +43,7 @@ namespace Game
             _line.ShowLine(RequestLineType.Attack);
 
             // ダメージを与える。
-            string result = string.Empty;
+            string result;
             if (target != null && TryGetComponent(out IDamageable damage))
             {
                 // Defeat(撃破した)、Hit(当たったが生存)、Corpse(既に死んでいる)、Miss(当たらなかった)
@@ -67,29 +71,36 @@ namespace Game
                 _adventurer.Status.DefeatCount++;
             }
 
-            // 攻撃結果を返す。
+            // 攻撃結果ごとの行動ログに追加する文章。
+            string actionLog;
             if (result == "Defeat")
             {
-                return "I attacked the enemy. I defeated the enemy.";
+                actionLog = "I attacked the enemy. I defeated the enemy.";
             }
             else if (result == "Hit")
             {
-                return "I attacked the enemy. The enemy is still alive.";
+                actionLog = "I attacked the enemy. The enemy is still alive.";
             }
             else if (result == "Corpse")
             {
-                return "I tried to attack it, but it was already dead.";
+                actionLog = "I tried to attack it, but it was already dead.";
             }
             else if (result == "Miss")
             {
-                // まだない
-                return "I tried to attack it, but it was miss.";
+                actionLog = "I tried to attack it, but it was miss.";
             }
             else
             {
                 Debug.LogWarning($"攻撃結果に対応する処理が無い。スペルミス？: {result}");
-                return string.Empty;
+                
+                actionLog = "I tried to attack it.";
             }
+
+            return new ActionResult(
+                actionLog,
+                _adventurer.Coords,
+                _adventurer.Direction
+            );
         }
     }
 }

@@ -13,8 +13,8 @@ namespace Game
 
         EnemyComponent.Status _status;
         Vector2Int _spawnCoords;
-        Vector2Int _currentCoords;
-        Vector2Int _currentDirection;
+        Vector2Int _coords;
+        Vector2Int _direction;
         bool _isInitialized;
 
         ActionSelector _actionSelector;
@@ -24,8 +24,8 @@ namespace Game
 
         public EnemyComponent.Status Status => _status;
         public Vector2Int SpawnCoords => _spawnCoords;
-        public override Vector2Int Coords => _currentCoords;
-        public override Vector2Int Direction => _currentDirection;
+        public override Vector2Int Coords => _coords;
+        public override Vector2Int Direction => _direction;
 
         void Awake()
         {
@@ -44,17 +44,12 @@ namespace Game
         {
             _status = new EnemyComponent.Status();
             _spawnCoords = coords;
-            _currentCoords = coords;
+            _coords = coords;
             // 上以外の向きの場合、回転させる処理が必要。
-            _currentDirection = Vector2Int.up;
+            _direction = Vector2Int.up;
 
             _isInitialized = true;
         }
-
-        // オーバーライドしたgetterに派生クラスでsetterを追加できない。
-        // とりあえず値をセットするメソッドを作った。
-        public void SetCoords(Vector2Int coords) => _currentCoords = coords;
-        public void SetDirection(Vector2Int direction) => _currentDirection = direction;
 
         async UniTask UpdateAsync(CancellationToken token)
         {
@@ -73,34 +68,45 @@ namespace Game
             {
                 // 次の行動を選択し、実行。
                 string selectedAction = _actionSelector.Select();
+                ActionResult actionResult = null; 
                 if (selectedAction == "Idle")
                 {
                     await UniTask.Yield(cancellationToken: token);
                 }
                 else if (selectedAction == "MoveNorth")
                 {
-                    await _movement.MoveAsync(Vector2Int.up, token);
+                    actionResult = await _movement.MoveAsync(Vector2Int.up, token);
                 }
                 else if (selectedAction == "MoveSouth")
                 {
-                    await _movement.MoveAsync(Vector2Int.down, token);
+                    actionResult = await _movement.MoveAsync(Vector2Int.down, token);
                 }
                 else if (selectedAction == "MoveEast")
                 {
-                    await _movement.MoveAsync(Vector2Int.right, token);
+                    actionResult = await _movement.MoveAsync(Vector2Int.right, token);
                 }
                 else if (selectedAction == "MoveWest")
                 {
-                    await _movement.MoveAsync(Vector2Int.left, token);
+                    actionResult = await _movement.MoveAsync(Vector2Int.left, token);
                 }
                 else if (selectedAction == "Attack")
                 {
-                    await _attack.AttackAsync(token);
+                    actionResult = await _attack.AttackAsync(token);
                 }
                 else
                 {
                     Debug.LogWarning($"対応する行動が無い。スペルミス？: {selectedAction}");
                     await UniTask.Yield(cancellationToken: token);
+                }
+
+                // 行動結果を反映。
+                if (actionResult != null)
+                {
+                    DungeonManager.RemoveActor(Coords, this);
+                    _coords = actionResult.Coords;
+                    DungeonManager.AddActor(Coords, this);
+
+                    _direction = actionResult.Direction;
                 }
 
                 // 撃破された場合。

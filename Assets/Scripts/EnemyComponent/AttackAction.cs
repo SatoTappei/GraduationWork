@@ -11,7 +11,6 @@ namespace Game.EnemyComponent
         [SerializeField] float _animationLength = 2.0f;
         [SerializeField] float _rotateSpeed = 4.0f;
         [SerializeField] int _damage = 10;
-        [SerializeField] string _weapon = "パンチ";
 
         Enemy _enemy;
         Animator _animator;
@@ -22,10 +21,17 @@ namespace Game.EnemyComponent
             _animator = GetComponentInChildren<Animator>();
         }
 
-        public async UniTask AttackAsync(CancellationToken token)
+        public async UniTask<ActionResult> AttackAsync(CancellationToken token)
         {
             // 周囲に攻撃可能な対象がいない場合。
-            if (!TryGetTarget<Adventurer>(out Actor target)) return;
+            if (!TryGetTarget<Adventurer>(out Actor target))
+            {
+                return new ActionResult(
+                    string.Empty,
+                    _enemy.Coords,
+                    _enemy.Direction
+                );
+            }
 
             // 攻撃する前に目標に向く。
             Vector3 targetPosition = DungeonManager.GetCell(target.Coords).Position;
@@ -41,6 +47,12 @@ namespace Game.EnemyComponent
 
             // アニメーションの再生終了を待つ。
             await UniTask.WaitForSeconds(_animationLength, cancellationToken: token);
+
+            return new ActionResult(
+                string.Empty,
+                _enemy.Coords,
+                _enemy.Direction
+            );
         }
     }
 }
