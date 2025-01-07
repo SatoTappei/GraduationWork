@@ -33,6 +33,8 @@ namespace Game
             if (!TryGetTarget<Adventurer>(out Actor target))
             {
                 return new ActionResult(
+                    "Talk",
+                    "Failure",
                     "I tried to talk with other adventurers, but there was no one around.",
                     _adventurer.Coords,
                     _adventurer.Direction
@@ -67,6 +69,8 @@ namespace Game
             if (isTalked)
             {
                 return new ActionResult(
+                    "Talk",
+                    "Success",
                     "I talked to the adventurers around me about what I knew.",
                     _adventurer.Coords,
                     _adventurer.Direction
@@ -75,6 +79,8 @@ namespace Game
             else
             {
                 return new ActionResult(
+                    "Talk",
+                    "Failure",
                     "I tried to talk with other adventurers, but there was no one around.", 
                     _adventurer.Coords, 
                     _adventurer.Direction

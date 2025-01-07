@@ -29,6 +29,8 @@ namespace Game
             if (!TryGetTarget<TTarget>(out Actor target))
             {
                 return new ActionResult(
+                    "Attack",
+                    "Miss",
                     "There are no enemies around to attack.",
                     _adventurer.Coords,
                     _adventurer.Direction
@@ -44,7 +46,7 @@ namespace Game
 
             // ダメージを与える。
             string result;
-            if (target != null && TryGetComponent(out IDamageable damage))
+            if (target != null && target.TryGetComponent(out IDamageable damage))
             {
                 // Defeat(撃破した)、Hit(当たったが生存)、Corpse(既に死んでいる)、Miss(当たらなかった)
                 result = damage.Damage(_adventurer.Status.TotalAttack, _adventurer.Coords);
@@ -97,6 +99,8 @@ namespace Game
             }
 
             return new ActionResult(
+                "Attack",
+                result,
                 actionLog,
                 _adventurer.Coords,
                 _adventurer.Direction

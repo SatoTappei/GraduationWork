@@ -27,6 +27,8 @@ namespace Game.EnemyComponent
             if (!TryGetTarget<Adventurer>(out Actor target))
             {
                 return new ActionResult(
+                    "Attack",
+                    "Miss",
                     string.Empty,
                     _enemy.Coords,
                     _enemy.Direction
@@ -39,16 +41,23 @@ namespace Game.EnemyComponent
 
             _animator.Play("Attack");
 
-            if (target != null && TryGetComponent(out IDamageable damage))
+            string result;
+            if (target != null && target.TryGetComponent(out IDamageable damage))
             {
                 // Defeat(撃破した)、Hit(当たったが生存)、Corpse(既に死んでいる)、Miss(当たらなかった)
-                damage.Damage(_damage, _enemy.Coords);
+                result = damage.Damage(_damage, _enemy.Coords);
+            }
+            else
+            {
+                result = "Miss";
             }
 
             // アニメーションの再生終了を待つ。
             await UniTask.WaitForSeconds(_animationLength, cancellationToken: token);
 
             return new ActionResult(
+                "Attack",
+                result,
                 string.Empty,
                 _enemy.Coords,
                 _enemy.Direction

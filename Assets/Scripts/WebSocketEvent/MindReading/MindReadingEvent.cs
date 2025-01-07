@@ -20,7 +20,7 @@ namespace Game
             List<Information> temp = new List<Information>();
             foreach (Adventurer adventurer in _spawner.Spawned)
             {
-                if (adventurer.TryGetComponent(out HoldInformation informationStock))
+                if (adventurer != null && adventurer.TryGetComponent(out HoldInformation informationStock))
                 {
                     temp.AddRange(informationStock.Information.Where(info => info.IsShared));
                 }
@@ -33,12 +33,13 @@ namespace Game
             {
                 Information info = temp[Random.Range(0, temp.Count)];
 
-                if (adventurer.TryGetComponent(out TalkReceiver talk))
+                if (adventurer != null && adventurer.TryGetComponent(out TalkReceiver talk))
                 {
                     talk.Talk(
                         info.Text, 
                         "‘M‚¢‚½", 
-                        adventurer.Coords
+                        adventurer.Coords,
+                        nameof(MindReadingEvent)
                     );
                 }
             }

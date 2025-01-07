@@ -8,6 +8,7 @@ namespace Game
     {
         Vector2Int _coords;
         Vector2Int _direction;
+        int _placeCount;
 
         public override Vector2Int Coords => _coords;
         public override Vector2Int Direction => _direction;
@@ -25,7 +26,10 @@ namespace Game
 
         public void Place(Vector2Int coords, Vector2Int direction)
         {
-            DungeonManager.RemoveActor(Coords, this);
+            if (_placeCount++ > 0)
+            {
+                DungeonManager.RemoveActor(Coords, this);
+            }
 
             transform.position = new Vector3(coords.x, 0, coords.y);            
             transform.Rotate(GetEulers(direction));

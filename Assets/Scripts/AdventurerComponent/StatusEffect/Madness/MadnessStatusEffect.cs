@@ -6,8 +6,8 @@ namespace Game
 {
     public class MadnessStatusEffect : StatusEffect
     {
-        AvailableActions _availableActions;
-        int _remainingTurn;
+        AvailableActions _actions;
+        int _turn;
         bool _isValid;
 
         public override string Description => "頭おかしい。";
@@ -15,7 +15,7 @@ namespace Game
 
         void Awake()
         {
-            _availableActions = GetComponent<AvailableActions>();
+            _actions = GetComponent<AvailableActions>();
         }
 
         public void Set()
@@ -23,16 +23,16 @@ namespace Game
             if (_isValid)
             {
                 // 既に適用されている場合は効果時間延長。
-                _remainingTurn = 10; // 適当なターン数。
+                _turn = 10; // 適当なターン数。
             }
             else
             {
                 _isValid = true;
-                _remainingTurn = 10; // 適当なターン数。
+                _turn = 10; // 適当なターン数。
 
-                _availableActions.SetScore("AttackToAdventurer", 1.0f);
-                _availableActions.SetScore("TalkWithAdventurer", -1.0f);
-                _availableActions.SetScore("Scavenge", -1.0f);
+                _actions.SetScore("AttackToAdventurer", 1.0f);
+                _actions.SetScore("TalkWithAdventurer", -1.0f);
+                _actions.SetScore("Scavenge", -1.0f);
             }
         }
 
@@ -42,9 +42,9 @@ namespace Game
             {
                 _isValid = false;
 
-                _availableActions.ResetScore("AttackToAdventurer");
-                _availableActions.ResetScore("TalkWithAdventurer");
-                _availableActions.ResetScore("Scavenge");
+                _actions.ResetScore("AttackToAdventurer");
+                _actions.ResetScore("TalkWithAdventurer");
+                _actions.ResetScore("Scavenge");
             }
         }
 
@@ -52,10 +52,10 @@ namespace Game
         {
             if (_isValid)
             {
-                _remainingTurn--;
-                _remainingTurn = Mathf.Max(_remainingTurn, 0);
+                _turn--;
+                _turn = Mathf.Max(_turn, 0);
 
-                if (_remainingTurn == 0) Remove();
+                if (_turn == 0) Remove();
             }
         }
     }

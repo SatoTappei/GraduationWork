@@ -42,11 +42,27 @@ namespace Game.EnemyComponent
                 await RotateAsync(_rotateSpeed, nextCell.Position, token);
             }
 
-            return new ActionResult(
-                string.Empty,
-                nextCell.Coords,
-                nextDirection
-            );
+            // à⁄ìÆåãâ Çï‘Ç∑ÅB
+            if (nextCell.IsPassable())
+            {
+                return new ActionResult(
+                    "Move",
+                    "Success",
+                    string.Empty,
+                    nextCell.Coords,
+                    nextDirection
+                );
+            }
+            else
+            {
+                return new ActionResult(
+                    "Move",
+                    "Failure",
+                    string.Empty,
+                    _enemy.Coords,
+                    nextDirection
+                );
+            }
         }
     }
 }

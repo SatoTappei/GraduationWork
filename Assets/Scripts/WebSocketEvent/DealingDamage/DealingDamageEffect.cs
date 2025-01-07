@@ -51,7 +51,9 @@ namespace Game
             _audioSource.Play();
             _smokeParticle.Play();
 
-            Vector3 targetPosition = target.transform.position;
+            Vector3 targetPosition = transform.position + transform.forward;
+            if (target != null) targetPosition = target.transform.position;
+
             yield return AimAsync(targetPosition);
 
             // 弾を発射。
@@ -69,7 +71,7 @@ namespace Game
 
             if (target != null && target.TryGetComponent(out IDamageable damage))
             {
-                damage.Damage(33, target.Coords); // ダメージ量は適当。
+                damage.Damage(1, target.Coords); // ダメージ量は適当。
             }
 
             // 爆発の演出が終わるまで待つ。演出の長さに合わせて時間を指定。

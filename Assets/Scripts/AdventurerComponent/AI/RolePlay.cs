@@ -44,6 +44,7 @@ namespace Game
                     $"# 指示内容\n" +
                     $"- 以下のキャラクターになりきって各質問に答えてください。\n" +
                     $"# キャラクター\n" +
+                    $"- {adventurer.AdventurerSheet.Sex}\n" +
                     $"- {adventurer.AdventurerSheet.Age}\n" +
                     $"- {adventurer.AdventurerSheet.Job}\n" +
                     $"- {adventurer.AdventurerSheet.Background}";

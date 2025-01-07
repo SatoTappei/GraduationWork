@@ -176,7 +176,7 @@ namespace Game
                     }
                     else
                     {
-                        _information.text += $"{information[i].Text.Japanese} 残り{information[i].RemainingTurn}ターン\n";
+                        _information.text += $"{information[i].Text.Japanese} 残り{information[i].Turn}ターン\n";
                     }
                 }
             }

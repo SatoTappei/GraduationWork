@@ -74,7 +74,7 @@ namespace Game
             {
                 if (actor != null && actor.TryGetComponent(out IDamageable damage))
                 {
-                    damage.Damage(33, targetCoords); // ダメージ量は適当。
+                    damage.Damage(1, targetCoords); // ダメージ量は適当。
                 }
             }
 

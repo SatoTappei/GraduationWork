@@ -34,6 +34,8 @@ namespace Game
             if (target == null)
             {
                 return new ActionResult(
+                    "Scavenge",
+                    "Failure",
                     "There are no areas around that can be scavenged.",
                     _adventurer.Coords,
                     _adventurer.Direction
@@ -100,10 +102,14 @@ namespace Game
             // アニメーションなどの演出を待つ。
             await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
 
+            // 漁った結果。何かしら手に入れば成功。
+            string result = foundItem != null ? "Success" : "Failure";
+
             // 漁った結果ごとの行動ログに追加する文章。
             string actionLog;
             if (foundItem == null)
             {
+
                 actionLog = "I scavenged the surrounding boxes. There was nothing in them.";
             }
             else if (foundItem.Name.English == "Treasure")
@@ -116,6 +122,8 @@ namespace Game
             }
 
             return new ActionResult(
+                "Scavenge",
+                result,
                 actionLog,
                 _adventurer.Coords,
                 _adventurer.Direction

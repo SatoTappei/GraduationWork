@@ -56,7 +56,9 @@ namespace Game
                 Debug.LogWarning("ˆÚ“®æ‚Æ‚È‚éƒZƒ‹‚ª‘¶İ‚µ‚È‚¢B");
 
                 return new ActionResult(
-                    $"Failed to move to target position. Cannot move in this direction.",
+                    "Move",
+                    "Failure",
+                    "Failed to move to target position. Cannot move in this direction.",
                     Adventurer.Coords,
                     Adventurer.Direction
                 );

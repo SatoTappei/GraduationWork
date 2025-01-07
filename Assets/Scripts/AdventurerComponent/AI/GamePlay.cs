@@ -37,7 +37,7 @@ namespace Game
 
         Adventurer _adventurer;
         HoldInformation _information;
-        AvailableActions _availableActions;
+        AvailableActions _actions;
         SubGoalPath _subGoalPath;
         AIClient _ai;
 
@@ -48,7 +48,7 @@ namespace Game
         {
             _adventurer = GetComponent<Adventurer>();
             _information = GetComponent<HoldInformation>();
-            _availableActions = GetComponent<AvailableActions>();
+            _actions = GetComponent<AvailableActions>();
             _subGoalPath = GetComponent<SubGoalPath>();
         }
 
@@ -72,12 +72,12 @@ namespace Game
             
             // 行動ログ。
             format.ActionLog = _adventurer.Status.ActionLog.Log.ToArray();
-
+            
             // 情報。ユーザーが送信したコメントの場合、英語ではなく日本語の文章が送信される。
             format.Information = _information.Information.Select(info => info.Text.English).ToArray();
             
             // この中から1つ行動を選ぶ。
-            format.AvailableActions = _availableActions.GetEntries().ToArray();
+            format.AvailableActions = _actions.GetEntries().ToArray();
             
             // 現在のサブゴール。
             format.Goal = _subGoalPath.GetCurrent().Description.English;

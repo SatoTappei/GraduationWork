@@ -10,29 +10,6 @@ namespace Game
 {
     public class TerrainFeature : MonoBehaviour
     {
-        // 意図的にBilingualString型ではなくstring型を2つにしている。
-        // エディターから値を設定する際にトグルリストにならないので見やすい。
-        [System.Serializable]
-        public class Data
-        {
-            [SerializeField] Vector2Int _coords;
-            [SerializeField] string _japanese;
-            [SerializeField] string _english;
-            [SerializeField] int _validTurn;
-
-            public Vector2Int Coords => _coords;
-            public string Japanese => _japanese;
-            public string English => _english;
-            public int ValidTurn => _validTurn;
-
-            public Information ToInformation()
-            {
-                // この情報が信頼できるかの判断はAIに任せるため、Scoreの値は設定しない。
-                return new Information(Japanese, English, "システム", ValidTurn, true);
-            }
-        }
-
-        [SerializeField] Data[] _data;
         [SerializeField] bool _isDrawGizmos = true;
 
         Dictionary<Vector2Int, List<Information>> _table;
@@ -67,7 +44,7 @@ namespace Game
                 List<Information> temp = new List<Information>();
                 foreach (Information e in list)
                 {
-                    temp.Add(new Information(e.Text, e.Source, e.RemainingTurn, true));
+                    temp.Add(new Information(e.Text, e.Source, e.Turn, true));
                 }
 
                 result = temp;

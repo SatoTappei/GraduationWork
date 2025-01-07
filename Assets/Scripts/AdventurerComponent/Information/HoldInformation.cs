@@ -24,10 +24,10 @@ namespace Game
             _evaluator = new InformationEvaluator();
         }
 
-        public void AddPending(BilingualString text, string source, bool isShared = true)
+        public void AddPending(BilingualString text, string source)
         {
             if (text == null) Debug.LogWarning("追加しようとした文章がnull");
-            else AddPending(new Information(text, source, isShared));
+            else AddPending(new Information(text, source));
         }
 
         public void AddPending(Information info)
@@ -54,13 +54,13 @@ namespace Game
             // 残りターンを減らす。
             for (int i = 0; i < _information.Count; i++)
             {
-                _information[i].RemainingTurn--;
+                _information[i].Turn--;
             }
 
             // 残りターンが0になった情報を消す。
             for (int i = _information.Count - 1; i >= 0; i--)
             {
-                if (_information[i].RemainingTurn <= 0) _information.RemoveAt(i);
+                if (_information[i].Turn <= 0) _information.RemoveAt(i);
             }
 
             // 保留中の情報が無い場合は、保持している情報の更新をしない。
@@ -81,7 +81,7 @@ namespace Game
                 // AIに情報を評価してもらい、有効ターンを決める。
                 // とりあえずスコアを基に1~10ターンの間で設定する。
                 newInfo.Score = await _evaluator.EvaluateAsync(newInfo, token);
-                newInfo.RemainingTurn = Mathf.RoundToInt(newInfo.Score * 10);
+                newInfo.Turn = Mathf.RoundToInt(newInfo.Score * 10);
 
                 // 既に知っている情報の場合は、スコアと残りターンを更新する。
                 bool isReplaced = false;
@@ -90,7 +90,7 @@ namespace Game
                     if (info.Text.Japanese == newInfo.Text.Japanese)
                     {
                         info.Score = newInfo.Score;
-                        info.RemainingTurn = newInfo.RemainingTurn;
+                        info.Turn = newInfo.Turn;
                         isReplaced = true;
                         break;
                     }

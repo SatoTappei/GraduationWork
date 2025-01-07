@@ -31,8 +31,8 @@ namespace Game
         DefeatedAction _defeated;
         EscapeAction _escape;
 
-        AvailableActions _availableActions;
-        ActionEvaluator _actionEvaluator;
+        PreActionEvaluator _preEvaluator;
+        PostActionEvaluator _postEvaluator;
 
         SubGoalPath _subGoal;
         HoldInformation _information;
@@ -66,8 +66,8 @@ namespace Game
             _scavenge = GetComponent<ScavengeAction>();
             _defeated = GetComponent<DefeatedAction>();
             _escape = GetComponent<EscapeAction>();
-            _availableActions = GetComponent<AvailableActions>();
-            _actionEvaluator = GetComponent<ActionEvaluator>();
+            _preEvaluator = GetComponent<PreActionEvaluator>();
+            _postEvaluator = GetComponent<PostActionEvaluator>();
             _subGoal = GetComponent<SubGoalPath>();
             _information = GetComponent<HoldInformation>();
             _hungry = GetComponent<HungryStatusEffect>();
@@ -171,10 +171,7 @@ namespace Game
                 }
 
                 // 周囲の状況やゴール、ステータスを調べ、それぞれの選択肢にスコア付け。
-                foreach ((string action, float score) value in _actionEvaluator.Evaluate())
-                {
-                    _availableActions.SetScore(value.action, value.score);
-                }
+                _preEvaluator.Evaluate();
 
                 // 保持している情報を更新。
                 // 新しい情報を知った場合、このタイミングで保持している情報に追加される。
@@ -227,6 +224,12 @@ namespace Game
                 {
                     Debug.LogWarning($"行動を選ぶAIの出力が、指定した形式と違う。: {selectedAction}");
                     await UniTask.Yield(cancellationToken: token);
+                }
+
+                // 行動結果を基に、それぞれの選択肢をスコア付け。
+                if (actionResult != null)
+                {
+                    _postEvaluator.Evaluate(actionResult);
                 }
 
                 // 行動結果を反映。

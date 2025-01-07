@@ -6,16 +6,20 @@ namespace Game
 {
     public class AvailableActions : MonoBehaviour
     {
-        class Score
+        public class Score
         {
             public Score(float value)
             {
                 Default = value;
                 Current = value;
+                Weight = 1.0f;
             }
 
             public float Default;
             public float Current;
+            public float Weight;
+
+            public float Total => Current * Weight;
         }
 
         Dictionary<string, Score> _actions;
@@ -24,6 +28,7 @@ namespace Game
         void Awake()
         {
             // スコアは0~1の範囲。0未満の場合、その行動は選択不可能。
+            // 現在値に重みを乗算したものが最終的なスコアになる。
             _actions = new Dictionary<string, Score>()
             {
                 { "MoveNorth", new Score(0.0f) },
@@ -45,7 +50,7 @@ namespace Game
             {
                 if (0 <= e.Value.Current)
                 {
-                    entries.Add($"{e.Key} (Score:{e.Value.Current})");
+                    entries.Add($"{e.Key} (Score:{e.Value.Total})");
                 }
             }
 
@@ -61,32 +66,73 @@ namespace Game
             _debugView.Clear();
             foreach (KeyValuePair<string, Score> e in _actions)
             {
-                _debugView.Add($"{e.Key}: {e.Value.Current}");
+                _debugView.Add($"{e.Key}: {e.Value.Total}");
             }
 #endif
 
             return entries;
         }
 
-        public bool SetScore(string action, float score)
+        public float GetScore(string action)
         {
-            if (_actions.ContainsKey(action))
+            if (Check(action))
             {
-                _actions[action].Current = Mathf.Clamp(score, -1.0f, 1.0f);
-                return true;
+                return _actions[action].Current;
             }
             else
             {
-                Debug.LogWarning($"どの行動の選択肢にも該当しない。スペルミス？:{action}");
-                return false;
+                return -1.0f;
             }
         }
 
-        public bool ResetScore(string action)
+        public void SetScore(string action, float score)
+        {
+            if (Check(action))
+            {
+                _actions[action].Current = Mathf.Clamp(score, -1.0f, 1.0f);
+            }
+        }
+
+        public void ResetScore(string action)
+        {
+            if (Check(action))
+            {
+                _actions[action].Current = _actions[action].Default;
+            }
+        }
+
+        public float GetWeight(string action)
+        {
+            if (Check(action))
+            {
+                return _actions[action].Weight;
+            }
+            else
+            {
+                return -1.0f;
+            }
+        }
+
+        public void SetWeight(string action, float weight)
+        {
+            if (Check(action))
+            {
+                _actions[action].Weight = Mathf.Clamp01(weight);
+            }
+        }
+
+        public void ResetWeight(string action)
+        {
+            if (Check(action))
+            {
+                _actions[action].Weight = 1.0f;
+            }
+        }
+
+        bool Check(string action)
         {
             if (_actions.ContainsKey(action))
             {
-                _actions[action].Current = _actions[action].Default;
                 return true;
             }
             else

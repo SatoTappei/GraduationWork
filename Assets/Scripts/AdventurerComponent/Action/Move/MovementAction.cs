@@ -92,6 +92,8 @@ namespace Game
             if (_movementPath.GetCurrent().IsPassable())
             {
                 return new ActionResult(
+                    "Move",
+                    "Success",
                     $"Successfully moved to the {directionName}.",
                     nextCoords,
                     nextDirection
@@ -100,6 +102,8 @@ namespace Game
             else
             {
                 return new ActionResult(
+                    "Move",
+                    "Failure",
                     $"Failed to move to the {directionName}. Cannot move in this direction.",
                     _adventurer.Coords,
                     nextDirection
