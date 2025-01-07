@@ -31,7 +31,7 @@ namespace Game
         async UniTask UpdateAsync(CancellationToken token)
         {
             // 一度に生成する冒険者の最大数。
-            const int Max = 4;
+            const int Max = 1;
 
             // "使用中"のスプレッドシートの内容を消す。
             //await SpawnedAdventurerSender.DeleteAsync(token);
