@@ -265,11 +265,14 @@ namespace Game
                 }
 
                 // サブゴールを達成した場合、次のサブゴールを設定。
-                if (_subGoal.IsAchieve())
+                if (_subGoal.IsAchieve(out string result))
                 {
+                    if (result == "Completed") result = "達成";
+                    else if (result == "Retire") result = "諦めた";
+
                     GameLog.Add(
                         $"システム",
-                        $"{AdventurerSheet.DisplayName}が「{_subGoal.GetCurrent().Description.Japanese}」を達成。",
+                        $"{AdventurerSheet.DisplayName}が「{_subGoal.GetCurrent().Description.Japanese}」を{result}。",
                         GameLogColor.White
                     );
 

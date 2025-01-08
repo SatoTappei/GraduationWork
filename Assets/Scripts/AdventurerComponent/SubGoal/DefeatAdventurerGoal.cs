@@ -25,5 +25,10 @@ namespace Game
             // 同時に出てくる冒険者は最大4人なので、1体倒せば十分。
             return _adventurer.Status.DefeatCount >= 1;
         }
+
+        public override bool IsRetire()
+        {
+            return _adventurer.Status.ElapsedTurn > 100;
+        }
     }
 }

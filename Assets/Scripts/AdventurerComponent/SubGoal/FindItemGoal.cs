@@ -5,6 +5,7 @@ namespace Game
     public class FindItemGoal : SubGoal
     {
         BilingualString _description;
+        Adventurer _adventurer;
         ItemInventory _itemInventory;
 
         void Awake()
@@ -13,6 +14,7 @@ namespace Game
                 "依頼されたアイテムを手に入れる。", 
                 "Scavenge containers and barrels to obtain items."
             );
+            _adventurer = GetComponent<Adventurer>();
             _itemInventory = GetComponent<ItemInventory>();
         }
 
@@ -27,6 +29,11 @@ namespace Game
             }
 
             return false;
+        }
+
+        public override bool IsRetire()
+        {
+            return _adventurer.Status.ElapsedTurn > 100;
         }
     }
 }

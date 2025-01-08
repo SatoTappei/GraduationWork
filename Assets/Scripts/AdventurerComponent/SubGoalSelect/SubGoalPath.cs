@@ -69,22 +69,32 @@ namespace Game
             }
         }
 
-        public bool IsAchieve()
+        public bool IsAchieve(out string result)
         {
             if (_path.Count == 0)
             {
                 Debug.LogWarning("サブゴールが設定されておらず、達成したか判定できない。");
-                return false;
+                result = string.Empty;
             }
             else if (_path[_currentIndex] == null)
             {
                 Debug.LogWarning("サブゴールのクラスがnullになっている。");
-                return false;
+                result = string.Empty;
+            }
+            else if (_path[_currentIndex].IsCompleted())
+            {
+                result = "Completed";
+            }
+            else if (_path[_currentIndex].IsRetire())
+            {
+                result = "Retire";
             }
             else
             {
-                return _path[_currentIndex].IsCompleted();
+                result = string.Empty;
             }
+
+            return result != string.Empty;
         }
 
         public void SetNext()

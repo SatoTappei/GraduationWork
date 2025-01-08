@@ -9,7 +9,8 @@ namespace Game
         // 説明文。UIへの表示の他、AIへのリクエストにも使うので、日本語と英文の両方が必要。
         public abstract BilingualString Description { get; }
 
-        // 完了条件を満たしたかどうか。
+        // 完了もしくはリタイア条件を満たしたかどうか。
         public abstract bool IsCompleted();
+        public abstract bool IsRetire();
     }
 }

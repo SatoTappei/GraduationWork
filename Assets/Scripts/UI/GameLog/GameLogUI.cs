@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 namespace Game
 {
-    public enum GameLogColor { White, Red, Yellow, Green, }
+    public enum GameLogColor { White, Red, Yellow, Green, Blue }
 
     public class GameLogUI : MonoBehaviour
     {
@@ -58,6 +58,7 @@ namespace Game
             else if (color == GameLogColor.Red) htmlColor = "#FF5555";
             else if (color == GameLogColor.Green) htmlColor = "#55FF55";
             else if (color == GameLogColor.Yellow) htmlColor = "#FFFF55";
+            else if (color == GameLogColor.Blue) htmlColor = "#5555FF";
 
             ColorUtility.TryParseHtmlString(htmlColor, out Color result);
             return result;

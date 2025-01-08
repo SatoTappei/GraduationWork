@@ -25,5 +25,10 @@ namespace Game
             // 適当なターン数経過したら完了。
             return _adventurer.Status.ElapsedTurn >= 30;
         }
+
+        public override bool IsRetire()
+        {
+            return _adventurer.Status.ElapsedTurn > 100;
+        }
     }
 }

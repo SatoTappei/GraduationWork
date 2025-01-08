@@ -25,5 +25,10 @@ namespace Game
             // 脱出の難易度が上がってしまうので、1つ獲得すれば十分。
             return _adventurer.Status.TreasureCount >= 1;
         }
+
+        public override bool IsRetire()
+        {
+            return _adventurer.Status.ElapsedTurn > 100;
+        }
     }
 }

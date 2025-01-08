@@ -24,5 +24,10 @@ namespace Game
         {
             return Blueprint.Interaction[_adventurer.Coords.y][_adventurer.Coords.x] == '<';
         }
+
+        public override bool IsRetire()
+        {
+            return _adventurer.Status.ElapsedTurn > 100;
+        }
     }
 }
