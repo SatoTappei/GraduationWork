@@ -80,8 +80,11 @@ namespace Game
             {
                 // AIに情報を評価してもらい、有効ターンを決める。
                 // とりあえずスコアを基に1~10ターンの間で設定する。
-                newInfo.Score = await _evaluator.EvaluateAsync(newInfo, token);
-                newInfo.Turn = Mathf.RoundToInt(newInfo.Score * 10);
+                if (newInfo.IsEvaluate)
+                {
+                    newInfo.Score = await _evaluator.EvaluateAsync(newInfo, token);
+                    newInfo.Turn = Mathf.RoundToInt(newInfo.Score * 10);
+                }
 
                 // 既に知っている情報の場合は、スコアと残りターンを更新する。
                 bool isReplaced = false;

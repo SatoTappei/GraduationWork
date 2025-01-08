@@ -25,7 +25,7 @@ namespace Game
             _isEvaluate = true;
         }
 
-        // 地形の特徴など、システムから情報を渡す場合。
+        // 地形の特徴など、スコアや有効ターンが決まった情報を渡す場合。
         public Information(string japanese, string english, string source, float score, int turn)
         {
             _text = new BilingualString(japanese, english);

@@ -42,7 +42,6 @@ namespace Game
         StatusEffect[] _statusEffects;
 
         CommentDisplayer _commentDisplayer;       
-        TerrainFeature _terrainFeature;
 
         public AdventurerSheet AdventurerSheet => _adventurerSheet;
         public Status Status => _status;
@@ -74,7 +73,6 @@ namespace Game
             _result = GetComponent<AdventureResultReporter>();
             _statusEffects = GetComponents<StatusEffect>();
             _commentDisplayer = CommentDisplayer.Find();
-            _terrainFeature = TerrainFeature.Find();
         }
 
         void Start()
@@ -163,7 +161,7 @@ namespace Game
 
                 // 現在いるセルについて、地形の特徴に関する情報がある場合、
                 // AIが次の行動を選択する際に、考慮する情報として追加する。
-                if (_terrainFeature.TryGet(Coords, out IReadOnlyList<Information> features))
+                if (TerrainNavigator.TryGet(Coords, out IReadOnlyList<Information> features))
                 {
                     // プレイする度、行動にバラつきを持たせるため、複数ある場合はランダムで1つ選ぶ。
                     int random = Random.Range(0, features.Count);
