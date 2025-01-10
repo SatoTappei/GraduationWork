@@ -25,9 +25,6 @@ namespace Game
         // 派生クラスから呼び出す移動処理。
         protected async UniTask<ActionResult> MoveAsync(CancellationToken token)
         {
-            // シリアライズしても良い。
-            const float RotateSpeed = 4.0f;
-
             Vector2Int nextCoords = _movementPath.GetCurrent().Coords;
             Vector2Int nextDirection = nextCoords - _adventurer.Coords;
 
@@ -57,7 +54,7 @@ namespace Game
                         token
                     ),
                     RotateAsync(
-                        RotateSpeed * _adventurer.Status.SpeedMagnification,
+                        _adventurer.Status.TotalRotateSpeed,
                         _movementPath.GetCurrent().Position, 
                         token
                     )
@@ -69,7 +66,7 @@ namespace Game
             else
             {
                 await RotateAsync(
-                    RotateSpeed * _adventurer.Status.SpeedMagnification, 
+                    _adventurer.Status.TotalRotateSpeed, 
                     _movementPath.GetCurrent().Position, 
                     token
                 );

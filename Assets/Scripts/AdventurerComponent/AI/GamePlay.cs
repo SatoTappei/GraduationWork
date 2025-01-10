@@ -148,11 +148,11 @@ namespace Game
             string info = "Floor";
             foreach (Actor actor in cell.GetActors())
             {
-                if (actor is Adventurer adventurer)
+                if (actor.TryGetComponent(out Adventurer _))
                 {
-                    info = $"There is {adventurer.ID}, an adventurer like me.";
+                    info = $"There is an adventurer exploring a dungeon.";
                 }
-                else if (actor is Enemy enemy)
+                else if (actor.TryGetComponent(out Enemy enemy))
                 {
                     if (enemy.ID == nameof(BlackKaduki))
                     {
@@ -167,7 +167,7 @@ namespace Game
                         info = "In front of you is the boss of the dungeon. Do you attack?";
                     }
                 }
-                else if (actor is Treasure treasure)
+                else if (actor.TryGetComponent(out Treasure treasure))
                 {
                     if (treasure.IsEmpty)
                     {
@@ -176,6 +176,17 @@ namespace Game
                     else
                     {
                         info = "There is a treasure chest. You can get it when you scavenge out the contents.";
+                    }
+                }
+                else if (actor.TryGetComponent(out Artifact artifact))
+                {
+                    if (artifact.IsEmpty)
+                    {
+                        info = "There is an altar, but nothing is placed on it.";
+                    }
+                    else
+                    {
+                        info = "Here is a legendary treasure. You can get it when you scavenge.";
                     }
                 }
                 else if (actor.ID == nameof(Barrel))

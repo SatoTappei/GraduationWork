@@ -13,18 +13,13 @@ namespace Game
         public override Vector2Int Coords => _coords;
         public override Vector2Int Direction => _direction;
 
-        public virtual void Interact(Actor user) 
-        {
-            // 開いたり動いたり何らかの仕掛けが動く。
-        }
-
         public void Place(int x, int y, Vector2Int direction)
         {
             Vector2Int coords = new Vector2Int(x, y);
             Place(coords, direction);
         }
 
-        public void Place(Vector2Int coords, Vector2Int direction)
+        public virtual void Place(Vector2Int coords, Vector2Int direction)
         {
             if (_placeCount++ > 0)
             {
@@ -39,7 +34,10 @@ namespace Game
             DungeonManager.AddActor(Coords, this);
         }
 
-        Vector3 GetEulers(Vector2Int direction)
+        // 開いたり動いたり何らかの仕掛けが動く。
+        public virtual void Interact(Actor user) { }
+
+        static Vector3 GetEulers(Vector2Int direction)
         {
             if (direction == Vector2Int.up) return Vector3.up * 0;
             if (direction == Vector2Int.down) return Vector3.up * 180;

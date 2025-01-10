@@ -79,6 +79,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _fbx: {fileID: 8538901977145517192}
+  _renderer: {fileID: 3896864179117696677}
+  _particle: {fileID: 8018445142814805360}
 --- !u!1001 &3910750861519858301
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -151,6 +153,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 11e31a2ebb4e6e246bcf8c0ba034a031, type: 3}
+--- !u!23 &3896864179117696677 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 23000010768551128, guid: 11e31a2ebb4e6e246bcf8c0ba034a031,
+    type: 3}
+  m_PrefabInstance: {fileID: 3910750861519858301}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &3912487665910038487 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4000013828724138, guid: 11e31a2ebb4e6e246bcf8c0ba034a031,
@@ -286,6 +294,12 @@ MonoBehaviour:
 --- !u!4 &6268128338485542628 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8037160467862551414, guid: 12a56ee4630040c4eb17ae9707ed4cef,
+    type: 3}
+  m_PrefabInstance: {fileID: 4140329091972662674}
+  m_PrefabAsset: {fileID: 0}
+--- !u!198 &8018445142814805360 stripped
+ParticleSystem:
+  m_CorrespondingSourceObject: {fileID: 6211125795773073634, guid: 12a56ee4630040c4eb17ae9707ed4cef,
     type: 3}
   m_PrefabInstance: {fileID: 4140329091972662674}
   m_PrefabAsset: {fileID: 0}

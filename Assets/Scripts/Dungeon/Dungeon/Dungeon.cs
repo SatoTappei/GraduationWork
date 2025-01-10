@@ -20,6 +20,8 @@ namespace Game
             public DungeonEntity Container;
             public DungeonEntity Lever;
             public DungeonEntity FireBreath;
+            public DungeonEntity Artifact;
+            public DungeonEntity AltarPillar;
         }
 
         [SerializeField] Prefabs _prefabs;
@@ -62,6 +64,8 @@ namespace Game
             BuildNonDirectionalEntity('C', _prefabs.Container);
             BuildNonDirectionalEntity('l', _prefabs.Lever);
             BuildNonDirectionalEntity('f', _prefabs.FireBreath);
+            BuildNonDirectionalEntity('a', _prefabs.Artifact);
+            BuildNonDirectionalEntity('p', _prefabs.AltarPillar);
             BuildEnemySpawner('b', _prefabs.BlackKadukiSpawner);
             BuildEnemySpawner('s', _prefabs.SoldierSpawner);
             BuildEnemySpawner('G', _prefabs.GolemSpawner);

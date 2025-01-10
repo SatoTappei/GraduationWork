@@ -10,8 +10,8 @@ namespace Game
     {
         public void Send()
         {
-            // 名前,冒険結果,サブゴール,アイテム最大3個,出会った冒険者最大3人。
-            string[] result = new string[9];
+            // 名前,冒険結果,サブゴール,サブゴールの結果(達成/諦めた)。
+            string[] result = new string[4];
 
             // 名前。
             TryGetComponent(out Adventurer adventurer);
@@ -29,8 +29,17 @@ namespace Game
                 else result[1] = "Rescue";
             }
 
-            // サブゴール。"ダンジョンの入口に戻る。"以外でランダムに1つ選ぶ。
-            if (TryGetComponent(out SubGoalPath path) && path.Path != null && path.Path.Count > 0)
+            // サブゴール。「ダンジョンの入口に戻る。」以外でランダムに1つ選ぶ。
+            TryGetComponent(out SubGoalPath path);
+            if (path.Path == null)
+            {
+                Debug.LogWarning("サブゴールがnullなので空欄のまま送信。");
+            }
+            else if (path.Path.Count == 0)
+            {
+                Debug.LogWarning("サブゴールが1つもないので空欄のまま送信。");
+            }
+            else
             {
                 string[] subGoals = path.Path
                     .Select(a => a.Description.Japanese)
@@ -40,25 +49,23 @@ namespace Game
                 result[2] = subGoals[Random.Range(0, subGoals.Length)];
             }
 
-            // アイテム。送信する数は3つまで。
-            if (TryGetComponent(out ItemInventory item))
+            if (path.Path[0].Check() == SubGoal.State.Completed)
             {
-                string[] items = item.GetEntries().Select(e => e.Name).ToArray();
-                for (int i = 0; i < Mathf.Min(items.Length, 3); i++)
-                {
-                    result[3 + i] = items[i];
-                }
+                result[3] = "Completed";
             }
-
-            // 会話した冒険者。送信する数は3人まで。
-            string[] talk = adventurer.Status.TalkRecord.Record.ToArray();
-            for (int i = 0; i < Mathf.Min(talk.Length, 3); i++)
+            else if (path.Path[0].Check() == SubGoal.State.Failed)
             {
-                result[6 + i] = talk[i];
+                result[3] = "Failed";
+            }
+            else
+            {
+                Debug.LogWarning($"サブゴールを終えていない。:{path.Path[0].Check()}");
+                result[3] = "Failed";
             }
 
             // 送信。
             string csv = string.Join(",", result);
+            Debug.Log(csv);
             GameManager.ReportAdventureResult(adventurer, csv);
         }
     }

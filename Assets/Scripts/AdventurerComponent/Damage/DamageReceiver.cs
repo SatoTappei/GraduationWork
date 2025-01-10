@@ -27,7 +27,7 @@ namespace Game
             if (_adventurer.Status.IsDefeated) return "Corpse";
 
             // ダメージ演出を再生。
-            _effect.Play(coords);
+            if (value >= 1) _effect.Play(coords);
 
             // 狂気を付与する場合。
             if (effect == "Madness") _madness.Set();

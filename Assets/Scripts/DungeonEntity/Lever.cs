@@ -20,6 +20,12 @@ namespace Game
         void Start()
         {
             DungeonManager.AddAvoidCell(Coords);
+
+            // このレバーに対応する仕掛けが正常に設定されているかチェック。
+            if (LeverBinding.GetTargetCoords(Coords).Count == 0)
+            {
+                Debug.LogWarning($"レバーに対応する仕掛けが無い。{Coords}");
+            }
         }
 
         // タルやコンテナと同じく、漁ることで仕掛けが動作する。

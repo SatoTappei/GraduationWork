@@ -23,8 +23,10 @@ namespace Game
         float _attackMagnification;
         
         float _speed;
+        float _rotateSpeed;
         float _speedMagnification;
-        
+
+        int _artifactCount;
         int _treasureCount;
         int _defeatCount;
         int _elapsedTurn;
@@ -48,6 +50,7 @@ namespace Game
             AttackMagnification = 1.0f;
 
             _speed = CalculationFormula.GetSpeed(level);
+            _rotateSpeed = 4.0f;
             SpeedMagnification = 1.0f;
 
             TreasureCount = 0;
@@ -63,6 +66,7 @@ namespace Game
         public ExploreRecord ExploreRecord => _exploreRecord;
 
         public float TotalSpeed => _speed * SpeedMagnification;
+        public float TotalRotateSpeed => _rotateSpeed * SpeedMagnification;
         public int TotalAttack => Mathf.FloorToInt(_attack * AttackMagnification);
         public bool IsDefeated => CurrentHp <= 0;
         public bool IsAlive => !IsDefeated;
@@ -96,6 +100,12 @@ namespace Game
         { 
             get => _speedMagnification; 
             set => _speedMagnification = Mathf.Max(value, 0); 
+        }
+
+        public int ArtifactCount
+        {
+            get => _artifactCount;
+            set => _artifactCount = Mathf.Max(value, 0);
         }
 
         public int TreasureCount

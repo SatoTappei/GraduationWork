@@ -9,6 +9,8 @@ namespace Game
         BilingualString _description;
         Adventurer _adventurer;
 
+        bool _isConfirmed;
+
         void Awake()
         {
             _description = new BilingualString(
@@ -20,14 +22,24 @@ namespace Game
 
         public override BilingualString Description => _description;
 
-        public override bool IsCompleted()
+        public override State Check()
         {
-            return Blueprint.Interaction[_adventurer.Coords.y][_adventurer.Coords.x] == '<';
-        }
+            // 一度でも入口の座標に到達すれば、違う座標に移動したとしても完了を返す。
+            if (_isConfirmed)
+            {
+                return State.Completed;
+            }
 
-        public override bool IsRetire()
-        {
-            return _adventurer.Status.ElapsedTurn > 100;
+            if (Blueprint.Interaction[_adventurer.Coords.y][_adventurer.Coords.x] == '<')
+            {
+                _isConfirmed = true;
+
+                return State.Completed;
+            }
+            else
+            {
+                return State.Running;
+            }
         }
     }
 }

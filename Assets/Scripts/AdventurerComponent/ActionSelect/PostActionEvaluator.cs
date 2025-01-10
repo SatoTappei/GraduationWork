@@ -100,6 +100,10 @@ namespace Game
                     Debug.LogWarning($"漁るの結果に対するスコア付けが出来ない。{result.Result}");
                 }
             }
+            else if (result.Action == "Help")
+            {
+                //
+            }
             else
             {
                 Debug.LogWarning($"行動後のスコア付けが出来ない。{result.Action}");

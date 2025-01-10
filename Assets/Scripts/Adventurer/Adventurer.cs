@@ -28,6 +28,7 @@ namespace Game
         AttackAction _attack;
         TalkAction _talk;
         ScavengeAction _scavenge;
+        HelpAction _help;
         DefeatedAction _defeated;
         EscapeAction _escape;
 
@@ -63,6 +64,7 @@ namespace Game
             _attack = GetComponent<AttackAction>();
             _talk = GetComponent<TalkAction>();
             _scavenge = GetComponent<ScavengeAction>();
+            _help = GetComponent<HelpAction>();
             _defeated = GetComponent<DefeatedAction>();
             _escape = GetComponent<EscapeAction>();
             _preEvaluator = GetComponent<PreActionEvaluator>();
@@ -202,6 +204,10 @@ namespace Game
                 {
                     actionResult = await _targetMove.PlayAsync("Entrance", token);
                 }
+                else if (selectedAction == "MoveToArtifact")
+                {
+                    actionResult = await _targetMove.PlayAsync("Artifact", token);
+                }
                 else if (selectedAction == "AttackToEnemy")
                 {
                     actionResult = await _attack.PlayAsync<Enemy>(token);
@@ -217,6 +223,10 @@ namespace Game
                 else if (selectedAction == "Scavenge")
                 {
                     actionResult = await _scavenge.PlayAsync(token);
+                }
+                else if (selectedAction == "RequestHelp")
+                {
+                    actionResult = await _help.PlayAsync(token);
                 }
                 else
                 {
@@ -246,41 +256,54 @@ namespace Game
                 _selectedAction = selectedAction;
 
                 // 足元に罠等がある場合に起動。
+                // 操作と同時にセルから削除される可能性があるので、別のリスト内にコピーした後に実行する。
+                List<IFootTriggerable> copy = new List<IFootTriggerable>();
                 foreach (Actor actor in DungeonManager.GetActors(Coords))
                 {
-                    if (actor.ID == "Trap" && actor is DungeonEntity e)
-                    {
-                        e.Interact(this);
-                    }
+                    if (actor is IFootTriggerable e) copy.Add(e);
                 }
+                copy.ForEach(t => t.Interact(this));
 
                 // ステータス効果を反映。
                 foreach (StatusEffect e in _statusEffects) e.Apply();
 
                 // 撃破されたもしくは脱出した場合。
-                if (await _defeated.PlayAsync(token) || await _escape.PlayAsync(token))
+                if (await _defeated.PlayAsync(token) || await _escape.PlayAsync(token)) break;
+
+                // サブゴールを達成した場合
+                if (_subGoal.IsAchieve())
                 {
-                    _result.Send();
-                    break;
-                }
+                    // 結果をチェックしてログに表示。
+                    if (_subGoal.GetCurrent().Check() == SubGoal.State.Completed)
+                    {
+                        GameLog.Add(
+                            $"システム",
+                            $"{AdventurerSheet.DisplayName}が「{_subGoal.GetCurrent().Description.Japanese}」を達成。",
+                            GameLogColor.White
+                        );
+                    }
+                    else if (_subGoal.GetCurrent().Check() == SubGoal.State.Failed)
+                    {
+                        GameLog.Add(
+                            $"システム",
+                            $"{AdventurerSheet.DisplayName}が「{_subGoal.GetCurrent().Description.Japanese}」を諦めた。",
+                            GameLogColor.White
+                        );
+                    }
+                    else
+                    {
+                        Debug.LogWarning("サブゴール達成時の結果が達成もしくは失敗以外になっている。");
+                    }
 
-                // サブゴールを達成した場合、次のサブゴールを設定。
-                if (_subGoal.IsAchieve(out string result))
-                {
-                    if (result == "Completed") result = "達成";
-                    else if (result == "Retire") result = "諦めた";
-
-                    GameLog.Add(
-                        $"システム",
-                        $"{AdventurerSheet.DisplayName}が「{_subGoal.GetCurrent().Description.Japanese}」を{result}。",
-                        GameLogColor.White
-                    );
-
+                    // 次のサブゴールを設定
                     _subGoal.SetNext();
                 }
 
                 await UniTask.Yield(cancellationToken: token);
             }
+
+            // 冒険結果を送信。
+            _result.Send();
 
             // セルから削除。
             DungeonManager.RemoveActor(Coords, this);

@@ -36,10 +36,12 @@ namespace Game
                 { "MoveEast", new Score(0.0f) },
                 { "MoveWest", new Score(0.0f) },
                 { "MoveToEntrance", new Score(-1.0f) },
+                { "MoveToArtifact", new Score(-1.0f) },
                 { "AttackToEnemy", new Score(-1.0f) },
                 { "AttackToAdventurer", new Score(-1.0f) },
                 { "TalkWithAdventurer", new Score(-1.0f) },
                 { "Scavenge", new Score(-1.0f) },
+                { "RequestHelp", new Score(-1.0f) },
             };
         }
 

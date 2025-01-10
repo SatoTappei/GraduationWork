@@ -68,12 +68,18 @@ namespace Game
                 choices[i].Text = info.Text.English;
                 choices[i].Number = i;
             }
-            
+
+#if true
             RequestFormat request = new RequestFormat();
             request.Choices = choices;
             string result = await _ai.RequestAsync(JsonUtility.ToJson(request), token);
             token.ThrowIfCancellationRequested();
-
+#else
+            await UniTask.Yield(cancellationToken:token);
+            // デバッグ用。選択をAIにリクエストせず、ランダムで選択する。
+            Debug.Log("APIに会話内容の選択をリクエストしていない状態で実行中。");
+            string result = Random.Range(0, choices.Length).ToString();
+#endif
             // 出力された文章の中に数値以外の文字列が含まれている可能性があるので、弾いてから数値に変換。
             int index = result
                 .Split()

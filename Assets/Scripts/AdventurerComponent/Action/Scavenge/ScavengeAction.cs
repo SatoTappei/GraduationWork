@@ -62,12 +62,12 @@ namespace Game
             {
                 // まだない
             }
-            else if (foundItem.Name.English == "Treasure")
+            else if (foundItem.Name.English == "Artifact")
             {
                 GameLog.Add(
                     "システム", 
-                    $"{_adventurer.AdventurerSheet.DisplayName}が宝物を入手。", 
-                    GameLogColor.White
+                    $"{_adventurer.AdventurerSheet.DisplayName}がアーティファクトを入手！", 
+                    GameLogColor.Yellow
                 );
             }
             else
@@ -84,16 +84,20 @@ namespace Game
             {
                 _line.ShowLine(RequestLineType.GetItemFailure);
             }
-            else if (foundItem.Name.English == "Treasure")
+            else if (foundItem.Name.English == "Artifact")
             {
-                _line.ShowLine(RequestLineType.GetTreasureSuccess);
+                _line.ShowLine(RequestLineType.GetArtifactSuccess);
             }
             else
             {
                 _line.ShowLine(RequestLineType.GetItemSuccess);
             }
 
-            // 宝箱を獲得した場合、宝箱カウントを増やす。
+            // 漁った結果に対応したカウントを増やす。
+            if (foundItem != null && foundItem.Name.English == "Artifact")
+            {
+                _adventurer.Status.ArtifactCount++;
+            }
             if (foundItem != null && foundItem.Name.English == "Treasure")
             {
                 _adventurer.Status.TreasureCount++;
@@ -109,8 +113,11 @@ namespace Game
             string actionLog;
             if (foundItem == null)
             {
-
                 actionLog = "I scavenged the surrounding boxes. There was nothing in them.";
+            }
+            else if (foundItem.Name.English == "Artifact")
+            {
+                actionLog = "I scavenged the surrounding altar. I got the legendary treasure.";
             }
             else if (foundItem.Name.English == "Treasure")
             {

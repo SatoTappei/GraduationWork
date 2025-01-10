@@ -13,8 +13,7 @@ namespace Game
         Entry,              // 登場。
         Defeated,           // 撃破された。
         Goal,               // 脱出した。
-        GetTreasureSuccess, // 宝物を入手。
-        GetTreasureFailure, // 宝箱が空っぽ。
+        GetArtifactSuccess, // アーティファクトを入手。
         GetItemSuccess,     // アイテムを入手。
         GetItemFailure,     // アイテムが無かった。
         DefeatEnemy,        // 敵を撃破した。
@@ -63,6 +62,7 @@ namespace Game
             }
 
             (string lineType, string sample) instruction = GetInstruction(type);
+#if true
             string prompt =
                 $"# 指示内容\n" +
                 $"- 自身のキャラクターの設定を基に、{instruction.lineType}を考えてください。\n" +
@@ -83,6 +83,11 @@ namespace Game
             // 出力例のフォーマットの解釈ミスで半角スペースが入っている場合。
             // 台詞として扱うので「」付きにして出力する場合もある。
             return response.Trim().Trim('「', '」');
+#else
+            // デバッグ用。台詞をAIにリクエストせず、サンプルをそのまま返す。
+            Debug.Log("APIに台詞をリクエストしていない状態で実行中。");
+            return instruction.sample;
+#endif
         }
 
         static (string, string) GetInstruction(RequestLineType type)
@@ -90,8 +95,7 @@ namespace Game
             if (type == RequestLineType.Entry) return ("登場時の台詞", "頑張るぞ！");
             if (type == RequestLineType.Defeated) return ("敵とのバトルで敗北した際の台詞", "もうだめぽ");
             if (type == RequestLineType.Goal) return ("ゲームをクリアした際の台詞", "ばいばい");
-            if (type == RequestLineType.GetTreasureSuccess) return ("宝物を入手した際の台詞", "やったーっ！");
-            if (type == RequestLineType.GetTreasureFailure) return ("宝箱の中身が空っぽで残念だった際の台詞", "がっかり");
+            if (type == RequestLineType.GetArtifactSuccess) return ("伝説の宝物を入手した際の台詞", "これは…！");
             if (type == RequestLineType.GetItemSuccess) return ("アイテムを入手した際の台詞", "やったね");
             if (type == RequestLineType.GetItemFailure) return ("アイテムを探したが無かった場合の台詞", "何もないか");
             if (type == RequestLineType.DefeatEnemy) return ("敵を撃破した際の台詞", "勝った！");

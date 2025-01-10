@@ -28,8 +28,8 @@ namespace Game
                 Actor treasure = cell.GetActors().Where(a => a.ID == targetID).FirstOrDefault();
                 // 宝箱のマスへは経路探索が出来ないので、正面の位置までの経路探索。
                 MovementPath.Finding(
-                    targetID, 
-                    Adventurer.Coords, 
+                    targetID,
+                    Adventurer.Coords,
                     treasure.Coords + treasure.Direction
                 );
 
@@ -38,9 +38,18 @@ namespace Game
             {
                 Cell cell = DungeonManager.GetPlacedCells(targetID).FirstOrDefault();
                 MovementPath.Finding(
-                    targetID, 
-                    Adventurer.Coords, 
+                    targetID,
+                    Adventurer.Coords,
                     cell.Coords
+                );
+            }
+            else if (targetID == "Artifact")
+            {
+                // 漁ることで入手するのでアーティファクトがある座標の1歩手前の座標に向かう。
+                MovementPath.Finding(
+                    targetID,
+                    Adventurer.Coords,
+                    new Vector2Int(17, 20)
                 );
             }
             else

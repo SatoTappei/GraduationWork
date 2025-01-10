@@ -9,6 +9,8 @@ namespace Game
         BilingualString _description;
         Adventurer _adventurer;
 
+        bool _isConfirmed;
+
         void Awake()
         {
             _description = new BilingualString(
@@ -20,15 +22,25 @@ namespace Game
 
         public override BilingualString Description => _description;
 
-        public override bool IsCompleted()
+        public override State Check()
         {
-            // 適当なターン数経過したら完了。
-            return _adventurer.Status.ElapsedTurn >= 30;
-        }
+            // 経過ターン数が減少するような処理は書かないと思うが念のため。
+            // 結果が確定した場合は条件を満たさなくなっても覆らない。
+            if (_isConfirmed)
+            {
+                return State.Completed;
+            }
 
-        public override bool IsRetire()
-        {
-            return _adventurer.Status.ElapsedTurn > 100;
+            if (_adventurer.Status.ElapsedTurn >= 100)
+            {
+                _isConfirmed = true;
+
+                return State.Completed;
+            }
+            else
+            {
+                return State.Running;
+            }
         }
     }
 }

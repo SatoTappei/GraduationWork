@@ -8,6 +8,8 @@ namespace Game
         Adventurer _adventurer;
         ItemInventory _itemInventory;
 
+        State _confirmed;
+
         void Awake()
         {
             _description = new BilingualString(
@@ -16,24 +18,37 @@ namespace Game
             );
             _adventurer = GetComponent<Adventurer>();
             _itemInventory = GetComponent<ItemInventory>();
+
+            _confirmed = State.Running;
         }
 
         public override BilingualString Description => _description;
 
-        public override bool IsCompleted()
+        public override State Check()
         {
+            // 結果が確定した後に別の結果の条件を満たしたとしても、結果は覆らない。
+            if (_confirmed == State.Completed || _confirmed == State.Failed)
+            {
+                return _confirmed;
+            }
+
             // アイテムは自由に設定しても大丈夫。
             foreach (ItemInventory.Entry item in _itemInventory.GetEntries())
             {
-                if (item.Name == "荷物") return true;
+                if (item.Name == "荷物")
+                {
+                    _confirmed = State.Completed;
+                    return _confirmed;
+                }
             }
 
-            return false;
-        }
+            if (_adventurer.Status.ElapsedTurn > 100)
+            {
+                _confirmed = State.Failed;
+                return _confirmed;
+            }
 
-        public override bool IsRetire()
-        {
-            return _adventurer.Status.ElapsedTurn > 100;
+            return State.Running;
         }
     }
 }

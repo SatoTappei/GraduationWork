@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Game
 {
@@ -16,6 +17,11 @@ namespace Game
             public Enemy Prefab => _prefab;
             public int Weight => _weight;
         }
+
+        // 生成したタイミングのイベント。
+        public event UnityAction OnSpawned;
+        // 生成した敵が撃破された瞬間のイベント。
+        public event UnityAction OnDefeated;
 
         [SerializeField] Data[] _data;
 
@@ -34,9 +40,13 @@ namespace Game
             {
                 _spawned = Instantiate(Choice());
                 _spawned.Initialize(Coords);
+                
+                OnSpawned?.Invoke();
 
                 yield return _waitDefeated ??= new WaitUntil(IsDefeated);
                 
+                OnDefeated?.Invoke();
+
                 // 敵が撃破されてから再度湧くまでの間隔。適当に時間を指定。
                 yield return _waitInterval ??= new WaitForSeconds(10.0f);
             }

@@ -24,7 +24,7 @@ namespace Game
 
             // 現在のサブゴールが「ダンジョンの入口に戻る。」かつ、サブゴールが完了したかチェック。
             bool isLast = _subGoalPath.GetCurrent().Description.Japanese == "ダンジョンの入口に戻る。";
-            bool isCompleted = _subGoalPath.GetCurrent().IsCompleted();
+            bool isCompleted = _subGoalPath.GetCurrent().Check() == SubGoal.State.Completed;
             if (!(isLast && isCompleted)) return false;
 
             // 脱出の演出。

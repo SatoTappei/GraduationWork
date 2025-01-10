@@ -27,7 +27,7 @@ namespace Game
                 }
             },
             {
-                new Vector2Int(17, 21),
+                new Vector2Int(8, 1),
                 new Vector2Int[3]
                 {
                     new Vector2Int(22, 11),

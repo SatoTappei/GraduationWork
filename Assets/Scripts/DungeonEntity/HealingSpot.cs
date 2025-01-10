@@ -4,13 +4,22 @@ using UnityEngine;
 
 namespace Game
 {
-    public class HealingSpot : DungeonEntity
+    public class HealingSpot : DungeonEntity, IFootTriggerable
     {
         [SerializeField] Transform _fbx;
+        [SerializeField] Renderer _renderer;
+        [SerializeField] ParticleSystem _particle;
+
+        WaitForSeconds _waitRefill;
 
         void Start()
         {
             StartCoroutine(RotateAsync());
+        }
+
+        public override void Interact(Actor user)
+        {
+            StartCoroutine(InteractAsync(user));
         }
 
         IEnumerator RotateAsync()
@@ -24,6 +33,24 @@ namespace Game
 
                 yield return null;
             }
+        }
+
+        IEnumerator InteractAsync(Actor user)
+        {
+            if (user != null && user.TryGetComponent(out HealReceiver heal))
+            {
+                heal.Heal(33, default); // 効果量は適当。
+            }
+
+            _renderer.enabled = false;
+            _particle.gameObject.SetActive(false);
+            DungeonManager.RemoveActor(Coords, this);
+
+            yield return _waitRefill ??= new WaitForSeconds(30.0f); // 時間は適当に指定。
+
+            _renderer.enabled = true;
+            _particle.gameObject.SetActive(true);
+            DungeonManager.AddActor(Coords, this);
         }
     }
 }

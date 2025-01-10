@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 namespace Game
 {
@@ -9,12 +10,30 @@ namespace Game
         Adventurer _adventurer;
         SubGoalPath _subGoalPath;
         AvailableActions _actions;
+        MadnessStatusEffect _madness;
+
+        Artifact _artifact;
 
         void Awake()
         {
             _adventurer = GetComponent<Adventurer>();
             _subGoalPath = GetComponent<SubGoalPath>();
             _actions = GetComponent<AvailableActions>();
+            _madness = GetComponent<MadnessStatusEffect>();
+        }
+
+        void Start()
+        {
+            // アーティファクトの生成座標を手動で指定。
+            _artifact = DungeonManager
+                .GetActors(new Vector2Int(17, 21))
+                .Select(a => a as Artifact)
+                .FirstOrDefault();
+
+            if (_artifact == null)
+            {
+                Debug.LogWarning("アーティファクトが見つからない。");
+            }
         }
 
         public void Evaluate()
@@ -120,6 +139,28 @@ namespace Game
                 _actions.SetScore("MoveToEntrance", -1.0f);
             }
 
+            // 「アーティファクトの位置に移動する。」の選択肢。
+            // アーティファクトが出現している場合は最優先で向かうよう促す。
+            if (_artifact.IsEmpty)
+            {
+                _actions.SetScore("MoveToArtifact", -1.0f);
+            }
+            else
+            {
+                // 大部屋にいる場合、アーティファクトがある座標の1歩手前の座標を目指す。
+                bool isBossRoom = Blueprint.Location[_adventurer.Coords.y][_adventurer.Coords.x] == '5';
+                bool isAway = _adventurer.Coords != new Vector2Int(17, 20);
+                if (isBossRoom && isAway)
+                {
+                    _actions.SetScore("MoveToArtifact", 1.0f);
+                }
+                else
+                {
+                    _actions.SetScore("MoveToArtifact", -1.0f);
+                }
+
+            }
+
             // 何れかの方向に敵がいる場合は、周囲の敵に攻撃できる。
             // スコアは移動より上。
             if (isEnemyExistNorth || 
@@ -140,8 +181,17 @@ namespace Game
                 isAdventurerExistEast || 
                 isAdventurerExistWest)
             {
-                _actions.SetScore("AttackToAdventurer", 0);
-                _actions.SetScore("TalkWithAdventurer", 0.5f);
+                // 狂気状態のときは攻撃しかできない。
+                if (_madness.IsValid)
+                {
+                    _actions.SetScore("AttackToAdventurer", 1.0f);
+                    _actions.SetScore("TalkWithAdventurer", -1.0f);
+                }
+                else
+                {
+                    _actions.SetScore("AttackToAdventurer", 0);
+                    _actions.SetScore("TalkWithAdventurer", 0.5f);
+                }
             }
             else
             {
@@ -156,11 +206,31 @@ namespace Game
                isScavengeableEast ||
                isScavengeableWest)
             {
-                _actions.SetScore("Scavenge", 0.5f);
+                // 狂気状態のときは漁ることが出来ない。
+                if (_madness.IsValid)
+                {
+                    _actions.SetScore("Scavenge", -1.0f);
+                }
+                else
+                {
+                    _actions.SetScore("Scavenge", 0.5f);
+                }
             }
             else
             {
                 _actions.SetScore("Scavenge", -1.0f);
+            }
+
+            // 同じセルを何回も通った場合、周囲をうろうろしている可能性がある。
+            // 回数が多いほど助け(AIの初期化)を求めるよう強く促す。
+            int explore = _adventurer.Status.ExploreRecord.Get(_adventurer.Coords);
+            if (explore >= 5)
+            {
+                _actions.SetScore("RequestHelp", explore / 10.0f);
+            }
+            else
+            {
+                _actions.SetScore("RequestHelp", -1.0f);
             }
         }
     }
