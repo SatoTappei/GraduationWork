@@ -81,7 +81,7 @@ namespace Game
             }
 
             // それぞれの方向に冒険者がいる場合、その方向に移動できない。
-            // いる場合のスコアは、箱や樽が空っぽの状態で漁らずに移動するよう促すために0より少し高い。
+            // いない場合のスコアは、箱や樽が空っぽの状態で漁らずに移動するよう促すために0より少し高い。
             _actions.SetScore("MoveNorth", isAdventurerExistNorth ? -1.0f : 0.1f);
             _actions.SetScore("MoveSouth", isAdventurerExistSouth ? -1.0f : 0.1f);
             _actions.SetScore("MoveEast", isAdventurerExistEast ? -1.0f : 0.1f);
@@ -162,13 +162,12 @@ namespace Game
             }
 
             // 何れかの方向に敵がいる場合は、周囲の敵に攻撃できる。
-            // スコアは移動より上。
             if (isEnemyExistNorth || 
                 isEnemyExistSouth || 
                 isEnemyExistEast || 
                 isEnemyExistWest)
             {
-                _actions.SetScore("AttackToEnemy", 0.5f);
+                _actions.SetScore("AttackToEnemy", 1.0f);
             }
             else
             {
@@ -200,7 +199,6 @@ namespace Game
             }
 
             // 何れかの方向に宝箱やレバーなどインタラクトできる対象がある場合は、周囲を漁ることが出来る。
-            // スコアは移動より上。
             if(isScavengeableNorth || 
                isScavengeableSouth || 
                isScavengeableEast ||

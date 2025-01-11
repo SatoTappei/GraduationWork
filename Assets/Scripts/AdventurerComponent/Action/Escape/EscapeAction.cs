@@ -8,6 +8,8 @@ namespace Game
 {
     public class EscapeAction : BaseAction
     {
+        [SerializeField] ParticleSystem _particle;
+
         SubGoalPath _subGoalPath;
 
         void Awake()
@@ -30,6 +32,7 @@ namespace Game
             // 脱出の演出。
             Animator animator = GetComponentInChildren<Animator>();
             animator.Play("Jump");
+            _particle.Play();
 
             // 脱出時の台詞。
             TryGetComponent(out LineDisplayer line);

@@ -30,6 +30,8 @@ namespace Game
         {
             IReadOnlyList<AdventurerData>  profiles = await AdventurerLoader.GetDataAsync(token);
 
+            _spawned.Clear();
+
             // 読み込んだプロフィールの数が、引数で指定した数より少ない場合を考慮。
             int spawnedCount = Mathf.Min(profiles.Count, count);
             for (int i = 0; i < spawnedCount;)

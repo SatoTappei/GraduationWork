@@ -155,8 +155,23 @@ namespace Game
                 _status.CurrentHunger++;
 
                 // 空腹が最大の場合、空腹のステータス効果を付与。
-                if (_status.IsHungry) _hungry.Set();
-                else _hungry.Remove();
+                if (_status.IsHungry)
+                {
+                    if (!_hungry.IsValid)
+                    {
+                        GameLog.Add(
+                            "システム",
+                            $"{_adventurerSheet.DisplayName}はお腹がすいてきた。", 
+                            GameLogColor.White
+                        );
+                    }
+
+                    _hungry.Set();
+                }
+                else
+                {
+                    _hungry.Remove();
+                }
 
                 // ステータスの変化をUIに反映。
                 _statusBar.Apply();

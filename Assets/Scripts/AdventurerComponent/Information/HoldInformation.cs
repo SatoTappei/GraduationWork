@@ -82,7 +82,12 @@ namespace Game
                 // とりあえずスコアを基に1~10ターンの間で設定する。
                 if (newInfo.IsEvaluate)
                 {
+#if true
                     newInfo.Score = await _evaluator.EvaluateAsync(newInfo, token);
+#else
+                    newInfo.Score = Random.value;
+                    await UniTask.Yield(cancellationToken: token); // 警告対策。
+#endif
                     newInfo.Turn = Mathf.RoundToInt(newInfo.Score * 10);
                 }
 

@@ -15,12 +15,19 @@ namespace Game
         LineDisplayer _line;
         TalkThemeSelector _talkTheme;
 
+        // 話しかけた相手を記録する。
+        List<string> _history;
+
+        public IReadOnlyList<string> History => _history;
+
         void Awake()
         {
             _adventurer = GetComponent<Adventurer>();
             _animator = GetComponentInChildren<Animator>();
             _line = GetComponent<LineDisplayer>();
             _talkTheme = GetComponent<TalkThemeSelector>();
+
+            _history = new List<string>();
         }
 
         public async UniTask<ActionResult> PlayAsync(CancellationToken token)
@@ -50,16 +57,25 @@ namespace Game
             _particle.Play();
 
             // 目標を向いている間に会話対象が消える可能性があるので事前にチェックする必要がある。
-            // 情報の中から会話内容として選んだものを相手に伝え、会話相手を記憶。
+            // 情報の中から会話内容として選んだものを相手に伝える。
             bool isTalked = true;
             if (target != null && target.TryGetComponent(out TalkReceiver talk))
             {
                 talk.Talk(_talkTheme.Selected, "Adventurer", _adventurer.Coords);
-                _adventurer.Status.TalkRecord.Add(target as Adventurer);
             }
             else
             {
                 isTalked = false;
+            }
+
+            // 会話相手を記録。
+            if (target != null && target.TryGetComponent(out Adventurer targetAdventurer))
+            {
+                _history.Add(targetAdventurer.AdventurerSheet.FullName);
+            }
+            else
+            {
+                _history.Add(target.ID);
             }
 
             // 会話の演出が終わるまで待つ。
