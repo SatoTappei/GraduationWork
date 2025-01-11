@@ -279,8 +279,9 @@ namespace Game
                 }
                 copy.ForEach(t => t.Interact(this));
 
-                // ステータス効果を反映。
+                // ステータス効果を反映、UIに反映。
                 foreach (StatusEffect e in _statusEffects) e.Apply();
+                _statusBar.Apply();
 
                 // 撃破されたもしくは脱出した場合。
                 if (await _defeated.PlayAsync(token) || await _escape.PlayAsync(token)) break;
