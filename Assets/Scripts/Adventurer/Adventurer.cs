@@ -9,6 +9,8 @@ namespace Game
     {
         AdventurerSheet _adventurerSheet;
         Status _status;
+        ActionLog _actionLog;
+        ExploreRecord _exploreRecord;
         Vector2Int _coords;
         Vector2Int _direction;
         string _selectedAction;
@@ -46,12 +48,16 @@ namespace Game
 
         public AdventurerSheet AdventurerSheet => _adventurerSheet;
         public Status Status => _status;
+        public ActionLog ActionLog => _actionLog;
+        public ExploreRecord ExploreRecord => _exploreRecord;
         public override Vector2Int Coords => _coords;
         public override Vector2Int Direction => _direction;
         public string SelectedAction => _selectedAction;
 
         void Awake()
         {
+            _actionLog = new ActionLog();
+            _exploreRecord = new ExploreRecord();
             _gamePlay = GetComponent<GamePlay>();
             _rolePlay = GetComponent<RolePlay>();
             _talkTheme = GetComponent<TalkThemeSelector>();
@@ -82,6 +88,13 @@ namespace Game
             UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
+        void OnDrawGizmos()
+        {
+            Cell cell = DungeonManager.GetCell(Coords + Direction);
+            Gizmos.color = Color.red;
+            Gizmos.DrawSphere(cell.Position, 0.33f);
+        }
+
         public void Initialize(AdventurerSheet adventurerSheet)
         {
             _adventurerSheet = adventurerSheet;
@@ -99,8 +112,8 @@ namespace Game
         // とりあえずここに書いているが、なんか良い感じのクラスがあればそっちに移す。
         public void Reboot()
         {
-            _status.ActionLog.Delete();
-            _status.ExploreRecord.Delete();
+            _actionLog.Delete();
+            _exploreRecord.Delete();
             _information.RequestDelete();
             _gamePlay.PreInitialize();
         }
@@ -249,23 +262,30 @@ namespace Game
                     await UniTask.Yield(cancellationToken: token);
                 }
 
-                // 行動結果を基に、それぞれの選択肢をスコア付け。
-                if (actionResult != null)
-                {
-                    _postEvaluator.Evaluate(actionResult);
-                }
-
                 // 行動結果を反映。
                 if (actionResult != null)
                 {
+                    // 行動結果を基に、それぞれの選択肢をスコア付け。
+                    _postEvaluator.Evaluate(actionResult);
+
+                    // 座標の更新。
                     DungeonManager.RemoveActor(Coords, this);
                     _coords = actionResult.Coords;
                     DungeonManager.AddActor(_coords, this);
 
+                    // 方向を更新。
                     _direction = actionResult.Direction;
 
-                    Status.ActionLog.Add(actionResult.Log);
+                    // 行動ログへ追加。
+                    _actionLog.Add($"Turn{_status.ElapsedTurn}: {actionResult.Log}");
+
+                    // 探索したセルがある場合。
+                    if (actionResult.Explored != null)
+                    {
+                        _exploreRecord.Increase((Vector2Int)actionResult.Explored);
+                    }
                 }
+
 
                 // インスペクター上で確認できるよう、適当なメンバ変数に反映させておく。
                 _selectedAction = selectedAction;

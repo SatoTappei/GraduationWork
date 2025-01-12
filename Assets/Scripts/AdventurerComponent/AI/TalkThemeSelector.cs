@@ -72,7 +72,8 @@ namespace Game
 #if true
             RequestFormat request = new RequestFormat();
             request.Choices = choices;
-            string result = await _ai.RequestAsync(JsonUtility.ToJson(request), token);
+            string json = JsonUtility.ToJson(request, prettyPrint: true);
+            string result = await _ai.RequestAsync(json, token);
             token.ThrowIfCancellationRequested();
 #else
             await UniTask.Yield(cancellationToken:token);

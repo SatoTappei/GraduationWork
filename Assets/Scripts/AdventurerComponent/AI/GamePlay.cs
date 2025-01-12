@@ -71,7 +71,7 @@ namespace Game
             format.Surroundings.West = GetCellInfo(_adventurer.Coords + Vector2Int.left);
             
             // 行動ログ。
-            format.ActionLog = _adventurer.Status.ActionLog.Log.ToArray();
+            format.ActionLog = _adventurer.ActionLog.Log.ToArray();
             
             // 情報。ユーザーが送信したコメントの場合、英語ではなく日本語の文章が送信される。
             format.Information = _information.Information.Select(info => info.Text.English).ToArray();
@@ -96,7 +96,9 @@ namespace Game
                 Initialize();
             }
 
-            string response = await _ai.RequestAsync(JsonUtility.ToJson(format), token);
+            string json = JsonUtility.ToJson(format, prettyPrint: true);
+            Debug.Log(json);
+            string response = await _ai.RequestAsync(json, token);
             token.ThrowIfCancellationRequested();
 
             // 選択肢とスコアがスペース区切りで返ってくることを想定。
@@ -217,18 +219,18 @@ namespace Game
             }
 
             // 探索回数に応じたタグを付与する。
-            int count = _adventurer.Status.ExploreRecord.Get(coords);
+            int count = _adventurer.ExploreRecord.Get(coords);
             if (count == 0)
             {
                 return $"[Unexplored] {info}";
             }
             else if (count == 1)
             {
-                return $"[Exproled {count} time] {info}";
+                return $"[Explored {count} time] {info}";
             }
             else if (count > 1)
             {
-                return $"[Exproled {count} times] {info}";
+                return $"[Explored {count} times] {info}";
             }
             else
             {

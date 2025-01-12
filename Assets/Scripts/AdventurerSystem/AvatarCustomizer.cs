@@ -20,9 +20,6 @@ namespace Game
 
         public AvatarData GetData(AdventurerData profile)
         {
-            Debug.Log("デバッグ用途でランダムでアバターを選んでいる。");
-            return _avatars[Random.Range(0, 12)];
-
             // アバターは全12種類。
             if (0 <= profile.AvatarType && profile.AvatarType < 12)
             {

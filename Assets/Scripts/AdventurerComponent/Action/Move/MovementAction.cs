@@ -79,12 +79,6 @@ namespace Game
             else if (nextDirection == Vector2Int.left) directionName = "west";
             else if (nextDirection == Vector2Int.right) directionName = "east";
 
-            // 移動出来た場合、探索したセルとして更新。
-            if (_movementPath.GetCurrent().IsPassable())
-            {
-                _adventurer.Status.ExploreRecord.Increase(nextCoords);
-            }
-
             // 移動結果を返す。
             if (_movementPath.GetCurrent().IsPassable())
             {
@@ -93,7 +87,8 @@ namespace Game
                     "Success",
                     $"Successfully moved to the {directionName}.",
                     nextCoords,
-                    nextDirection
+                    nextDirection,
+                    nextCoords
                 );
             }
             else

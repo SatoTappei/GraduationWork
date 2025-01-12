@@ -43,7 +43,9 @@ namespace Game
             }
 
             // ãôÇÈëOÇ…ñ⁄ïWÇ…å¸Ç≠ÅB
-            Vector3 targetPosition = DungeonManager.GetCell(target.Coords).Position;
+            Cell targetCell = DungeonManager.GetCell(target.Coords);
+            Vector3 targetPosition = targetCell.Position;
+            Vector2Int targetDirection = targetCell.Coords - _adventurer.Coords;
             await RotateAsync(RotateSpeed, targetPosition, token);
 
             _animator.Play("Scav");
@@ -133,7 +135,8 @@ namespace Game
                 result,
                 actionLog,
                 _adventurer.Coords,
-                _adventurer.Direction
+                targetDirection,
+                _adventurer.Coords + targetDirection
             );
         } 
     }

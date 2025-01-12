@@ -6,9 +6,6 @@ namespace Game
 {
     public class Status
     {
-        ActionLog _actionLog;
-        ExploreRecord _exploreRecord;
-
         int _maxHp;
         int _currentHp;
         
@@ -32,9 +29,6 @@ namespace Game
 
         public Status(int level)
         {
-            _actionLog = new ActionLog(this);
-            _exploreRecord = new ExploreRecord();
-
             _maxHp = CalculationFormula.GetHp(level);
             CurrentHp = _maxHp;
 
@@ -59,8 +53,6 @@ namespace Game
         public int MaxHp => _maxHp;
         public int MaxEmotion => _maxEmotion;
         public int MaxHunger => _maxHunger;
-        public ActionLog ActionLog => _actionLog;
-        public ExploreRecord ExploreRecord => _exploreRecord;
 
         public float TotalSpeed => _speed * SpeedMagnification;
         public float TotalRotateSpeed => _rotateSpeed * SpeedMagnification;

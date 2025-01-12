@@ -50,7 +50,8 @@ namespace Game.EnemyComponent
                     "Success",
                     string.Empty,
                     nextCell.Coords,
-                    nextDirection
+                    nextDirection,
+                    nextCell.Coords
                 );
             }
             else

@@ -221,7 +221,7 @@ namespace Game
 
             // 同じセルを何回も通った場合、周囲をうろうろしている可能性がある。
             // 回数が多いほど助け(AIの初期化)を求めるよう強く促す。
-            int explore = _adventurer.Status.ExploreRecord.Get(_adventurer.Coords);
+            int explore = _adventurer.ExploreRecord.Get(_adventurer.Coords);
             if (explore >= 5)
             {
                 _actions.SetScore("RequestHelp", explore / 10.0f);
