@@ -204,7 +204,7 @@ GameObject:
   - component: {fileID: 7170466126224591377}
   - component: {fileID: 5118351026856533076}
   m_Layer: 0
-  m_Name: LevitationEffect
+  m_Name: Event_LevitationEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

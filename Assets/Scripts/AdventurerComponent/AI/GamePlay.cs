@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using UnityEngine;
 using AI;
+using Game.ItemData;
 
 namespace Game
 {
@@ -20,6 +21,7 @@ namespace Game
 
             public string CurrentLocation;
             public Surroundings Surroundings;
+            public string[] Items;
             public string[] ActionLog;
             public string[] Information;
             public string[] AvailableActions;
@@ -39,6 +41,7 @@ namespace Game
         HoldInformation _information;
         AvailableActions _actions;
         SubGoalPath _subGoalPath;
+        ItemInventory _item;
         AIClient _ai;
 
         // 次にリクエストする際、事前にAIを初期化するフラグ。
@@ -50,6 +53,7 @@ namespace Game
             _information = GetComponent<HoldInformation>();
             _actions = GetComponent<AvailableActions>();
             _subGoalPath = GetComponent<SubGoalPath>();
+            _item = GetComponent<ItemInventory>();
         }
 
         public void PreInitialize()
@@ -69,11 +73,20 @@ namespace Game
             format.Surroundings.South = GetCellInfo(_adventurer.Coords + Vector2Int.down);
             format.Surroundings.East = GetCellInfo(_adventurer.Coords + Vector2Int.right);
             format.Surroundings.West = GetCellInfo(_adventurer.Coords + Vector2Int.left);
-            
+
+            // アイテム。種類ごとにリストで管理しているので、それぞれのリストの先頭の情報を渡す。
+            List<string> items = new List<string>();
+            foreach (IReadOnlyList<Item> e in _item.Get().Values)
+            {
+                items.Add($"{e[0].Name.English} (Usage: {e[0].Usage})");
+            }
+            if (items.Count == 0) items.Add("None");
+            format.Items = items.ToArray();
+
             // 行動ログ。
             format.ActionLog = _adventurer.ActionLog.Log.ToArray();
             
-            // 情報。ユーザーが送信したコメントの場合、英語ではなく日本語の文章が送信される。
+            // 情報。ユーザーが送信したコメントの場合、英語ではなく日本語の文章になる。
             format.Information = _information.Information.Select(info => info.Text.English).ToArray();
             
             // この中から1つ行動を選ぶ。
@@ -97,7 +110,6 @@ namespace Game
             }
 
             string json = JsonUtility.ToJson(format, prettyPrint: true);
-            Debug.Log(json);
             string response = await _ai.RequestAsync(json, token);
             token.ThrowIfCancellationRequested();
 
@@ -222,15 +234,11 @@ namespace Game
             int count = _adventurer.ExploreRecord.Get(coords);
             if (count == 0)
             {
-                return $"[Unexplored] {info}";
+                return $"{info} (Unexplored)";
             }
-            else if (count == 1)
+            else if (count > 0)
             {
-                return $"[Explored {count} time] {info}";
-            }
-            else if (count > 1)
-            {
-                return $"[Explored {count} times] {info}";
+                return $"{info} (Explored: {count}) ";
             }
             else
             {

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using UnityEngine;
 
 namespace Game
 {
@@ -40,7 +40,7 @@ namespace Game
             get => _information.Information;
         }
         
-        IEnumerable<ItemInventory.Entry> IProfileWindowDisplayable.Item
+        IEnumerable<ItemEntry> IProfileWindowDisplayable.Item
         {
             get => _itemInventory.GetEntries();
         }

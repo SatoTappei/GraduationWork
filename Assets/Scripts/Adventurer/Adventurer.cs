@@ -31,6 +31,7 @@ namespace Game
         TalkAction _talk;
         ScavengeAction _scavenge;
         HelpAction _help;
+        ThrowAction _throw;
         DefeatedAction _defeated;
         EscapeAction _escape;
 
@@ -41,10 +42,8 @@ namespace Game
         HoldInformation _information;
         HungryStatusEffect _hungry;
         AdventureResultReporter _result;
-
         StatusEffect[] _statusEffects;
-
-        CommentDisplayer _commentDisplayer;       
+        CommentDisplayer _comment;       
 
         public AdventurerSheet AdventurerSheet => _adventurerSheet;
         public Status Status => _status;
@@ -71,6 +70,7 @@ namespace Game
             _talk = GetComponent<TalkAction>();
             _scavenge = GetComponent<ScavengeAction>();
             _help = GetComponent<HelpAction>();
+            _throw = GetComponent<ThrowAction>();
             _defeated = GetComponent<DefeatedAction>();
             _escape = GetComponent<EscapeAction>();
             _preEvaluator = GetComponent<PreActionEvaluator>();
@@ -80,7 +80,7 @@ namespace Game
             _hungry = GetComponent<HungryStatusEffect>();
             _result = GetComponent<AdventureResultReporter>();
             _statusEffects = GetComponents<StatusEffect>();
-            _commentDisplayer = CommentDisplayer.Find();
+            _comment = CommentDisplayer.Find();
         }
 
         void Start()
@@ -88,11 +88,15 @@ namespace Game
             UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
-        void OnDrawGizmos()
+        void OnDrawGizmosSelected()
         {
-            Cell cell = DungeonManager.GetCell(Coords + Direction);
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(cell.Position, 0.33f);
+            if (Application.isPlaying)
+            {
+                // 方向を描画。
+                Cell cell = DungeonManager.GetCell(Coords + Direction);
+                Gizmos.color = Color.red;
+                Gizmos.DrawSphere(cell.Position, 0.33f);
+            }
         }
 
         public void Initialize(AdventurerSheet adventurerSheet)
@@ -146,7 +150,7 @@ namespace Game
             _entry.Play();
 
             // コメントを流し、心情の値を変化させる。
-            IReadOnlyCollection<CommentData> comment = _commentDisplayer.Display(AdventurerSheet.FullName);
+            IReadOnlyCollection<CommentData> comment = _comment.Display(AdventurerSheet.FullName);
             if (!(comment == null || comment.Count == 0))
             {
                 float score = 1; // コメントの仕様書が来るまで仮の値。
@@ -256,6 +260,10 @@ namespace Game
                 {
                     actionResult = await _help.PlayAsync(token);
                 }
+                else if (selectedAction == "ThrowItem")
+                {
+                    actionResult= await _throw.PlayAsync(token);
+                }
                 else
                 {
                     Debug.LogWarning($"行動を選ぶAIの出力が、指定した形式と違う。: {selectedAction}");
@@ -285,7 +293,6 @@ namespace Game
                         _exploreRecord.Increase((Vector2Int)actionResult.Explored);
                     }
                 }
-
 
                 // インスペクター上で確認できるよう、適当なメンバ変数に反映させておく。
                 _selectedAction = selectedAction;

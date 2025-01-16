@@ -80,9 +80,27 @@ namespace Game
             }
         }
 
+        public static Cell GetCell(Vector3 position)
+        {
+            // 原点から右と奥にセルを敷き詰めている。
+            // 1辺の長さが1、セルの中央が基準なので-0.5~0.5する。
+            int x = (int)(position.x + 0.5f);
+            int z = (int)(position.z + 0.5f);
+            return GetCell(new Vector2Int(x, z));
+        }
+
         public static Cell GetCell(Vector2Int coords)
         {
-            return _instance._dungeon.Grid[coords.y, coords.x];
+            if (0 <= coords.x && coords.x < _instance._dungeon.Grid.GetLength(1) &&
+                0 <= coords.y && coords.y < _instance._dungeon.Grid.GetLength(0))
+            {
+                return _instance._dungeon.Grid[coords.y, coords.x];
+            }
+            else
+            {
+                Debug.LogWarning($"座標がグリッドの範囲外{coords}");
+                return null;
+            }
         }
 
         static void AddPlaced(Actor actor)

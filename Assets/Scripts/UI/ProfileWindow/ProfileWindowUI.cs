@@ -90,14 +90,14 @@ namespace Game
             else _goal.text = goal.Description.Japanese;
         }
 
-        void SetItem(IEnumerable<ItemInventory.Entry> item)
+        void SetItem(IEnumerable<ItemEntry> items)
         {
             // 持ち物欄は最大3つ表示可能なデザインになっている。
             const int Max = 3;
 
             _item.text = string.Empty;
 
-            if (item == null)
+            if (items == null)
             {
                 for (int i = 0; i < Max; i++)
                 {
@@ -106,12 +106,12 @@ namespace Game
             }
             else
             {
-                foreach (ItemInventory.Entry entry in item.Take(Max))
+                foreach (ItemEntry e in items.Take(Max))
                 {
-                    _item.text += $"{entry.Name}\n";
+                    _item.text += $"{e.Name}\n";
                 }
 
-                int emptyCount = Max - item.Count();
+                int emptyCount = Max - items.Count();
                 for (int i = 0; i < emptyCount; i++)
                 {
                     _item.text += "--\n";
@@ -119,14 +119,14 @@ namespace Game
             }
         }
 
-        void SetEffect(IEnumerable<string> effect)
+        void SetEffect(IEnumerable<string> effects)
         {
             // 効果欄は最大3つ表示可能なデザインになっている。
             const int Max = 3;
             
             _effect.text = string.Empty;
 
-            if (effect == null)
+            if (effects == null)
             {
                 for (int i = 0; i < Max; i++)
                 {
@@ -135,12 +135,12 @@ namespace Game
             }
             else
             {
-                foreach (string item in effect)
+                foreach (string e in effects)
                 {
-                    _effect.text += $"{item}\n";
+                    _effect.text += $"{e}\n";
                 }
 
-                int emptyCount = Max - effect.Count();
+                int emptyCount = Max - effects.Count();
                 for (int i = 0; i < emptyCount; i++)
                 {
                     _effect.text += "--\n";

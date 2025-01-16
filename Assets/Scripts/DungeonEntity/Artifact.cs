@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Game.ItemData;
 
 namespace Game
 {
@@ -64,7 +65,7 @@ namespace Game
             // モデルを回転させる。
             if (_rotate != null) StopCoroutine(_rotate);
 
-            return new Item("★アーティファクト", "Artifact");
+            return new ItemData.Artifact();
         }
 
         void Refill()

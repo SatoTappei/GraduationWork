@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using Game.ItemData;
 
 namespace Game
 {
@@ -127,7 +128,7 @@ namespace Game
             }
             else
             {
-                actionLog = $"I scavenged the surrounding boxes. I got the {foundItem}.";
+                actionLog = $"I scavenged the surrounding boxes. I got the {foundItem.Name.English}.";
             }
 
             return new ActionResult(

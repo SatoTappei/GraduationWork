@@ -42,6 +42,7 @@ namespace Game
                 { "TalkWithAdventurer", new Score(-1.0f) },
                 { "Scavenge", new Score(-1.0f) },
                 { "RequestHelp", new Score(-1.0f) },
+                { "ThrowItem", new Score(-1.0f) }
             };
         }
 
@@ -52,7 +53,7 @@ namespace Game
             {
                 if (0 <= e.Value.Current)
                 {
-                    entries.Add($"{e.Key} (Score:{e.Value.Total})");
+                    entries.Add($"{e.Key} (Score: {e.Value.Total})");
                 }
             }
 
@@ -65,11 +66,7 @@ namespace Game
 #if UNITY_EDITOR
             // デバッグ用にインスペクターに表示する内容を更新。
             _debugView ??= new List<string>();
-            _debugView.Clear();
-            foreach (KeyValuePair<string, Score> e in _actions)
-            {
-                _debugView.Add($"{e.Key}: {e.Value.Total}");
-            }
+            _debugView = entries;
 #endif
 
             return entries;

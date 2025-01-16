@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using Game.ItemData;
 
 namespace Game
 {
@@ -11,6 +12,7 @@ namespace Game
         SubGoalPath _subGoalPath;
         AvailableActions _actions;
         MadnessStatusEffect _madness;
+        ItemInventory _item;
 
         Artifact _artifact;
 
@@ -20,6 +22,7 @@ namespace Game
             _subGoalPath = GetComponent<SubGoalPath>();
             _actions = GetComponent<AvailableActions>();
             _madness = GetComponent<MadnessStatusEffect>();
+            _item = GetComponent<ItemInventory>();
         }
 
         void Start()
@@ -229,6 +232,19 @@ namespace Game
             else
             {
                 _actions.SetScore("RequestHelp", -1.0f);
+            }
+
+            _actions.SetScore("ThrowItem", -1.0f);
+
+            // 投げることが出来るアイテムを持っている場合のみ「アイテムを投げる。」選択肢を選ぶことが出来る。
+            foreach (IReadOnlyList<Item> items in _item.Get().Values)
+            {
+                if (items[0].Usage == Usage.Throw)
+                {
+                    // 優先度は最低で良い？
+                    _actions.SetScore("ThrowItem", 0);
+                    break;
+                }
             }
         }
     }

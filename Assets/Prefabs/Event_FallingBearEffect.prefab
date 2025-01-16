@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2736559126636002389}
   - component: {fileID: 3320142113755659249}
   m_Layer: 0
-  m_Name: FallingBearEffect
+  m_Name: Event_FallingBearEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

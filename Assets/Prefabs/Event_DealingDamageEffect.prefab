@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: -6129944012262604124}
   - component: {fileID: -3054114794177051223}
   m_Layer: 0
-  m_Name: DealingDamageEffect
+  m_Name: Event_DealingDamageEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

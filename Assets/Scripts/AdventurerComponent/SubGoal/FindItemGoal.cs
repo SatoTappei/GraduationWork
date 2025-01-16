@@ -33,7 +33,7 @@ namespace Game
             }
 
             // アイテムは自由に設定しても大丈夫。
-            foreach (ItemInventory.Entry item in _itemInventory.GetEntries())
+            foreach (ItemEntry item in _itemInventory.GetEntries())
             {
                 if (item.Name == "荷物")
                 {

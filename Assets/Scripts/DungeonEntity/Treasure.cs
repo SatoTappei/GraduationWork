@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Game.ItemData;
 
 namespace Game
 {
@@ -42,7 +43,7 @@ namespace Game
             else
             {
                 StartCoroutine(OpenAsync());
-                return new Item("•ó•¨", "Treasure");
+                return new ItemData.Treasure();
             }
         }
 
