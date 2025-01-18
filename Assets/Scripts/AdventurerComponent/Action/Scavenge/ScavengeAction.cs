@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 using Game.ItemData;
+using VTNConnect;
 
 namespace Game
 {
@@ -130,6 +131,32 @@ namespace Game
             {
                 actionLog = $"I scavenged the surrounding boxes. I got the {foundItem.Name.English}.";
             }
+
+            // 入手したアイテムに対応したイベントがある場合は送信。
+            EventData eventData = null;
+            if (foundItem == null) { }
+            else if (foundItem.Name.Japanese == "クラッカー")
+            {
+                eventData = new EventData(EventDefine.ActorEffect);
+            }
+            else if (foundItem.Name.Japanese == "壊れた罠")
+            {
+                eventData = new EventData(EventDefine.ReviveGimmick);
+            }
+            else if (foundItem.Name.Japanese == "錆びた剣")
+            {
+                eventData = new EventData(EventDefine.SummonWeapon);
+            }
+            else if (foundItem.Name.Japanese == "切れた電球")
+            {
+                eventData = new EventData(EventDefine.DarkRoom);
+            }
+            else if (foundItem.Name.Japanese == "ヘルメット")
+            {
+                eventData = new EventData(EventDefine.SummonEnemy);
+            }
+
+            if (eventData != null) VantanConnect.SendEvent(eventData);
 
             return new ActionResult(
                 "Scavenge",

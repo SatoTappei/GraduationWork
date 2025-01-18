@@ -15,7 +15,7 @@ namespace Game
         {
             _description = new BilingualString(
                 "ƒ_ƒ“ƒWƒ‡ƒ““à‚ğ’Tõ‚·‚éB",
-                "Feel free to explore the dungeon."
+                "Actively explore unexplored areas, defeat enemies, and bring back items."
             );
             _adventurer = GetComponent<Adventurer>();
         }

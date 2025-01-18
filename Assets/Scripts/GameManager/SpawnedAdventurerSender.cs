@@ -5,8 +5,9 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Game
+namespace Game.Unused
 {
+    // 未使用。保存先がスプレッドシートではなくなった。
     public static class SpawnedAdventurerSender
     {
         public static async UniTask WriteAsync(IReadOnlyList<Adventurer> adventurers, CancellationToken token)

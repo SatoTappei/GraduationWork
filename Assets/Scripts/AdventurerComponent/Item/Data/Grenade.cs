@@ -6,6 +6,6 @@ namespace Game.ItemData
 {
     public class Grenade : Item
     {
-        public Grenade() : base("Žè“Š‚°”š’e", "Grenade", Usage.Throw) { }
+        public Grenade() : base("ŽèžÖ’e", "Grenade", Usage.Throw) { }
     }
 }

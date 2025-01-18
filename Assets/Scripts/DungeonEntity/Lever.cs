@@ -5,6 +5,12 @@ using Game.ItemData;
 
 namespace Game
 {
+    // レバーで制御する対象などに実装するインターフェース。
+    public interface ILeverControllable
+    {
+        public void Play();
+    }
+
     public class Lever : DungeonEntity, IScavengeable
     {
         [SerializeField] Transform _lever;
@@ -53,7 +59,7 @@ namespace Game
             int random = Random.Range(0, targetCoords.Count);
             foreach (Actor actor in DungeonManager.GetActors(targetCoords[random]))
             {
-                if (actor is FireBreath target) target.Play();
+                if (actor.TryGetComponent(out ILeverControllable target)) target.Play();
             }
 
             yield return RotateAsync(_openRotation, _closeRotation);

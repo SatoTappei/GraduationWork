@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using VTNConnect;
 
 namespace Game
 {
@@ -56,6 +57,10 @@ namespace Game
                 $"{adventurer.AdventurerSheet.DisplayName}は力尽きた。", 
                 GameLogColor.Red
             );
+
+            // イベントを送信。
+            EventData eventData = new EventData(EventDefine.DeathScream);
+            VantanConnect.SendEvent(eventData);
 
             // 演出の終了を待つ。
             await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);

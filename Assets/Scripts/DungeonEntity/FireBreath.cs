@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public class FireBreath : DungeonEntity
+    public class FireBreath : DungeonEntity, ILeverControllable
     {
         // パーティクルの見た目も合わせて調整が必要。
         const int Range = 3;

@@ -7,7 +7,6 @@ namespace Game
 {
     public class Container : DungeonEntity, IScavengeable
     {
-        [SerializeField] float _refillInterval = 10.0f;
         [SerializeField] ParticleSystem _particle;
 
         AudioSource _audioSource;
@@ -22,6 +21,12 @@ namespace Game
         void Start()
         {
             DungeonManager.AddAvoidCell(Coords);
+
+            // このコンテナから取得できるアイテムのデータが正常に設定されているかチェック。
+            if (ContainerContents.GetItems(Coords).Count == 0)
+            {
+                Debug.LogWarning($"コンテナから取得できるアイテムが無い。{Coords}");
+            }
         }
 
         public Item Scavenge()
@@ -39,17 +44,18 @@ namespace Game
                 StartCoroutine(RefillAsync());
 
                 // ランダムなアイテム。
-                int r = Random.Range(0, 8);
-                if (r == 0) return new Luggage(); // 「依頼されたアイテムの入手」達成に必要。
-                if (r == 1) return new Junk();
-                if (r == 2) return new RustySword();
-                if (r == 3) return new Scroll();
-                if (r == 4) return new Herb();
-                if (r == 5) return new Water();
-                if (r == 6) return new Coin();
-                if (r == 7) return new Grenade();
+                IReadOnlyList<string> items = ContainerContents.GetItems(Coords);
+                string item = items[Random.Range(0, items.Count)];
+                if (item == "荷物") return new Luggage(); // 「依頼されたアイテムの入手」達成に必要。
+                if (item == "ガラクタ") return new Junk();
+                if (item == "錆びた剣") return new RustySword();
+                if (item == "クラッカー") return new Cracker();
+                if (item == "壊れた罠") return new BrokenTrap();
+                if (item == "切れた電球") return new LightBlub();
+                if (item == "ヘルメット") return new Helmet();
+                if (item == "手榴弾") return new Grenade();
 
-                Debug.LogWarning("番号に対応した返すアイテムが無い。");
+                Debug.LogWarning($"対応した返すアイテムが無い。{item}");
                 return new Junk();
             }
         }
@@ -57,7 +63,10 @@ namespace Game
         IEnumerator RefillAsync()
         {
             _isEmpty = true;
-            yield return _waitRefill ??= new WaitForSeconds(_refillInterval);
+
+            float interval = ContainerContents.GetInterval(Coords);
+            yield return _waitRefill ??= new WaitForSeconds(interval);
+            
             _isEmpty = false;
         }
     }

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using VTNConnect;
 
 namespace Game
 {
@@ -96,6 +97,13 @@ namespace Game
                 Debug.LogWarning($"攻撃結果に対応する処理が無い。スペルミス？: {result}");
                 
                 actionLog = "I tried to attack it.";
+            }
+
+            // 敵を倒した場合はイベントを送信。
+            if (result == "Defeat")
+            {
+                EventData data = new EventData(EventDefine.DefeatBomb);
+                VantanConnect.SendEvent(data);
             }
 
             return new ActionResult(

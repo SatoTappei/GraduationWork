@@ -38,7 +38,7 @@ namespace Game
 
         public static IReadOnlyList<Vector2Int> GetTargetCoords(Vector2Int leverCoords)
         {
-            if (Bind.TryGetValue(leverCoords, out var targetCoords))
+            if (Bind.TryGetValue(leverCoords, out Vector2Int[] targetCoords))
             {
                 return targetCoords;
             }

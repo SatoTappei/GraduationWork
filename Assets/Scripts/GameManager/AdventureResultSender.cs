@@ -4,8 +4,9 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Game
+namespace Game.Unused
 {
+    // 未使用。管理方法がGASではなくなった。
     public static class AdventureResultSender
     {
         public class ProcessStatus

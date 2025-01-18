@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using VTNConnect;
 
 namespace Game
 {
@@ -9,7 +10,7 @@ namespace Game
     {
         AdventurerSpawner _adventurerSpawner;
         Dictionary<Adventurer, string> _adventureResults;
-        
+
         void Awake()
         {
             _adventurerSpawner = AdventurerSpawner.Find();
@@ -33,27 +34,23 @@ namespace Game
             // 一度に生成する冒険者の最大数。
             const int Max = 1;
 
-            // "使用中"のスプレッドシートの内容を消す。
-            //await SpawnedAdventurerSender.DeleteAsync(token);
-
             while (!token.IsCancellationRequested)
             {
+                // ゲーム開始。
+                await VantanConnect.GameStart();
+                token.ThrowIfCancellationRequested();
+
                 _adventureResults.Clear();
 
                 // 一定間隔で冒険者を生成。
                 int spawnedCount = await _adventurerSpawner.SpawnAsync(Max, token);
 
-                // 生成した冒険者を"使用中"のスプレッドシートに書き込み。
-                //await SpawnedAdventurerSender.WriteAsync(spawner.Spawned, token);
-
                 // 生成した冒険者が全員、冒険の結果を報告するまで待つ。
                 await UniTask.WaitUntil(() => _adventureResults.Count == spawnedCount, cancellationToken: token);
 
-                // 冒険の結果を送信する。
-                //await AdventureResultSender.SendAsync(_adventureResults, token);
-
-                // "使用中"のスプレッドシートの内容を消す。
-                //await SpawnedAdventurerSender.DeleteAsync(token);
+                // ゲーム終了。
+                await VantanConnect.GameEnd();
+                token.ThrowIfCancellationRequested();
             }
         }
     }
