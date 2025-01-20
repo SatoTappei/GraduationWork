@@ -34,16 +34,26 @@ namespace Game
             DungeonManager.AddAvoidCell(Coords);
         }
 
-        public Item Scavenge()
+        public string Scavenge(Actor user, out Item item)
         {
+            // 鍵を持っているかチェック。
+            if (!IsConsumeKey(user))
+            {
+                item = null;
+                return "Lock";
+            }
+
             if (_isOpen)
             {
-                return null;
+                item = null;
+                return "Empty";
             }
             else
             {
                 StartCoroutine(OpenAsync());
-                return new ItemData.Treasure();
+                
+                item = new ItemData.Treasure();
+                return "Get";
             }
         }
 
@@ -73,6 +83,40 @@ namespace Game
             _smokeParticle.Play();
 
             _isOpen = false;
+        }
+
+        static bool IsConsumeKey(Actor actor)
+        {
+            if (actor.TryGetComponent(out ItemInventory itemInventory))
+            {
+                string key = string.Empty;
+                foreach (IReadOnlyList<Item> item in itemInventory.Get().Values)
+                {
+                    if (item.Count == 0) continue;
+
+                    // とりあえずどちらの鍵でも開くようにしておく。
+                    string itemName = item[0].Name.Japanese;
+                    if (itemName == "軽い鍵" || itemName == "重い鍵")
+                    {
+                        key = itemName;
+                    }
+                }
+
+                // インベントリ内に鍵がある場合は削除。
+                if (key != string.Empty)
+                {
+                    itemInventory.Remove(key);
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

@@ -29,15 +29,11 @@ namespace Game
                 {
                     _path.Add(gameObject.AddComponent<FindItemGoal>());
                 }
-                else if (s == "ダンジョン内を探索する")
-                {
-                    _path.Add(gameObject.AddComponent<ExploreDungeonGoal>());
-                }
-                else if (s == "自分より弱そうな敵を倒す")
+                else if (s == "依頼された敵を倒す")
                 {
                     _path.Add(gameObject.AddComponent<DefeatEnemyGoal>());
                 }
-                else if (s == "強力な敵を倒す")
+                else if (s == "ダンジョンのボスを倒す")
                 {
                     _path.Add(gameObject.AddComponent<DefeatBossGoal>());
                 }

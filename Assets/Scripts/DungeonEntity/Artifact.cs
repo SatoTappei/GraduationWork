@@ -49,9 +49,13 @@ namespace Game
             if (_spawner != null) _spawner.OnDefeated -= Refill;
         }
 
-        public Item Scavenge()
+        public string Scavenge(Actor _, out Item item)
         {
-            if (IsEmpty) return null;
+            if (IsEmpty)
+            {
+                item = null;
+                return "Empty";
+            }
 
             IsEmpty = true;
 
@@ -65,7 +69,8 @@ namespace Game
             // ƒ‚ƒfƒ‹‚ğ‰ñ“]‚³‚¹‚éB
             if (_rotate != null) StopCoroutine(_rotate);
 
-            return new ItemData.Artifact();
+            item = new ItemData.Artifact();
+            return "Get";
         }
 
         void Refill()

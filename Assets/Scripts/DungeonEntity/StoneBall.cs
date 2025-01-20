@@ -16,33 +16,13 @@ namespace Game
         [SerializeField] ParticleSystem _dustParticle;
         [SerializeField] ParticleSystem _explosionParticle;
 
-        Vector2Int _direction;
+        WaitForSeconds _waitInterval;
         bool _isPlaying;
 
         void Awake()
         {
             _renderer.enabled = false;
             _shadowRenderer.enabled = false;
-        }
-
-        void Start()
-        {
-            List<Vector2Int> candidate = new List<Vector2Int>()
-            {
-                Vector2Int.up,
-                Vector2Int.down,
-                Vector2Int.left,
-                Vector2Int.right
-            };
-
-            // 上下左右のうち、一番空間が大きな方向に転がる。
-            _direction = candidate
-                .Select(d => new { Direction = d, Distance = GetDistance(d) })
-                .OrderByDescending(x => x.Distance)
-                .First()
-                .Direction;
-
-            Play(); // テスト
         }
 
         public void Play()
@@ -55,21 +35,29 @@ namespace Game
         IEnumerator PlayAsync()
         {
             _isPlaying = true;
-            
+
+            Vector3 defaultShadowPosition = _shadow.position;
             _renderer.enabled = true;
             _shadowRenderer.enabled = true;
             _smokeParticle.Play();
 
             yield return FallAsync();
 
-            StartCoroutine(RotateAsync());
-
+            Coroutine rotate = StartCoroutine(RotateAsync());
             _dustParticle.Play();
+
             yield return TranslateAsync();
+
+            _dustParticle.Stop();
+            StopCoroutine(rotate);
 
             _explosionParticle.Play();
             _renderer.enabled = false;
             _shadowRenderer.enabled = false;
+            _shadow.position = defaultShadowPosition;
+
+            // 演出を待つ。時間は適当に指定。
+            yield return _waitInterval ??= new WaitForSeconds(1.5f);
 
             _isPlaying = false;
         }
@@ -91,23 +79,33 @@ namespace Game
         {
             const float Speed = 2.0f;
 
-            int distance = GetDistance(_direction);
-            Vector2Int goalCoords = Coords + _direction * distance;
+            // 上下左右のうち、一番空間が大きな方向に転がる。
+            Vector2Int direction = GetDirections()
+                .Select(d => new { Direction = d, Distance = GetDistance(d) })
+                .OrderByDescending(x => x.Distance)
+                .First()
+                .Direction;
+
+            int distance = GetDistance(direction);
+            Vector2Int goalCoords = Coords + direction * distance;
+            Vector2Int prevCoords = Coords;
             Vector3 start = _parent.position;
             Vector3 goal = DungeonManager.GetCell(goalCoords).Position;
             for (float t = 0; t <= 1.0f; t += Time.deltaTime / distance * Speed)
             {
-                _parent.position = Vector3.Lerp(start, goal, EasingRoll(t));
+                Vector3 p = Vector3.Lerp(start, goal, EasingTranslate(t));
 
-                Vector3 p = Vector3.Lerp(start, goal, EasingRoll(t));
-                p.y = _shadow.position.y;
-                _shadow.position = p;
+                _parent.position = p;
+                _shadow.position = new Vector3(p.x, _shadow.position.y, p.z);
+
+                // 別のセルに移動した場合、そのセルにいる対象にダメージを与える。
+                Vector2Int currentCoords = DungeonManager.GetCell(p).Coords;
+                if (currentCoords != prevCoords && Check(currentCoords)) break;
+
+                prevCoords = currentCoords;
 
                 yield return null;
             }
-
-            _parent.position = goal;
-            _shadow.position = goal;
         }
 
         IEnumerator RotateAsync()
@@ -140,16 +138,49 @@ namespace Game
             return Max;
         }
 
+        static bool Check(Vector2Int coords)
+        {
+            IReadOnlyList<Actor> actors = DungeonManager.GetActors(coords);
+
+            // 何もない、誰もいない場合。
+            if (actors.Count == 0) return false;
+
+            bool isCrash = false;
+            foreach (Actor actor in DungeonManager.GetActors(coords))
+            {
+                // 冒険者または敵がいる場合はダメージを与える。
+                if (actor.TryGetComponent(out IDamageable damage))
+                {
+                    damage.Damage(70, coords); // ダメージ量は適当。
+                }
+
+                // DungeonEntityで判定すると、入口の魔法陣にぶつかった場合でも破壊されてしまう。
+                // 現状の配置だと進路上にある障害物はドアのみなので、ピンポイントで判定すれば十分。
+                if (actor.TryGetComponent(out Door _))
+                {
+                    isCrash = true;
+                }
+            }
+
+            return isCrash;
+        }
+
+        static IEnumerable<Vector2Int> GetDirections()
+        {
+            yield return Vector2Int.up;
+            yield return Vector2Int.down;
+            yield return Vector2Int.left;
+            yield return Vector2Int.right;
+        }
+
         static float EasingFall(float t)
         {
             return t * t * t * t * t;
         }
 
-        static float EasingRoll(float t)
+        static float EasingTranslate(float t)
         {
             return t * t * t;
         }
     }
 }
-
-// 次、繰り返し呼び出し、ぶつかったら消える。ぶつかったらダメージを作る。

@@ -29,7 +29,7 @@ namespace Game
             DungeonManager.AddAvoidCell(Coords);
 
             // このレバーに対応する仕掛けが正常に設定されているかチェック。
-            if (LeverBinding.GetTargetCoords(Coords).Count == 0)
+            if (LeverBind.GetTargetCoords(Coords).Count == 0)
             {
                 Debug.LogWarning($"レバーに対応する仕掛けが無い。{Coords}");
             }
@@ -37,13 +37,18 @@ namespace Game
 
         // タルやコンテナと同じく、漁ることで仕掛けが動作する。
         // 行動ログには「漁ったが何も手に入らなかった。」と記録される。
-        public Item Scavenge()
+        public string Scavenge(Actor _, out Item item)
         {
-            if (_isPlaying) return null;
+            if (_isPlaying)
+            {
+                item = null;
+                return "Empty";
+            }
 
             StartCoroutine(PlayAsync());
 
-            return null;
+            item = null;
+            return "Empty";
         }
 
         IEnumerator PlayAsync()
@@ -53,7 +58,7 @@ namespace Game
             yield return RotateAsync(_closeRotation, _openRotation);
 
             // このレバーで起動するオブジェクトの座標を取得。
-            IReadOnlyList<Vector2Int> targetCoords = LeverBinding.GetTargetCoords(Coords);
+            IReadOnlyList<Vector2Int> targetCoords = LeverBind.GetTargetCoords(Coords);
 
             // このレバーで起動するオブジェクトが複数ある場合、ランダムに1つ選ぶ。
             int random = Random.Range(0, targetCoords.Count);

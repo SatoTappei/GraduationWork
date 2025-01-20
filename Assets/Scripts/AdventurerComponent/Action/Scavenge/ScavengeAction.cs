@@ -54,36 +54,52 @@ namespace Game
 
             // アイテムを漁り、何かしらのアイテムを獲得した場合はインベントリに追加。
             Item foundItem = null;
+            string result = string.Empty;
             if (target != null && target is IScavengeable targetEntity)
             {
-                foundItem = targetEntity.Scavenge();
+                result = targetEntity.Scavenge(_adventurer, out foundItem);
 
                 if (foundItem != null) _inventory.Add(foundItem);
             }
 
-            // 何かしら入手した場合、ログに表示。
-            if (foundItem == null)
+            // 漁った結果によってログに追加する内容が変わる。
+            if (result == "Get")
             {
-                // まだない
+                if (foundItem != null && foundItem.Name.English == "Artifact")
+                {
+                    GameLog.Add(
+                        "システム",
+                        $"{_adventurer.AdventurerSheet.DisplayName}が{foundItem.Name.Japanese}を入手！",
+                        GameLogColor.Yellow
+                    );
+                }
+                else if(foundItem != null)
+                {
+                    GameLog.Add(
+                        "システム",
+                        $"{_adventurer.AdventurerSheet.DisplayName}が{foundItem.Name.Japanese}を入手。",
+                        GameLogColor.White
+                    );
+                }
             }
-            else if (foundItem.Name.English == "Artifact")
+            else if (result == "Empty")
+            {
+                //
+            }
+            else if (result == "Lock")
             {
                 GameLog.Add(
-                    "システム", 
-                    $"{_adventurer.AdventurerSheet.DisplayName}がアーティファクトを入手！", 
-                    GameLogColor.Yellow
+                    "システム",
+                    $"{_adventurer.AdventurerSheet.DisplayName}は宝箱の鍵を持っていない…。",
+                    GameLogColor.White
                 );
             }
             else
             {
-                GameLog.Add(
-                    "システム", 
-                    $"{_adventurer.AdventurerSheet.DisplayName}がアイテムを入手。", 
-                    GameLogColor.White
-                );
+                Debug.LogWarning($"漁った結果の値がおかしい。スペルミス？{result}");
             }
 
-            // 漁った結果に応じた台詞。
+            // 手に入れたアイテムによって台詞が変わる。
             if (foundItem == null)
             {
                 _line.ShowLine(RequestLineType.GetItemFailure);
@@ -97,7 +113,7 @@ namespace Game
                 _line.ShowLine(RequestLineType.GetItemSuccess);
             }
 
-            // 漁った結果に対応したカウントを増やす。
+            // 手に入れたアイテムに対応したカウントを増やす。
             if (foundItem != null && foundItem.Name.English == "Artifact")
             {
                 _adventurer.Status.ArtifactCount++;
@@ -110,26 +126,39 @@ namespace Game
             // アニメーションなどの演出を待つ。
             await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
 
-            // 漁った結果。何かしら手に入れば成功。
-            string result = foundItem != null ? "Success" : "Failure";
-
             // 漁った結果ごとの行動ログに追加する文章。
             string actionLog;
-            if (foundItem == null)
+            if (result == "Get")
+            {
+                if (foundItem != null && foundItem.Name.English == "Artifact")
+                {
+                    actionLog = "I scavenged the surrounding altar. I got the legendary treasure.";
+                }
+                else if (foundItem != null && foundItem.Name.English == "Treasure")
+                {
+                    actionLog = "I scavenged the surrounding treasure chests. I got the treasure.";
+                }
+                else if (foundItem != null)
+                {
+                    actionLog = $"I scavenged the surrounding boxes. I got the {foundItem.Name.English}.";
+                }
+                else
+                {
+                    actionLog = "I scavenged the surrounding boxes. There was nothing in them.";
+                }
+            }
+            else if (result == "Empty")
             {
                 actionLog = "I scavenged the surrounding boxes. There was nothing in them.";
             }
-            else if (foundItem.Name.English == "Artifact")
+            else if (result == "Lock")
             {
-                actionLog = "I scavenged the surrounding altar. I got the legendary treasure.";
-            }
-            else if (foundItem.Name.English == "Treasure")
-            {
-                actionLog = "I scavenged the surrounding treasure chests. I got the treasure.";
+                actionLog = "I did not have the keys to open the surrounding treasure chests.";
             }
             else
             {
-                actionLog = $"I scavenged the surrounding boxes. I got the {foundItem.Name.English}.";
+                Debug.LogWarning($"漁った結果の値がおかしい。スペルミス？{result}");
+                actionLog = "I scavenged the surrounding boxes. There was nothing in them.";
             }
 
             // 入手したアイテムに対応したイベントがある場合は送信。
@@ -158,9 +187,10 @@ namespace Game
 
             if (eventData != null) VantanConnect.SendEvent(eventData);
 
+            // 何かしらアイテムを入手出来れば成功、出来なければ失敗。
             return new ActionResult(
                 "Scavenge",
-                result,
+                foundItem != null ? "Success" : "Failure",
                 actionLog,
                 _adventurer.Coords,
                 targetDirection,

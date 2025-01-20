@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public static class LeverBinding
+    public static class LeverBind
     {
         static Dictionary<Vector2Int, Vector2Int[]> Bind = new Dictionary<Vector2Int, Vector2Int[]>()
         {

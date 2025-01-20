@@ -43,10 +43,9 @@ namespace Game
                 $"# 選択肢\n" +
                 $"- お宝を手に入れる 0\n" +
                 $"- 依頼されたアイテムを手に入れる 1\n" +
-                $"- ダンジョン内を探索する 2\n" +
-                $"- 自分より弱そうな敵を倒す 3\n" +
-                $"- 強力な敵を倒す 4\n" +
-                $"- 他の冒険者を倒す 5\n" +
+                $"- 依頼された敵を倒す 2\n" +
+                $"- ダンジョンのボスを倒す 3\n" +
+                $"- 他の冒険者を倒す 4\n" +
 #if true
                 $"- 各選択肢の末尾の番号のみを出力してください。";
 #else
@@ -65,19 +64,19 @@ namespace Game
                 .Select(s => int.Parse(s))
                 .ToList();
 
-            // 選んだ番号に対応したサブゴールが無い場合、2番の「ダンジョン内を探索する」に置換する。
+            // 選んだ番号に対応したサブゴールが無い場合、0番の「お宝を手に入れる」に置換する。
             for (int i = 0; i < result.Count; i++)
             {
-                if (result[i] < 0 || 5 < result[i])
+                if (result[i] < 0 || 4 < result[i])
                 {
-                    result[i] = 2;
+                    result[i] = 0;
                 }
             }
 
-            // 選んだサブゴールの数が0の場合、2番の「ダンジョン内を探索する」で埋める。
+            // 選んだサブゴールの数が0の場合、0番の「お宝を手に入れる」で埋める。
             if (result.Count == 0)
             {
-                result.Add(2);
+                result.Add(0);
             }
 
             // 選んだサブゴールの数が2つ以上の場合、先頭1つのみ選択される。
@@ -89,11 +88,10 @@ namespace Game
             {
                 if (n == 0) subGoals.Add("お宝を手に入れる");
                 else if (n == 1) subGoals.Add("依頼されたアイテムを手に入れる");
-                else if (n == 2) subGoals.Add("ダンジョン内を探索する");
-                else if (n == 3) subGoals.Add("自分より弱そうな敵を倒す");
-                else if (n == 4) subGoals.Add("強力な敵を倒す");
-                else if (n == 5) subGoals.Add("他の冒険者を倒す");
-                else subGoals.Add("ダンジョン内を探索する");
+                else if (n == 2) subGoals.Add("依頼された敵を倒す");
+                else if (n == 3) subGoals.Add("ダンジョンのボスを倒す");
+                else if (n == 4) subGoals.Add("他の冒険者を倒す");
+                else subGoals.Add("お宝を手に入れる");
             }
 
             // 2つめのサブゴールは全キャラクター共通で「ダンジョンの入口に戻る」になる。

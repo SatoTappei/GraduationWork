@@ -72,7 +72,7 @@ namespace Game
             }
 
             // アイテムを生成し、投げる。
-            if (throwItem != null && throwItem.Name.Japanese == "手投げ爆弾")
+            if (throwItem != null && throwItem.Name.Japanese == "手榴弾")
             {
                 Vector3 position = transform.position + Vector3.up * 0.1f; // 高さは胸の位置辺り。 
                 Grenade grenade = Instantiate(_grenade, position, Quaternion.identity);

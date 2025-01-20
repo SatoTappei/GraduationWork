@@ -104,6 +104,10 @@ namespace Game
             {
                 //
             }
+            else if (result.Action == "Throw")
+            {
+                //
+            }
             else
             {
                 Debug.LogWarning($"行動後のスコア付けが出来ない。{result.Action}");

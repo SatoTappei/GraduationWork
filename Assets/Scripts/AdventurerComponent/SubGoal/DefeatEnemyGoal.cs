@@ -14,8 +14,8 @@ namespace Game
         void Awake()
         {
             _description = new BilingualString(
-                "ã‚»‚¤‚È“G‚ğ“|‚·B", 
-                "Defeat weak enemies roaming in the dungeon."
+                "ˆË—Š‚³‚ê‚½“G‚ğ“|‚·B", 
+                "Defeat requested enemies roaming in the dungeon."
             );
             _adventurer = GetComponent<Adventurer>();
 
@@ -32,8 +32,8 @@ namespace Game
                 return _confirmed;
             }
 
-            // ’Eo‚Ì“ïˆÕ“x‚ªã‚ª‚Á‚Ä‚µ‚Ü‚¤‚Ì‚ÅA1‘Ì“|‚¹‚Î\•ªB
-            if (_adventurer.Status.DefeatCount >= 1)
+            // ’Eo‚Ì“ïˆÕ“x‚ªã‚ª‚Á‚Ä‚µ‚Ü‚¤‚Ì‚ÅA2‘Ì“|‚¹‚Î\•ªB
+            if (_adventurer.Status.DefeatCount >= 2)
             {
                 _confirmed = State.Completed;
                 return _confirmed;

@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Game
 {
-    public static class ContainerContents
+    public static class ContainerBind
     {
         class Data
         {
@@ -12,7 +12,7 @@ namespace Game
             public string[] Items;
         }
 
-        static Dictionary<Vector2Int, Data> Contents = new Dictionary<Vector2Int, Data>()
+        static Dictionary<Vector2Int, Data> Bind = new Dictionary<Vector2Int, Data>()
         {
             {
                 new Vector2Int(3, 1),
@@ -106,7 +106,7 @@ namespace Game
 
         public static float GetInterval(Vector2Int coords)
         {
-            if (Contents.TryGetValue(coords, out Data data))
+            if (Bind.TryGetValue(coords, out Data data))
             {
                 return data.Interval;
             }
@@ -118,7 +118,7 @@ namespace Game
 
         public static IReadOnlyList<string> GetItems(Vector2Int coords)
         {
-            if (Contents.TryGetValue(coords, out Data data))
+            if (Bind.TryGetValue(coords, out Data data))
             {
                 return data.Items;
             }

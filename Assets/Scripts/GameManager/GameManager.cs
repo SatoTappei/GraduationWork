@@ -32,7 +32,7 @@ namespace Game
         async UniTask UpdateAsync(CancellationToken token)
         {
             // ˆê“x‚É¶¬‚·‚é–`Œ¯Ò‚ÌÅ‘å”B
-            const int Max = 1;
+            const int Max = 4;
 
             while (!token.IsCancellationRequested)
             {
