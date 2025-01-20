@@ -9,6 +9,7 @@ namespace Game.EnemyComponent
         [SerializeField] AudioClip _defeatedSE;
         [SerializeField] ParticleSystem _particle;
         [SerializeField] Renderer[] _renderers;
+        [SerializeField] DungeonEntity[] _dropItems;
 
         Enemy _enemy;
         Animator _animator;
@@ -30,6 +31,14 @@ namespace Game.EnemyComponent
             
             _audioSource.clip = _defeatedSE;
             _audioSource.Play();
+
+            // ランダムなアイテムをドロップ
+            if (_dropItems != null && 0 < _dropItems.Length)
+            {
+                int random = Random.Range(0, _dropItems.Length);
+                DungeonEntity item = Instantiate(_dropItems[random]);
+                item.Place(_enemy.Coords, Vector2Int.up);
+            }
 
             // 死亡アニメーションの再生終了後にパーティクルを出して画面から消える。時間は適当に指定。
             await UniTask.WaitForSeconds(1.5f, cancellationToken: token);

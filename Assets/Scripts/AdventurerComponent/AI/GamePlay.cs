@@ -170,15 +170,15 @@ namespace Game
                 {
                     if (enemy.ID == nameof(BlackKaduki))
                     {
-                        info = "There is an enemy that seems weaker than you. Do you attack?";
+                        info = "There is an enemy in the form of a girl. She is hostile. Will you attack her?";
                     }
                     else if (enemy.ID == nameof(Soldier))
                     {
-                        info = "There is an enemy who is as strong as you. Do you attack?";
+                        info = "There is a hostile bandit. A fight seems unavoidable. Will you attack him?";
                     }
                     else if (enemy.ID == nameof(Golem))
                     {
-                        info = "In front of you is the boss of the dungeon. Do you attack?";
+                        info = "There is a dungeon boss. ItÅfs a hostile golem. Will you attack him?";
                     }
                 }
                 else if (actor.TryGetComponent(out Treasure treasure))
@@ -218,6 +218,10 @@ namespace Game
                 else if (actor.ID == nameof(Lever))
                 {
                     info = "There's a lever. To activate the mechanism, select Scavenge.";
+                }
+                else if (actor.ID == nameof(TreasureChestKey))
+                {
+                    info = "There is a key to the treasure chest. You can get it when you scavenge.";
                 }
                 else if (cell.TerrainEffect == TerrainEffect.Flaming)
                 {

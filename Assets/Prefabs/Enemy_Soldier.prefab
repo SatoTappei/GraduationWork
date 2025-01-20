@@ -258,7 +258,6 @@ MonoBehaviour:
   _animationLength: 2
   _rotateSpeed: 4
   _damage: 15
-  _weapon: "\u30D1\u30F3\u30C1"
 --- !u!114 &3665510371277697486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,6 +276,8 @@ MonoBehaviour:
   - {fileID: 329472247351218619}
   - {fileID: 6497050173196292920}
   - {fileID: 8943146809869587465}
+  _dropItems:
+  - {fileID: 3839810541560168834, guid: b9a3163dbe165b044bf6f2c0febac74f, type: 3}
 --- !u!114 &5077377063395248268
 MonoBehaviour:
   m_ObjectHideFlags: 0

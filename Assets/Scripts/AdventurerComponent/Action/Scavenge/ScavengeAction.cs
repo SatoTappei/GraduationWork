@@ -29,8 +29,10 @@ namespace Game
             const float RotateSpeed = 4.0f;
             const float PlayTime = 2.0f;
 
-            // 漁る際は宝箱を優先する。
-            if (TryGetTarget<Treasure>(out Actor target) || TryGetTarget<IScavengeable>(out target)) { }
+            // 漁る際の優先度は 鍵->宝箱->その他 の順。
+            if (TryGetTarget<TreasureChestKey>(out Actor target) || 
+                TryGetTarget<Treasure>(out target) || 
+                TryGetTarget<IScavengeable>(out target)) { }
 
             // 周囲に漁るものが無い場合。
             if (target == null)

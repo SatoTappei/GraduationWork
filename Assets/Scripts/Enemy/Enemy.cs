@@ -40,6 +40,15 @@ namespace Game
             UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
         }
 
+        void Update()
+        {
+            Debug.Log("敵ドロップテスト");
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                GetComponent<IDamageable>().Damage(1000, Coords);
+            }
+        }
+
         public void Initialize(Vector2Int coords)
         {
             _status = new EnemyComponent.Status();
