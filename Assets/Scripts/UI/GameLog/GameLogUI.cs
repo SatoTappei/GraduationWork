@@ -1,67 +1,133 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace Game
 {
-    public enum GameLogColor { White, Red, Yellow, Green, Blue }
-
     public class GameLogUI : MonoBehaviour
     {
-        [SerializeField] Text _label;
-        [SerializeField] Text _value;
-        [SerializeField] float _startX;
-        [SerializeField] float _goalX;
-
-        bool _isPlaying;
-
-        public void Set(string label, string value, GameLogColor color = GameLogColor.White)
+        class Content
         {
-            _label.text = label;
-            _label.color = ConvertToColor(color);
-            _value.text = value;
-            _value.color = ConvertToColor(color);
-
-            if (_isPlaying) return;
-
-            StartCoroutine(PlaySlideAnimationAsync());
+            public string Label;
+            public string Value;
+            public LogColor Color;
         }
 
-        IEnumerator PlaySlideAnimationAsync()
+        [SerializeField] Row[] _rows;
+        [SerializeField] Vector2 _position;
+        [SerializeField] float _height = 33.0f;
+
+        Queue<Row> _pool;
+        List<Row> _used;
+        Queue<Content> _buffer;
+
+        bool _isAnimationPlaying;
+
+        void Awake()
         {
-            const float Speed = 5.0f;
+            _pool = new Queue<Row>();
+            _used = new List<Row>();
+            _buffer = new Queue<Content>();
 
-            _isPlaying = true;
-
-            Transform label = _label.transform;
-            Transform value = _value.transform;
-            for (float t = 0; t <= 1.0f; t += Time.deltaTime * Speed)
+            foreach (Row ui in _rows)
             {
-                float x = Mathf.Lerp(_startX, _goalX, Easing(t));
-                label.localPosition = new Vector3(x, label.localPosition.y, label.localPosition.z);
-                value.localPosition = new Vector3(x, value.localPosition.y, value.localPosition.z);
+                _pool.Enqueue(ui);
+                ui.Set(string.Empty, string.Empty);
+            }
+        }
 
-                yield return null;
+        void Start()
+        {
+            StartCoroutine(PlayAnimationRepeatingAsync());
+            StartCoroutine(DisplayBufferdRepeatingAsync());
+        }
+
+        public void Add(string label, string value, LogColor color)
+        {
+            _buffer.Enqueue(new Content() { Label = label, Value = value, Color = color });
+        }
+
+        IEnumerator DisplayBufferdRepeatingAsync()
+        {
+            WaitForSeconds waitInterval = null;
+            while (true)
+            {
+                if (_buffer.TryPeek(out Content content) && TryDisplay(content)) _buffer.Dequeue();
+
+                // 毎フレームバッファをチェックせずとも十分。時間は適当に指定。
+                yield return waitInterval ??= new WaitForSeconds(0.1f);
+            }
+        }
+
+        bool TryDisplay(Content content)
+        {
+            if (_isAnimationPlaying) return false;
+
+            if (_pool.TryDequeue(out Row ui))
+            {
+                ui.transform.localPosition = (Vector3)_position + Vector3.up * _height * _used.Count;
+                ui.Set(content.Label, content.Value, content.Color);
+
+                _used.Add(ui);
+
+                return true;
             }
 
-            label.localPosition = new Vector3(_goalX, label.localPosition.y, label.localPosition.z);
-            value.localPosition = new Vector3(_goalX, value.localPosition.y, value.localPosition.z);
-
-            _isPlaying = false;
+            return false;
         }
 
-        static Color ConvertToColor(GameLogColor color)
+        IEnumerator PlayAnimationRepeatingAsync()
         {
-            string htmlColor = "#FFFFFF";
-            if (color == GameLogColor.White) htmlColor = "#FFFFFF";
-            else if (color == GameLogColor.Red) htmlColor = "#FF5555";
-            else if (color == GameLogColor.Green) htmlColor = "#55FF55";
-            else if (color == GameLogColor.Yellow) htmlColor = "#FFFF55";
-            else if (color == GameLogColor.Blue) htmlColor = "#5555FF";
+            WaitForSeconds waitInterval = null;
+            WaitUntil waitDisplay = null;
+            while (true)
+            {
+                // 1つ以上ログが表示されるまで待つ。
+                yield return waitDisplay ??= new WaitUntil(() => _used.Count > 0);
 
-            ColorUtility.TryParseHtmlString(htmlColor, out Color result);
-            return result;
+                // 次のログが流れるまで少し待つ。時間は適当に指定。
+                yield return waitInterval ??= new WaitForSeconds(2.0f);
+
+                _isAnimationPlaying = true;
+                yield return TranslateRowsAsync();
+                _isAnimationPlaying = false;
+            }
+        }
+
+        IEnumerator TranslateRowsAsync()
+        {
+            if (_used.Count == 0)
+            {
+                yield return null;
+                yield break;
+            }
+
+            // 同時に動かすので1つだけ待つ。
+            Coroutine coroutine = null;
+            for (int i = 0; i < _used.Count; i++)
+            {
+                coroutine = StartCoroutine(LocalTranslateAsync(_used[i].transform));
+            }
+
+            yield return coroutine;
+
+            // プールに戻す。
+            Row ui = _used[0];
+            _used.RemoveAt(0);
+            _pool.Enqueue(ui);
+        }
+
+        IEnumerator LocalTranslateAsync(Transform transform)
+        {
+            const float Speed = 1.0f;
+
+            Vector3 start = transform.localPosition;
+            Vector3 goal = start + Vector3.down * _height;
+            for (float t = 0; t <= 1.0f; t += Time.deltaTime * Speed)
+            {
+                transform.localPosition = Vector3.Lerp(start, goal, Easing(t));
+                yield return null;
+            }
         }
 
         static float Easing(float t)

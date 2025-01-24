@@ -37,8 +37,9 @@ namespace Game
 
                 GameLog.Add(
                     "システム",
-                    $"{_adventurer.AdventurerSheet.DisplayName}は気が狂った。",
-                    GameLogColor.White
+                    $"気が狂った。",
+                    LogColor.White,
+                    _adventurer.AdventurerSheet.Number
                 );
             }
         }

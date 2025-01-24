@@ -73,11 +73,7 @@ namespace Game
                 if (data.GetIntData("Emotion") > 0) _powerUp.Execute();
                 else if (data.GetIntData("Emotion") < 0) _madness.Execute();
 
-                GameLog.Add(
-                    "おうえんコメント", 
-                    data.GetStringData("Message"), 
-                    GameLogColor.Green
-                );
+                Debug.Log($"応援コメント: {data.GetStringData("Message")}");
             }
         }
     }

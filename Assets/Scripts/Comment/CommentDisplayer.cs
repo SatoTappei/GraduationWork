@@ -36,7 +36,7 @@ namespace Game
             // ログに追加。
             foreach (CommentData data in comment)
             {
-                GameLog.Add($"{data.Name}へのコメント", data.Comment, GameLogColor.Green);
+                Debug.Log($"コメント来た。{data.Name}{data.Comment}");
             }
 
             return comment;

@@ -51,11 +51,11 @@ namespace Game
             }
 
             // ログに表示。
-            Adventurer adventurer = GetComponent<Adventurer>();
             GameLog.Add(
                 "システム", 
-                $"{adventurer.AdventurerSheet.DisplayName}は力尽きた。", 
-                GameLogColor.Red
+                $"力尽きた…", 
+                LogColor.Red,
+                _adventurer.AdventurerSheet.Number
             );
 
             // イベントを送信。

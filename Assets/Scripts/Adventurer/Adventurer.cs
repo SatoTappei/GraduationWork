@@ -175,8 +175,9 @@ namespace Game
                     {
                         GameLog.Add(
                             "システム",
-                            $"{_adventurerSheet.DisplayName}はお腹がすいてきた。", 
-                            GameLogColor.White
+                            $"お腹がすいてきた。", 
+                            LogColor.White,
+                            _adventurerSheet.Number
                         );
                     }
 
@@ -318,16 +319,18 @@ namespace Game
                     {
                         GameLog.Add(
                             $"システム",
-                            $"{AdventurerSheet.DisplayName}が「{_subGoal.GetCurrent().Description.Japanese}」を達成。",
-                            GameLogColor.White
+                            $"{_subGoal.GetCurrent().Description.Japanese}を達成。",
+                            LogColor.White,
+                            _adventurerSheet.Number
                         );
                     }
                     else if (_subGoal.GetCurrent().Check() == SubGoal.State.Failed)
                     {
                         GameLog.Add(
                             $"システム",
-                            $"{AdventurerSheet.DisplayName}が「{_subGoal.GetCurrent().Description.Japanese}」を諦めた。",
-                            GameLogColor.White
+                            $"{_subGoal.GetCurrent().Description.Japanese}を諦めた。",
+                            LogColor.White,
+                            _adventurerSheet.Number
                         );
                     }
                     else

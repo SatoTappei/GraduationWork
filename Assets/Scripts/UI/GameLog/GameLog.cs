@@ -6,144 +6,43 @@ namespace Game
 {
     public class GameLog : MonoBehaviour
     {
-        struct LogContent
-        {
-            public string Label;
-            public string Value;
-            public GameLogColor Color;
-        }
-
         static GameLog _instance;
 
-        [SerializeField] GameLogUI[] _rows;
-        [SerializeField] Vector3 _position;
-        [SerializeField] float _height = 120.0f;
-
-        Queue<GameLogUI> _pool;
-        List<GameLogUI> _used;
-        Queue<LogContent> _buffer;
-
-        bool _isAnimationPlaying;
+        [SerializeField] GameLogUI[] _gameLogUI;
 
         void Awake()
         {
             if (_instance == null) _instance = this;
             else Destroy(this);
-
-            _pool = new Queue<GameLogUI>();
-            _used = new List<GameLogUI>();
-            _buffer = new Queue<LogContent>();
-
-            foreach (GameLogUI ui in _rows)
-            {
-                _pool.Enqueue(ui);
-                ui.Set(string.Empty, string.Empty);
-            }
-        }
-
-        void Start()
-        {
-            StartCoroutine(PlayAnimationRepeatingAsync());
-            StartCoroutine(DisplayBufferdRepeatingAsync());
         }
 
         void OnDestroy()
         {
-            if (_instance = this) _instance = null;
+            if (_instance == this) _instance = null;
         }
 
-        public static void Add(string label, string value, GameLogColor color)
+        // 4•ªŠ„‚µ‚½‰æ–Ê‚Ì”Ô†‚ğ0~3‚Åw’èB‚±‚Ì”Ô†‚Í–`Œ¯Ò¶¬‚ÉŠ„‚è“–‚Ä‚ç‚ê‚Ä‚¢‚éB
+        // w’è‚µ‚È‚¢ê‡‚Ì-1‚Í‘S‚Ä‚Ì‰æ–Ê‚Å•\¦‚³‚ê‚éB
+        public static void Add(string label, string value, LogColor color, int id = -1)
         {
-            _instance._buffer.Enqueue(new LogContent() { Label = label, Value = value, Color = color });
-        }
-
-        IEnumerator DisplayBufferdRepeatingAsync()
-        {
-            WaitForSeconds waitInterval = null;
-            while (true)
+            if (id == -1)
             {
-                if (_buffer.TryPeek(out LogContent content) && TryDisplay(content)) _buffer.Dequeue();
+                foreach (GameLogUI ui in _instance._gameLogUI)
+                {
+                    ui.Add(label, value, color);
+                }
 
-                // æ¯ãƒ•ãƒ¬ãƒ¼ãƒ ãƒãƒƒãƒ•ã‚¡ã‚’ãƒã‚§ãƒƒã‚¯ã›ãšã¨ã‚‚ååˆ†ã€‚æ™‚é–“ã¯é©å½“ã«æŒ‡å®šã€‚
-                yield return waitInterval ??= new WaitForSeconds(0.1f);
-            }
-        }
-
-        bool TryDisplay(LogContent content)
-        {
-            if (_isAnimationPlaying) return false;
-
-            if (_pool.TryDequeue(out GameLogUI ui))
-            {
-                ui.transform.localPosition = _position + Vector3.up * _height * _used.Count;
-                ui.Set(content.Label, content.Value, content.Color);
-
-                _used.Add(ui);
-
-                return true;
+                return;
             }
 
-            return false;
-        }
-
-        IEnumerator PlayAnimationRepeatingAsync()
-        {
-            WaitForSeconds waitInterval = null;
-            WaitUntil waitDisplay = null;
-            while (true)
+            // –`Œ¯Ò‚Ì”Ô†‚É‘Î‰‚·‚éUI‚ª‚ ‚é‚©ƒ`ƒFƒbƒNB
+            if (id < 0 || _instance._gameLogUI.Length <= id)
             {
-                // 1ã¤ä»¥ä¸Šãƒ­ã‚°ãŒè¡¨ç¤ºã•ã‚Œã‚‹ã¾ã§å¾…ã¤ã€‚
-                yield return waitDisplay ??= new WaitUntil(() => _used.Count > 0);
-
-                // æ¬¡ã®ãƒ­ã‚°ãŒæµã‚Œã‚‹ã¾ã§å°‘ã—å¾…ã¤ã€‚æ™‚é–“ã¯é©å½“ã«æŒ‡å®šã€‚
-                yield return waitInterval ??= new WaitForSeconds(2.0f);
-
-                _isAnimationPlaying = true;
-                yield return TranslateRowsAsync();
-                _isAnimationPlaying = false;
-            }
-        }
-
-        IEnumerator TranslateRowsAsync()
-        {
-            if (_used.Count == 0)
-            {
-                yield return null;
-                yield break;
+                Debug.LogWarning($"”Ô†‚É‘Î‰‚·‚éUI‚ª–³‚¢B{id}");
+                return;
             }
 
-            // åŒæ™‚ã«å‹•ã‹ã™ã®ã§1ã¤ã ã‘å¾…ã¤ã€‚
-            Coroutine coroutine = null;
-            for (int i = 0; i < _used.Count; i++)
-            {
-                coroutine = StartCoroutine(LocalTranslateAsync(_used[i].transform));
-            }
-
-            yield return coroutine;
-
-            // ãƒ—ãƒ¼ãƒ«ã«æˆ»ã™ã€‚
-            GameLogUI ui = _used[0];
-            _used.RemoveAt(0);
-            _pool.Enqueue(ui);
-        }
-
-        IEnumerator LocalTranslateAsync(Transform transform)
-        {
-            const float Speed = 1.0f;
-
-            Vector3 start = transform.localPosition;
-            Vector3 goal = start + Vector3.down * _height;
-            for (float t = 0; t <= 1.0f; t += Time.deltaTime * Speed)
-            {
-                transform.localPosition = Vector3.Lerp(start, goal, Easing(t));
-                yield return null;
-            }
-        }
-
-        static float Easing(float t)
-        {
-            float x = 1.0f - t;
-            return 1 - x * x * x * x * x;
+            _instance._gameLogUI[id].Add(label, value, color);
         }
     }
 }

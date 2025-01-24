@@ -42,8 +42,9 @@ namespace Game
             TryGetComponent(out Adventurer adventurer);
             GameLog.Add(
                 $"システム", 
-                $"{adventurer.AdventurerSheet.DisplayName}がダンジョンから脱出した。", 
-                GameLogColor.Yellow
+                $"ダンジョンから脱出した！", 
+                LogColor.Yellow,
+                adventurer.AdventurerSheet.Number
             );
 
             // 演出の終了を待つ。

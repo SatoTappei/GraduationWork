@@ -71,16 +71,18 @@ namespace Game
                 {
                     GameLog.Add(
                         "システム",
-                        $"{_adventurer.AdventurerSheet.DisplayName}が{foundItem.Name.Japanese}を入手！",
-                        GameLogColor.Yellow
+                        $"{foundItem.Name.Japanese}を入手！",
+                        LogColor.Yellow,
+                        _adventurer.AdventurerSheet.Number
                     );
                 }
                 else if(foundItem != null)
                 {
                     GameLog.Add(
                         "システム",
-                        $"{_adventurer.AdventurerSheet.DisplayName}が{foundItem.Name.Japanese}を入手。",
-                        GameLogColor.White
+                        $"{foundItem.Name.Japanese}を入手。",
+                        LogColor.White,
+                        _adventurer.AdventurerSheet.Number
                     );
                 }
             }
@@ -92,8 +94,9 @@ namespace Game
             {
                 GameLog.Add(
                     "システム",
-                    $"{_adventurer.AdventurerSheet.DisplayName}は宝箱の鍵を持っていない…。",
-                    GameLogColor.White
+                    $"宝箱の鍵を持っていない。",
+                    LogColor.White,
+                    _adventurer.AdventurerSheet.Number
                 );
             }
             else

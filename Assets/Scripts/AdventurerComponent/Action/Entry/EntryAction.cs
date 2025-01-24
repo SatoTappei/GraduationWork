@@ -30,8 +30,9 @@ namespace Game
             TryGetComponent(out Adventurer adventurer);
             GameLog.Add(
                 $"システム", 
-                $"{adventurer.AdventurerSheet.DisplayName}がダンジョンにやってきた。", 
-                GameLogColor.White
+                $"ダンジョンにやってきた。", 
+                LogColor.White,
+                adventurer.AdventurerSheet.Number
             );
         }
     }

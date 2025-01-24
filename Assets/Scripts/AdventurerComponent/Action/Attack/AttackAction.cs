@@ -67,8 +67,9 @@ namespace Game
 
                 GameLog.Add(
                     $"ƒVƒXƒeƒ€", 
-                    $"{_adventurer.AdventurerSheet.DisplayName}‚ª“G‚ğ“|‚µ‚½B",
-                    GameLogColor.White
+                    $"“G‚ğ“|‚µ‚½B",
+                    LogColor.White,
+                    _adventurer.AdventurerSheet.Number
                 );
 
                 _adventurer.Status.DefeatCount++;

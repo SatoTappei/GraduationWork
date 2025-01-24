@@ -30,9 +30,6 @@ namespace Game
                 // 目標の頭上に生成する。高さは適当。
                 effect.Play(placeCell.Position + Vector3.up * 3.0f, target);
             }
-
-            // イベント実行をログに表示。
-            GameLog.Add("システム", "何者かが冒険者にいたずらした。", GameLogColor.Green);
         }
     }
 }

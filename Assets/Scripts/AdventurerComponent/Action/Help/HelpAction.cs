@@ -1,7 +1,6 @@
 using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
-using System.Numerics;
 using System.Threading;
 using UnityEngine;
 
@@ -22,12 +21,13 @@ namespace Game
 
             GameLog.Add(
                 "システム",
-                $"{_adventurer.AdventurerSheet.DisplayName}は状況を整理した。",
-                GameLogColor.White
+                $"状況を整理した。",
+                LogColor.White,
+                _adventurer.AdventurerSheet.Number
             );
 
             // アニメーション等の演出を待つ処理。
-            await UniTask.Yield();
+            await UniTask.Yield(cancellationToken: token);
 
             return new ActionResult(
                 "Help",

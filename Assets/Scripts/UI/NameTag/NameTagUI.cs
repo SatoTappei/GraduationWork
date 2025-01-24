@@ -30,9 +30,11 @@ namespace Game
         {
             foreach (Data data in _registered.Values)
             {
-                Vector3 p = RectTransformUtility.WorldToScreenPoint(_camera, data.Follow.position);
-                data.Tag.position = p + _offset;
+                // 冒険者の頭上に表示名のUIを追従させる。
+                Vector3 position = RectTransformUtility.WorldToScreenPoint(_camera, data.Follow.position);
+                data.Tag.position = position + _offset;
 
+                // 画面を4分割しているので、範囲外に出た場合は表示しないようにする。
                 float x = data.Tag.localPosition.x;
                 float y = data.Tag.localPosition.y;
                 if(_buttonLeft.x < x && x < _topRight.x && _buttonLeft.y < y && y < _topRight.y)
@@ -59,7 +61,7 @@ namespace Game
 
         public void Remove(Adventurer adventurer)
         {
-            var key = adventurer.GetInstanceID();
+            int key = adventurer.GetInstanceID();
             if (_registered.ContainsKey(key))
             {
                 Destroy(_registered[key].Tag.gameObject);

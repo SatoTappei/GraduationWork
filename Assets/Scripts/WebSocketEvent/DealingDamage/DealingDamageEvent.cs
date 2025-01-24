@@ -39,9 +39,6 @@ namespace Game
                 // 壁の上に生成する。
                 effect.Play(placeCell.Position + Vector3.up, target);
             }
-
-            // イベント実行をログに表示。
-            GameLog.Add("システム", "何者かが冒険者を砲撃した。", GameLogColor.Green);
         }
 
         // 目標とある程度離れた座標を返す。

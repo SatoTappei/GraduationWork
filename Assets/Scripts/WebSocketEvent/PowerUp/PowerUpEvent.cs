@@ -24,9 +24,6 @@ namespace Game
                     buff.Set("Speed", 2.0f);
                 }
             }
-
-            // イベント実行をログに表示。
-            GameLog.Add("システム", "何者かが冒険者を強化した。", GameLogColor.Green);
         }
     }
 }

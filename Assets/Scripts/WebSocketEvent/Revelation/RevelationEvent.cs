@@ -61,9 +61,6 @@ namespace Game
                 }
             }
 
-            // イベント実行をログに表示
-            GameLog.Add("システム", "何者かが冒険者に知恵を授けた。", GameLogColor.Green);
-
             _isRunning = false;
         }
     }

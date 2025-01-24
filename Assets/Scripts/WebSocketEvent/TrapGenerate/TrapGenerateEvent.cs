@@ -41,9 +41,6 @@ namespace Game
 
                 break;
             }
-
-            // イベント実行をログに表示。
-            GameLog.Add("システム", "何者かが罠を設置した。", GameLogColor.Green);
         }
 
         // イベントの候補となる座標を描画する。
