@@ -22,8 +22,9 @@ namespace Game
         
         StatusBarBinder _statusBar;
         ProfileWindowBinder _profileWindow;
-        CameraFocusBinder _cameraFocus;
-        
+        CameraFocusBinder _camera;
+        NameTagBinder _nameTag;
+
         EntryAction _entry;
         DirectionMoveAction _directionMove;
         TargetMoveAction _targetMove;
@@ -43,7 +44,7 @@ namespace Game
         HungryStatusEffect _hungry;
         AdventureResultReporter _result;
         StatusEffect[] _statusEffects;
-        CommentDisplayer _comment;       
+        CommentDisplayer _comment;
 
         public AdventurerSheet AdventurerSheet => _adventurerSheet;
         public Status Status => _status;
@@ -62,7 +63,8 @@ namespace Game
             _talkTheme = GetComponent<TalkThemeSelector>();
             _statusBar = GetComponent<StatusBarBinder>();
             _profileWindow = GetComponent<ProfileWindowBinder>();
-            _cameraFocus = GetComponent<CameraFocusBinder>();
+            _camera = GetComponent<CameraFocusBinder>();
+            _nameTag = GetComponent<NameTagBinder>();
             _entry = GetComponent<EntryAction>();
             _directionMove = GetComponent<DirectionMoveAction>();
             _targetMove = GetComponent<TargetMoveAction>();
@@ -138,13 +140,8 @@ namespace Game
             // 各UIに自身を登録。
             _statusBar.Register();
             _profileWindow.Register();
-            _cameraFocus.Register();
-            
-            // キャラクターの頭上に表示されるネームタグの表示名を反映。
-            if (this.TryGetComponentInChildren(out NameTag nameTag))
-            {
-                nameTag.SetName(AdventurerSheet.DisplayName);
-            }
+            _camera.Register();
+            _nameTag.Register();
 
             // 登場時の演出。台詞を表示させるので、UIに自身を登録した後に呼ぶ。
             _entry.Play();

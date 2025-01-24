@@ -36,7 +36,18 @@ namespace Game
             int spawnedCount = Mathf.Min(profiles.Count, count);
             for (int i = 0; i < spawnedCount;)
             {
-                if (IsCellEmpty()) Spawn(profiles[i++]);
+                if (IsCellEmpty())
+                {
+                    // 冒険者側に自身のプロフィールとコメント、アバターの情報を渡して初期化する。
+                    AvatarData avatarData = _avatarCustomizer.GetData(profiles[i]);
+                    AdventurerSheet adventurerSheet = new AdventurerSheet(i, profiles[i], avatarData);
+                    Adventurer adventurer = Instantiate(avatarData.Prefab);
+                    adventurer.Initialize(adventurerSheet);
+
+                    _spawned.Add(adventurer);
+
+                    i++;
+                }
 
                 await UniTask.WaitForSeconds(1.0f, cancellationToken: token); // 適当な秒数。
             }
@@ -52,17 +63,6 @@ namespace Game
             }
 
             return true;
-        }
-
-        void Spawn(AdventurerData profile)
-        {
-            // 冒険者側に自身のプロフィールとコメント、アバターの情報を渡して初期化する。
-            AvatarData avatarData = _avatarCustomizer.GetData(profile);
-            AdventurerSheet adventurerSheet = new AdventurerSheet(profile, avatarData);
-            Adventurer adventurer = Instantiate(avatarData.Prefab);
-            adventurer.Initialize(adventurerSheet);
-
-            _spawned.Add(adventurer);
         }
     }
 }

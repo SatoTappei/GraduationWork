@@ -6,13 +6,15 @@ namespace Game
 {
     public class CameraFocusBinder : MonoBehaviour
     {
-        CameraFocus _cameraFocus;
+        Adventurer _adventurer;
+        CameraManager _cameraManager;
         int _id;
         bool _isRegisterd;
 
         void Awake()
         {
-            _cameraFocus = CameraFocus.Find();
+            _adventurer = GetComponent<Adventurer>();
+            _cameraManager = CameraManager.Find();
         }
 
         public void Register()
@@ -24,15 +26,15 @@ namespace Game
             else
             {
                 _isRegisterd = true;
-                _id = _cameraFocus.RegisterTarget(gameObject);
+                _id = _cameraManager.RegisterTarget(_adventurer);
             }
         }
 
         void OnDestroy()
         {
-            if (_cameraFocus != null)
+            if (_cameraManager != null)
             {
-                _cameraFocus.DeleteTarget(_id);
+                _cameraManager.DeleteTarget(_id);
             }
         }
     }

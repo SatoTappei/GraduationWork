@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game
+namespace Game.Unused
 {
     public class FreeMovableCamera : MonoBehaviour
     {
@@ -25,7 +25,8 @@ namespace Game
 
         public static FreeMovableCamera Find()
         {
-            return GameObject.FindGameObjectWithTag("BirdsEyeViewCamera").GetComponent<FreeMovableCamera>();
+            // É^ÉOÇ™ñ≥Ç¢ÅB
+            return FindAnyObjectByType<FreeMovableCamera>();
         }
 
         public void SetPosition(Vector3 position)

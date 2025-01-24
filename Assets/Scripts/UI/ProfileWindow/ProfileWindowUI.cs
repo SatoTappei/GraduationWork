@@ -101,21 +101,25 @@ namespace Game
             {
                 for (int i = 0; i < Max; i++)
                 {
-                    _item.text += "--\n";
+                    _item.text += "--、";
                 }
+
+                _item.text = _item.text.TrimEnd('、');
             }
             else
             {
                 foreach (ItemEntry e in items.Take(Max))
                 {
-                    _item.text += $"{e.Name}\n";
+                    _item.text += $"{e.Name}、";
                 }
 
                 int emptyCount = Max - items.Count();
                 for (int i = 0; i < emptyCount; i++)
                 {
-                    _item.text += "--\n";
+                    _item.text += "--、";
                 }
+
+                _item.text = _item.text.TrimEnd('、');
             }
         }
 
@@ -130,21 +134,25 @@ namespace Game
             {
                 for (int i = 0; i < Max; i++)
                 {
-                    _effect.text += "--\n";
+                    _effect.text += "--、";
                 }
+
+                _effect.text = _effect.text.TrimEnd('、');
             }
             else
             {
                 foreach (string e in effects)
                 {
-                    _effect.text += $"{e}\n";
+                    _effect.text += $"{e}、";
                 }
 
                 int emptyCount = Max - effects.Count();
                 for (int i = 0; i < emptyCount; i++)
                 {
-                    _effect.text += "--\n";
+                    _effect.text += "--、";
                 }
+
+                _effect.text = _effect.text.TrimEnd('、');
             }
         }
 

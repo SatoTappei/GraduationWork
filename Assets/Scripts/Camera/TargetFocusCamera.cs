@@ -9,40 +9,46 @@ namespace Game
     {
         CinemachineVirtualCamera _vcam;
         CinemachineFramingTransposer _transposer;
-        AdventurerSpawner _spawner;
+
+        AudioListener _audio;
+        Coroutine _focus;
 
         void Awake()
         {
             _vcam = GetComponent<CinemachineVirtualCamera>();
             _transposer = _vcam.GetCinemachineComponent<CinemachineFramingTransposer>();
-            _spawner = AdventurerSpawner.Find();
+
+            GameObject follow = new GameObject($"{name}_Follow");
+            _vcam.Follow = follow.transform;
+            // 位置をダンジョンの出入り口にしておく。
+            follow.transform.position = new Vector3(11, 0, 8);
+            // カメラがフォーカスしている対象を中心に音を拾ってほしいので、
+            // AudioListenerをアタッチしたFollowを対象に追従させる。
+            _audio = follow.AddComponent<AudioListener>();
+            // AudioListenerが複数あると警告が出るので、初期状態では無効にしておく。
+            _audio.enabled = false;
         }
 
-        void Start()
+        public void SetTarget(Adventurer target)
         {
-            StartCoroutine(UpdateAsync());
+            _focus = StartCoroutine(FocusRepeatingAsync(target));
         }
 
-        public static TargetFocusCamera Find()
+        public void DeleteTarget()
         {
-            return GameObject.FindGameObjectWithTag("BirdsEyeViewCamera").GetComponent<TargetFocusCamera>();
+            if (_focus != null) StopCoroutine(_focus);
         }
 
-        IEnumerator UpdateAsync()
+        public void EnableAudio(bool value)
+        {
+            _audio.enabled = value;
+        }
+
+        IEnumerator FocusRepeatingAsync(Adventurer target)
         {
             while (true)
             {
-                if (0 < _spawner.Spawned.Count)
-                {
-                    // 一定間隔でランダムな冒険者をフォーカスする。
-                    int random = Random.Range(0, _spawner.Spawned.Count);
-                    Adventurer target = _spawner.Spawned[random];
-                    yield return FocusAsync(target);
-                }
-                else
-                {
-                    yield return null;
-                }
+                yield return FocusAsync(target);
             }
         }
 

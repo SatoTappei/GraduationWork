@@ -9,7 +9,7 @@ TagManager:
   - CommentDisplayer
   - AdventurerSpawner
   - GameManager
-  - BirdsEyeViewCamera
+  - CameraManager
   layers:
   - Default
   - TransparentFX
@@ -17,10 +17,10 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
-  - 
-  - 
+  - Camera1
+  - Camera2
+  - Camera3
+  - Camera4
   - 
   - 
   - 
