@@ -14,7 +14,7 @@ namespace Game
         void Awake()
         {
             _description = new BilingualString(
-                "ダンジョンのボスを倒す。", 
+                "ダンジョンのボスを倒す", 
                 "Defeat boss enemies roaming in the dungeon."
             );
             _adventurer = GetComponent<Adventurer>();

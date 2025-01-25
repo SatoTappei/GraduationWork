@@ -319,7 +319,7 @@ namespace Game
                     {
                         GameLog.Add(
                             $"システム",
-                            $"{_subGoal.GetCurrent().Description.Japanese}を達成。",
+                            $"「{_subGoal.GetCurrent().Description.Japanese}」を達成。",
                             LogColor.White,
                             _adventurerSheet.Number
                         );
@@ -328,7 +328,7 @@ namespace Game
                     {
                         GameLog.Add(
                             $"システム",
-                            $"{_subGoal.GetCurrent().Description.Japanese}を諦めた。",
+                            $"「{_subGoal.GetCurrent().Description.Japanese}」を諦めた。",
                             LogColor.White,
                             _adventurerSheet.Number
                         );

@@ -14,7 +14,7 @@ namespace Game
         void Awake()
         {
             _description = new BilingualString(
-                "ˆË—Š‚³‚ê‚½“G‚ğ“|‚·B", 
+                "ˆË—Š‚³‚ê‚½“G‚ğ“|‚·", 
                 "Defeat requested enemies roaming in the dungeon."
             );
             _adventurer = GetComponent<Adventurer>();

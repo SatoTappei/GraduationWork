@@ -9,25 +9,16 @@ namespace Game
 
     public class Row : MonoBehaviour
     {
-        [SerializeField] Text _value;
-        [SerializeField] float _startX;
-        [SerializeField] float _goalX;
+        [SerializeField] Text _text;
+        [SerializeField] Vector2 _start;
+        [SerializeField] Vector2 _goal;
 
         bool _isPlaying;
 
         public void Set(string label, string value, LogColor color = LogColor.White)
         {
-            const int MaxLength = 20;
-
-            // 長い文字列の場合はカット。見栄えが悪いので三点リーダーを付けておく。
-            if (value.Length > MaxLength)
-            {
-                value = value.Substring(0, MaxLength);
-                value += "…";
-            }
-
-            _value.text = value;
-            _value.color = GetColor(color);
+            _text.text = value;
+            _text.color = GetColor(color);
 
             if (_isPlaying) return;
 
@@ -36,20 +27,20 @@ namespace Game
 
         IEnumerator PlayAnimationAsync()
         {
-            const float Speed = 5.0f;
+            const float Speed = 3.0f;
 
             _isPlaying = true;
 
-            Transform value = _value.transform;
+            Transform text = _text.transform;
             for (float t = 0; t <= 1.0f; t += Time.deltaTime * Speed)
             {
-                float x = Mathf.Lerp(_startX, _goalX, Easing(t));
-                value.localPosition = new Vector3(x, value.localPosition.y, value.localPosition.z);
+                Vector2 p = Vector2.Lerp(_start, _goal, Easing(t));
+                text.localPosition = new Vector3(p.x, p.y, text.localPosition.z);
 
                 yield return null;
             }
 
-            value.localPosition = new Vector3(_goalX, value.localPosition.y, value.localPosition.z);
+            text.localPosition = new Vector3(_goal.x, _goal.y, text.localPosition.z);
 
             _isPlaying = false;
         }

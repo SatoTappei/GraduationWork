@@ -24,8 +24,8 @@ namespace Game
             // サブコールが設定されていない場合。
             if (_subGoalPath.GetCurrent() == null) return false;
 
-            // 現在のサブゴールが「ダンジョンの入口に戻る。」かつ、サブゴールが完了したかチェック。
-            bool isLast = _subGoalPath.GetCurrent().Description.Japanese == "ダンジョンの入口に戻る。";
+            // 現在のサブゴールが「ダンジョンの入口に戻る」かつ、サブゴールが完了したかチェック。
+            bool isLast = _subGoalPath.GetCurrent().Description.Japanese == "ダンジョンの入口に戻る";
             bool isCompleted = _subGoalPath.GetCurrent().Check() == SubGoal.State.Completed;
             if (!(isLast && isCompleted)) return false;
 

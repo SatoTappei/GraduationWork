@@ -32,14 +32,13 @@ namespace Game
             foreach (Row ui in _rows)
             {
                 _pool.Enqueue(ui);
-                ui.Set(string.Empty, string.Empty);
             }
         }
 
         void Start()
         {
-            StartCoroutine(PlayAnimationRepeatingAsync());
-            StartCoroutine(DisplayBufferdRepeatingAsync());
+            StartCoroutine(StreamRepeatingAsync());
+            StartCoroutine(DisplayRepeatingAsync());
         }
 
         public void Add(string label, string value, LogColor color)
@@ -47,36 +46,7 @@ namespace Game
             _buffer.Enqueue(new Content() { Label = label, Value = value, Color = color });
         }
 
-        IEnumerator DisplayBufferdRepeatingAsync()
-        {
-            WaitForSeconds waitInterval = null;
-            while (true)
-            {
-                if (_buffer.TryPeek(out Content content) && TryDisplay(content)) _buffer.Dequeue();
-
-                // 毎フレームバッファをチェックせずとも十分。時間は適当に指定。
-                yield return waitInterval ??= new WaitForSeconds(0.1f);
-            }
-        }
-
-        bool TryDisplay(Content content)
-        {
-            if (_isAnimationPlaying) return false;
-
-            if (_pool.TryDequeue(out Row ui))
-            {
-                ui.transform.localPosition = (Vector3)_position + Vector3.up * _height * _used.Count;
-                ui.Set(content.Label, content.Value, content.Color);
-
-                _used.Add(ui);
-
-                return true;
-            }
-
-            return false;
-        }
-
-        IEnumerator PlayAnimationRepeatingAsync()
+        IEnumerator StreamRepeatingAsync()
         {
             WaitForSeconds waitInterval = null;
             WaitUntil waitDisplay = null;
@@ -106,7 +76,7 @@ namespace Game
             Coroutine coroutine = null;
             for (int i = 0; i < _used.Count; i++)
             {
-                coroutine = StartCoroutine(LocalTranslateAsync(_used[i].transform));
+                coroutine = StartCoroutine(TranslateRowAsync(_used[i].transform));
             }
 
             yield return coroutine;
@@ -117,17 +87,49 @@ namespace Game
             _pool.Enqueue(ui);
         }
 
-        IEnumerator LocalTranslateAsync(Transform transform)
+        IEnumerator TranslateRowAsync(Transform row)
         {
             const float Speed = 1.0f;
 
-            Vector3 start = transform.localPosition;
+            Vector3 start = row.localPosition;
             Vector3 goal = start + Vector3.down * _height;
             for (float t = 0; t <= 1.0f; t += Time.deltaTime * Speed)
             {
-                transform.localPosition = Vector3.Lerp(start, goal, Easing(t));
+                row.localPosition = Vector3.Lerp(start, goal, Easing(t));
                 yield return null;
             }
+        }
+
+        IEnumerator DisplayRepeatingAsync()
+        {
+            WaitForSeconds waitInterval = null;
+            while (true)
+            {
+                if (_buffer.TryPeek(out Content content) && TryDisplay(content))
+                {
+                    _buffer.Dequeue();
+                }
+
+                // 毎フレームバッファをチェックせずとも十分。時間は適当に指定。
+                yield return waitInterval ??= new WaitForSeconds(0.1f);
+            }
+        }
+
+        bool TryDisplay(Content content)
+        {
+            if (_isAnimationPlaying) return false;
+
+            if (_pool.TryDequeue(out Row ui))
+            {
+                ui.transform.localPosition = (Vector3)_position + Vector3.up * _height * _used.Count;
+                ui.Set(content.Label, content.Value, content.Color);
+
+                _used.Add(ui);
+
+                return true;
+            }
+
+            return false;
         }
 
         static float Easing(float t)

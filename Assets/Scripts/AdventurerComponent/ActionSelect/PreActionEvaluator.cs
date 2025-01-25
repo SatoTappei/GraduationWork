@@ -126,14 +126,14 @@ namespace Game
                 _actions.SetScore("MoveWest", -1.0f);
             }
 
-            // 「入口に移動する。」の選択肢。
-            // 現在のサブゴールが「ダンジョンの入口に戻る。」の場合、移動よりスコアが高い。
+            // 「入口に移動する」の選択肢。
+            // 現在のサブゴールが「ダンジョンの入口に戻る」の場合、移動よりスコアが高い。
             // それ以外の時は選択肢から外す。
             if (_subGoalPath.GetCurrent() == null)
             {
                 _actions.SetScore("MoveToEntrance", -1.0f);
             }
-            else if (_subGoalPath.GetCurrent().Description.Japanese == "ダンジョンの入口に戻る。")
+            else if (_subGoalPath.GetCurrent().Description.Japanese == "ダンジョンの入口に戻る")
             {
                 _actions.SetScore("MoveToEntrance", 0.5f);
             }
@@ -142,7 +142,7 @@ namespace Game
                 _actions.SetScore("MoveToEntrance", -1.0f);
             }
 
-            // 「アーティファクトの位置に移動する。」の選択肢。
+            // 「アーティファクトの位置に移動する」の選択肢。
             // アーティファクトが出現している場合は最優先で向かうよう促す。
             if (_artifact.IsEmpty)
             {
@@ -236,7 +236,7 @@ namespace Game
 
             _actions.SetScore("ThrowItem", -1.0f);
 
-            // 投げることが出来るアイテムを持っている場合のみ「アイテムを投げる。」選択肢を選ぶことが出来る。
+            // 投げることが出来るアイテムを持っている場合のみ「アイテムを投げる」選択肢を選ぶことが出来る。
             foreach (IReadOnlyList<Item> items in _item.Get().Values)
             {
                 if (items[0].Usage == Usage.Throw)

@@ -35,7 +35,7 @@ namespace Game
                 new Data()
                 {
                     Interval = 30,
-                    Items = new string[] { "èÖ’e", "‰×•¨", "ƒKƒ‰ƒNƒ^" }
+                    Items = new string[] { "èÖ’e", "ƒKƒ‰ƒNƒ^" }
                 }
             },
             {

@@ -15,7 +15,7 @@ namespace Game
 
         [SerializeField] Camera _camera;
         [SerializeField] Text _textPrefab;
-        [SerializeField] Vector3 _offset;
+        [SerializeField] Vector2 _offset;
         [SerializeField] Vector2 _buttonLeft = new Vector2(20.0f, -520.0f);
         [SerializeField] Vector2 _topRight = new Vector2(940.0f, -20.0f);
 
@@ -32,7 +32,7 @@ namespace Game
             {
                 // 冒険者の頭上に表示名のUIを追従させる。
                 Vector3 position = RectTransformUtility.WorldToScreenPoint(_camera, data.Follow.position);
-                data.Tag.position = position + _offset;
+                data.Tag.position = position + (Vector3)_offset;
 
                 // 画面を4分割しているので、範囲外に出た場合は表示しないようにする。
                 float x = data.Tag.localPosition.x;
@@ -64,13 +64,14 @@ namespace Game
             int key = adventurer.GetInstanceID();
             if (_registered.ContainsKey(key))
             {
-                Destroy(_registered[key].Tag.gameObject);
+                RectTransform tag = _registered[key].Tag;
+                if (tag != null) Destroy(tag.gameObject);
 
                 _registered.Remove(key);
             }
             else
             {
-                Debug.Log($"既に削除済み。{adventurer.AdventurerSheet.DisplayName}");
+                Debug.LogWarning($"既に削除済み。{adventurer.AdventurerSheet.DisplayName}");
             }
         }
     }

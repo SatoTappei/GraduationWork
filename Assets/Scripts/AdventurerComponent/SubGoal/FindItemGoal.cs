@@ -13,7 +13,7 @@ namespace Game
         void Awake()
         {
             _description = new BilingualString(
-                "依頼されたアイテムを手に入れる。", 
+                "依頼されたアイテムを手に入れる", 
                 "Scavenge containers and barrels to obtain items."
             );
             _adventurer = GetComponent<Adventurer>();

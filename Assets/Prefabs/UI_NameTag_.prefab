@@ -91,6 +91,6 @@ MonoBehaviour:
   _camera: {fileID: 0}
   _textPrefab: {fileID: 1787543774681192910, guid: 15a04b0cf84b3a84683e940b9ccaf889,
     type: 3}
-  _offset: {x: 0, y: 0, z: 0}
+  _offset: {x: 0, y: 50}
   _buttonLeft: {x: 20, y: -520}
   _topRight: {x: 940, y: -20}
