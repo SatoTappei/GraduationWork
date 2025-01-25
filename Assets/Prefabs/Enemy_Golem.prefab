@@ -132,7 +132,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -226,7 +226,6 @@ MonoBehaviour:
   _animationLength: 2
   _rotateSpeed: 2
   _damage: 34
-  _weapon: "\u30D1\u30F3\u30C1"
 --- !u!114 &7216057516264772799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -246,6 +245,7 @@ MonoBehaviour:
   - {fileID: 5597757532790291151}
   - {fileID: 7541312405576156078}
   - {fileID: 6090567213694643985}
+  _dropItems: []
 --- !u!114 &5936980147642376256
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -22,11 +22,6 @@ namespace Game
             _vcam.Follow = follow.transform;
             // 位置をダンジョンの出入り口にしておく。
             follow.transform.position = new Vector3(11, 0, 8);
-            // カメラがフォーカスしている対象を中心に音を拾ってほしいので、
-            // AudioListenerをアタッチしたFollowを対象に追従させる。
-            _audio = follow.AddComponent<AudioListener>();
-            // AudioListenerが複数あると警告が出るので、初期状態では無効にしておく。
-            _audio.enabled = false;
         }
 
         public void SetTarget(Adventurer target)

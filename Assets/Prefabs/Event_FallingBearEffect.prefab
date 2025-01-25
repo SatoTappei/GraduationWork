@@ -92,7 +92,7 @@ AudioSource:
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1
+      value: 0
       inSlope: 0
       outSlope: 0
       tangentMode: 0
@@ -147,7 +147,6 @@ MonoBehaviour:
   _bear: {fileID: 5395081389226985663}
   _smokeParticle: {fileID: 276010335866708215}
   _groundHitParticle: {fileID: 7080182983605287147}
-  _smokeEffectSE: {fileID: 0}
 --- !u!1001 &28328868094462622
 PrefabInstance:
   m_ObjectHideFlags: 0

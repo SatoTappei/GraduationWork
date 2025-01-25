@@ -28,9 +28,13 @@ namespace Game
         {
             if (_spawner.Spawned.Count == 0) return;
 
+            // まだダンジョン内にいる冒険者のみを狙う。
+            Adventurer[] alive = _spawner.Spawned.Where(a => !a.IsCompleted).ToArray();
+            if (alive.Length == 0) return;
+
             // ランダムな冒険者に対を選び、狙うことが出来るセルに配置する。
-            int random = Random.Range(0, _spawner.Spawned.Count);
-            Adventurer target = _spawner.Spawned[random];
+            int random = Random.Range(0, alive.Length);
+            Adventurer target = alive[random];
             Vector2Int coords = GetOptimalCoords(target);
             Cell placeCell = DungeonManager.GetCell(coords);
 

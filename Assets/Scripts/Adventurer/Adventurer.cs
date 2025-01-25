@@ -15,6 +15,7 @@ namespace Game
         Vector2Int _direction;
         string _selectedAction;
         bool _isInitialized;
+        bool _isCompleted;
 
         GamePlay _gamePlay;
         RolePlay _rolePlay;
@@ -24,7 +25,7 @@ namespace Game
         ProfileWindowBinder _profileWindow;
         CameraFocusBinder _camera;
         NameTagBinder _nameTag;
-
+        
         EntryAction _entry;
         DirectionMoveAction _directionMove;
         TargetMoveAction _targetMove;
@@ -53,6 +54,7 @@ namespace Game
         public override Vector2Int Coords => _coords;
         public override Vector2Int Direction => _direction;
         public string SelectedAction => _selectedAction;
+        public bool IsCompleted => _isCompleted;
 
         void Awake()
         {
@@ -344,6 +346,9 @@ namespace Game
 
                 await UniTask.Yield(cancellationToken: token);
             }
+
+            // 冒険完了フラグを立てる。
+            _isCompleted = true;
 
             // 冒険結果を送信。
             _result.Send();
