@@ -15,6 +15,7 @@ namespace Game
         PowerUpEvent _powerUp;
         RevelationEvent _revelation;
         TrapGenerateEvent _trapGenerate;
+        GiveItemEvent _giveItem;
 
         AdventurerSpawner _spawner;
 
@@ -29,6 +30,7 @@ namespace Game
             _powerUp = GetComponent<PowerUpEvent>();
             _revelation = GetComponent<RevelationEvent>();
             _trapGenerate = GetComponent<TrapGenerateEvent>();
+            _giveItem = GetComponent<GiveItemEvent>();
             _spawner = AdventurerSpawner.Find();
         }
 
@@ -39,7 +41,7 @@ namespace Game
 
             if (IsButtonClicked(0, "ﾀﾞﾒｰｼﾞ"))
             {
-                _dealingDamage.Execute();
+                _dealingDamage.Execute(1); // ダメージ量は適当。
             }
             else if (IsButtonClicked(1, "ｸﾏｻﾝ"))
             {
@@ -50,7 +52,7 @@ namespace Game
                 if (_spawner.Spawned.Count > 0)
                 {
                     int r = Random.Range(0, _spawner.Spawned.Count);
-                    _heal.Execute(_spawner.Spawned[r].AdventurerSheet.FullName);
+                    _heal.Execute(_spawner.Spawned[r].AdventurerSheet.FullName, 1); // 回復量は適当。
                 }
             }
             else if (IsButtonClicked(3, "ﾍﾘｺﾌﾟﾀｰ"))
@@ -84,16 +86,18 @@ namespace Game
             {
                 _trapGenerate.Execute();
             }
-
-            // デバッグ用。
-            if (IsButtonClicked(9, "AI初期化"))
+            else if (IsButtonClicked(9, "アイテム付与"))
+            {
+                _giveItem.Execute("軽い鍵");
+            }
+            else if (IsButtonClicked(10, "AI初期化"))
             {
                 foreach (Adventurer adventurer in _spawner.Spawned)
                 {
                     if (adventurer != null) adventurer.Reboot();
                 }
             }
-            else if (IsButtonClicked(10, "狂気"))
+            else if (IsButtonClicked(11, "狂気"))
             {
                 foreach (Adventurer adventurer in _spawner.Spawned)
                 {

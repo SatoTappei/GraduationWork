@@ -6,7 +6,6 @@ TagManager:
   tags:
   - DungeonManager
   - UiManager
-  - CommentDisplayer
   - AdventurerSpawner
   - GameManager
   - CameraManager

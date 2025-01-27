@@ -13,7 +13,18 @@ namespace Game
             _spawner = AdventurerSpawner.Find();
         }
 
-        public void Execute(string name)
+        public void Execute(int amount)
+        {
+            foreach (Adventurer adventurer in _spawner.Spawned)
+            {
+                if (adventurer != null)
+                {
+                    Execute(adventurer.AdventurerSheet.FullName, amount);
+                }
+            }
+        }
+
+        public void Execute(string name, int amount)
         {
             foreach (Adventurer adventurer in _spawner.Spawned)
             {
@@ -22,7 +33,7 @@ namespace Game
 
                 if(adventurer.TryGetComponent(out HealReceiver heal))
                 {
-                    heal.Heal(33, default); // 回復量は適当。
+                    heal.Heal(amount, default); // 回復量は適当。
                 }
             }
         }

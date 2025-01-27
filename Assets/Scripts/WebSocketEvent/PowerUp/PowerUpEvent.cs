@@ -17,7 +17,20 @@ namespace Game
         {
             foreach (Adventurer adventurer in _spawner.Spawned)
             {
-                if (adventurer != null && adventurer.TryGetComponent(out BuffStatusEffect buff))
+                if (adventurer == null) continue;
+
+                Execute(adventurer.AdventurerSheet.FullName);
+            }
+        }
+
+        public void Execute(string name)
+        {
+            foreach (Adventurer adventurer in _spawner.Spawned)
+            {
+                if (adventurer == null) continue;
+                else if (adventurer.AdventurerSheet.FullName != name) continue;
+
+                if (adventurer.TryGetComponent(out BuffStatusEffect buff))
                 {
                     // バフ量を適当に設定。基準となる値に倍率をかける。
                     buff.Set("Attack", 1.2f);

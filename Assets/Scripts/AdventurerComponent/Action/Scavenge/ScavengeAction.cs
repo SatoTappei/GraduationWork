@@ -179,7 +179,7 @@ namespace Game
             }
             else if (foundItem.Name.Japanese == "K‚Ñ‚½Œ•")
             {
-                eventData = new EventData(EventDefine.SummonWeapon);
+                eventData = new EventData(EventDefine.PickupItem);
             }
             else if (foundItem.Name.Japanese == "Ø‚ê‚½“d‹…")
             {

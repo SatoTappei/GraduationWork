@@ -103,8 +103,8 @@ namespace Game
             // 敵を倒した場合はイベントを送信。
             if (result == "Defeat")
             {
-                EventData data = new EventData(EventDefine.DefeatBomb);
-                VantanConnect.SendEvent(data);
+                EventData eventData = new EventData(EventDefine.DefeatBomb);
+                VantanConnect.SendEvent(eventData);
             }
 
             return new ActionResult(

@@ -45,7 +45,6 @@ namespace Game
         HungryStatusEffect _hungry;
         AdventureResultReporter _result;
         StatusEffect[] _statusEffects;
-        CommentDisplayer _comment;
 
         public AdventurerSheet AdventurerSheet => _adventurerSheet;
         public Status Status => _status;
@@ -84,7 +83,6 @@ namespace Game
             _hungry = GetComponent<HungryStatusEffect>();
             _result = GetComponent<AdventureResultReporter>();
             _statusEffects = GetComponents<StatusEffect>();
-            _comment = CommentDisplayer.Find();
         }
 
         void Start()
@@ -147,15 +145,6 @@ namespace Game
 
             // 登場時の演出。台詞を表示させるので、UIに自身を登録した後に呼ぶ。
             _entry.Play();
-
-            // コメントを流し、心情の値を変化させる。
-            IReadOnlyCollection<CommentData> comment = _comment.Display(AdventurerSheet.FullName);
-            if (!(comment == null || comment.Count == 0))
-            {
-                float score = 1; // コメントの仕様書が来るまで仮の値。
-                float add = (_status.MaxEmotion / 100.0f) * (20.0f * score);
-                _status.CurrentEmotion += Mathf.CeilToInt(add);
-            }
 
             // 変化した心情をUIに反映。
             _statusBar.Apply();

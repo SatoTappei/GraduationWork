@@ -16,6 +16,7 @@ namespace Game
         PowerUpEvent _powerUp;
         RevelationEvent _revelation;
         TrapGenerateEvent _trapGenerate;
+        GiveItemEvent _giveItem;
 
         AdventurerSpawner _spawner;
 
@@ -30,6 +31,7 @@ namespace Game
             _powerUp = GetComponent<PowerUpEvent>();
             _revelation = GetComponent<RevelationEvent>();
             _trapGenerate = GetComponent<TrapGenerateEvent>();
+            _giveItem = GetComponent<GiveItemEvent>();
             _spawner = AdventurerSpawner.Find();
         }
 
@@ -45,7 +47,7 @@ namespace Game
                 int random = Random.Range(0, 9);
                 if (random == 0)
                 {
-                    _dealingDamage.Execute();
+                    _dealingDamage.Execute(1); // ﾀﾞﾒｰｼﾞは適当。
                 }
                 else if (random == 1)
                 {
@@ -56,7 +58,7 @@ namespace Game
                     if (_spawner.Spawned.Count > 0)
                     {
                         int r = Random.Range(0, _spawner.Spawned.Count);
-                        _heal.Execute(_spawner.Spawned[r].AdventurerSheet.FullName);
+                        _heal.Execute(_spawner.Spawned[r].AdventurerSheet.FullName, 1); // 回復量は適当。
                     }
                 }
                 else if (random == 3)
@@ -89,6 +91,10 @@ namespace Game
                 else if (random == 8)
                 {
                     _trapGenerate.Execute();
+                }
+                else if (random == 9)
+                {
+                    _giveItem.Execute("軽い鍵");
                 }
 
                 yield return new WaitForSeconds(1.0f);

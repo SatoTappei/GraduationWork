@@ -17,6 +17,8 @@ namespace Game
         RevelationEvent _revelation;
         TrapGenerateEvent _trapGenerate;
         MadnessEvent _madness;
+        CheerCommentEvent _cheerComment;
+        GiveItemEvent _giveItem;
 
         bool _isActive;
 
@@ -34,6 +36,8 @@ namespace Game
             _revelation = GetComponent<RevelationEvent>();
             _trapGenerate = GetComponent<TrapGenerateEvent>();
             _madness = GetComponent<MadnessEvent>();
+            _cheerComment = GetComponent<CheerCommentEvent>();
+            _giveItem = GetComponent<GiveItemEvent>();
 
             // イベントを受信するために必要。
             VantanConnect.RegisterEventReceiver(this);
@@ -48,7 +52,7 @@ namespace Game
         {
             if (data.EventCode == EventDefine.DemonUI)
             {
-                Debug.Log("岩垂UIが取り憑くイベントを実行。");
+                // 没った？
             }
             else if (data.EventCode == EventDefine.DeathTrap)
             {
@@ -56,16 +60,27 @@ namespace Game
             }
             else if (data.EventCode == EventDefine.JengaInfo)
             {
-                // 文字列を取得するにはジェンガ側で指定したキーを教えてもらう必要がある。
-                _revelation.Execute("バーボンハウスへようこそ。");
+                string material = data.GetStringData("Material");
+                if (material == "Plastic") _giveItem.Execute("軽い鍵");
+                else if (material == "Wood") _giveItem.Execute("軽い鍵");
+                else if (material == "Iron") _giveItem.Execute("重い鍵");
+                else Debug.LogWarning($"対応するアイテムが無い。スペルミス？: {material}");
             }
             else if (data.EventCode == EventDefine.BadJengaInfo)
             {
-                Debug.Log("ジェンガイベントを実行。");
+                _dealingDamage.Execute(data.GetIntData("Turn"));
             }
             else if (data.EventCode == EventDefine.SummonHeliCopter)
             {
                 _helicopterCrash.Execute();
+            }
+            else if (data.EventCode == EventDefine.UserTalk)
+            {
+                _revelation.Execute(data.GetStringData("Line"));
+            }
+            else if (data.EventCode == EventDefine.ConfrontHeal)
+            {
+                _heal.Execute(data.GetIntData("Value"));
             }
             else if (data.EventCode == EventDefine.Cheer)
             {
@@ -73,7 +88,17 @@ namespace Game
                 if (data.GetIntData("Emotion") > 0) _powerUp.Execute();
                 else if (data.GetIntData("Emotion") < 0) _madness.Execute();
 
-                Debug.Log($"応援コメント: {data.GetStringData("Message")}");
+                _cheerComment.Execute(
+                    data.GetStringData("Target"),
+                    data.GetStringData("Message"),
+                    data.GetIntData("Emotion")
+                );
+            }
+            else if (data.EventCode == EventDefine.BonusCoin)
+            {
+                // 回復とバフをかける。回復量は適当。
+                _heal.Execute(data.GetStringData("Target"), 100);
+                _powerUp.Execute(data.GetStringData("Target"));
             }
         }
     }

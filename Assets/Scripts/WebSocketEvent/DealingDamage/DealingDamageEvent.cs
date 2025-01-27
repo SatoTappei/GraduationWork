@@ -24,7 +24,7 @@ namespace Game
             if (Application.isPlaying && _isDraw) Draw();
         }
 
-        public void Execute()
+        public void Execute(int damage)
         {
             if (_spawner.Spawned.Count == 0) return;
 
@@ -41,7 +41,7 @@ namespace Game
             if (_effectpool.TryPop(out DealingDamageEffect effect))
             {
                 // ï«ÇÃè„Ç…ê∂ê¨Ç∑ÇÈÅB
-                effect.Play(placeCell.Position + Vector3.up, target);
+                effect.Play(placeCell.Position + Vector3.up, target, damage);
             }
         }
 

@@ -59,8 +59,10 @@ namespace Game
             );
 
             // イベントを送信。
-            EventData eventData = new EventData(EventDefine.DeathScream);
-            VantanConnect.SendEvent(eventData);
+            EventData eventData1 = new EventData(EventDefine.DeathScream);
+            VantanConnect.SendEvent(eventData1);
+            EventData eventData2 = new EventData(EventDefine.KnockWindow);
+            VantanConnect.SendEvent(eventData2);
 
             // 演出の終了を待つ。
             await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);

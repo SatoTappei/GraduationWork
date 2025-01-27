@@ -35,16 +35,16 @@ namespace Game
             foreach (MeshRenderer r in _tankRenderers) r.enabled = true;
         }
 
-        public void Play(Vector3 position, Adventurer target)
+        public void Play(Vector3 position, Adventurer target, int damage)
         {
             // ランダムな角度で配置する。
             transform.position = position;
             _forwardAxis.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
             
-            StartCoroutine(FireAsync(target));
+            StartCoroutine(FireAsync(target, damage));
         }
 
-        IEnumerator FireAsync(Adventurer target)
+        IEnumerator FireAsync(Adventurer target, int damage)
         {
             // 登場。
             _audioSource.clip = _smokeEffectSE;
@@ -69,9 +69,9 @@ namespace Game
             _explosionParticle.Play();
             _shellRenderer.enabled = false;
 
-            if (target != null && target.TryGetComponent(out IDamageable damage))
+            if (target != null && target.TryGetComponent(out IDamageable damageable))
             {
-                damage.Damage(1, target.Coords); // ダメージ量は適当。
+                damageable.Damage(damage, target.Coords); // ダメージ量は適当。
             }
 
             // 爆発の演出が終わるまで待つ。演出の長さに合わせて時間を指定。
