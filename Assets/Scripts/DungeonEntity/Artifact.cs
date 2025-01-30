@@ -1,41 +1,36 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using Game.ItemData;
+using VTNConnect;
 
 namespace Game
 {
-    public class Artifact : DungeonEntity, IScavengeable
+    public class Artifact : DungeonEntity, IScavengeable, IVantanConnectEventReceiver
     {
         [SerializeField] Transform _fbx;
         [SerializeField] Renderer _renderer;
         [SerializeField] ParticleSystem[] _particles;
 
-        EnemySpawner _spawner;
         Coroutine _rotate;
+        bool _isEmpty;
+        bool _isActive;
 
-        // 条件を満たすことで出現するので、初期状態では漁れないようフラグを立てておく。
-        public bool IsEmpty { get; private set; } = true;
+        public bool IsEmpty => _isEmpty;
+        public bool IsActive => _isActive;
+
+        void Awake()
+        {
+            // 条件を満たすことで出現するので、初期状態では入手できないようフラグを立てておく。
+            _isEmpty = true;
+
+            // イベントを受信するために必要。
+            VantanConnect.RegisterEventReceiver(this);
+            _isActive = true;
+        }
 
         void Start()
         {
-            // ボスの生成座標を手動で指定。
-            _spawner = DungeonManager
-                .GetActors(new Vector2Int(17, 19))
-                .Select(a => a as EnemySpawner)
-                .FirstOrDefault();
-
-            // ボスが死亡したタイミングでアーティファクトが湧くように登録。
-            if (_spawner == null)
-            {
-                Debug.LogWarning("ボスのスポナーがnullになっている。");
-            }
-            else
-            {
-                _spawner.OnDefeated += Refill;
-            }
-
             // 条件を満たすまで画面に映らないようにしておく。
             _renderer.enabled = false;
             foreach (ParticleSystem p in _particles)
@@ -44,9 +39,9 @@ namespace Game
             }
         }
 
-        void OnDisable()
+        public void OnEventCall(EventData data)
         {
-            if (_spawner != null) _spawner.OnDefeated -= Refill;
+            Refill();
         }
 
         public string Scavenge(Actor _, out Item item)
@@ -57,7 +52,7 @@ namespace Game
                 return "Empty";
             }
 
-            IsEmpty = true;
+            _isEmpty = true;
 
             // 条件を満たすまで画面に映らないようにしておく。
             _renderer.enabled = false;
@@ -87,7 +82,7 @@ namespace Game
             // モデルを回転させる。
             _rotate = StartCoroutine(RotateAsync());
 
-            IsEmpty = false;
+            _isEmpty = false;
         }
 
         IEnumerator RotateAsync()

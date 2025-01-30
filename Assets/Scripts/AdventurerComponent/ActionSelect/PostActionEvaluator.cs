@@ -6,12 +6,10 @@ namespace Game
 {
     public class PostActionEvaluator : MonoBehaviour
     {
-        Adventurer _adventurer;
         AvailableActions _actions;
 
         void Awake()
         {
-            _adventurer = GetComponent<Adventurer>();
             _actions = GetComponent<AvailableActions>();
         }
 

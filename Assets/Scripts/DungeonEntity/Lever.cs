@@ -39,13 +39,10 @@ namespace Game
         // 行動ログには「漁ったが何も手に入らなかった。」と記録される。
         public string Scavenge(Actor _, out Item item)
         {
-            if (_isPlaying)
+            if (!_isPlaying)
             {
-                item = null;
-                return "Empty";
+                StartCoroutine(PlayAsync());
             }
-
-            StartCoroutine(PlayAsync());
 
             item = null;
             return "Empty";

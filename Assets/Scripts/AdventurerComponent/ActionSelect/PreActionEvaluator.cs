@@ -8,6 +8,13 @@ namespace Game
 {
     public class PreActionEvaluator : MonoBehaviour
     {
+        struct State
+        {
+            public bool Adventurer;
+            public bool Enemy;
+            public bool Scavengeable;
+        }
+
         Adventurer _adventurer;
         SubGoalPath _subGoalPath;
         AvailableActions _actions;
@@ -41,54 +48,17 @@ namespace Game
 
         public void Evaluate()
         {
-            IReadOnlyList<Actor> northActors = DungeonManager.GetActors(_adventurer.Coords + Vector2Int.up);
-            IReadOnlyList<Actor> southActors = DungeonManager.GetActors(_adventurer.Coords + Vector2Int.down);
-            IReadOnlyList<Actor> eastActors = DungeonManager.GetActors(_adventurer.Coords + Vector2Int.right);
-            IReadOnlyList<Actor> westActors = DungeonManager.GetActors(_adventurer.Coords + Vector2Int.left);
-
-            bool isAdventurerExistNorth = false;
-            bool isAdventurerExistSouth = false;
-            bool isAdventurerExistEast = false;
-            bool isAdventurerExistWest = false;
-            bool isEnemyExistNorth = false;
-            bool isEnemyExistSouth = false;
-            bool isEnemyExistEast = false;
-            bool isEnemyExistWest = false;
-            bool isScavengeableNorth = false;
-            bool isScavengeableSouth = false;
-            bool isScavengeableEast = false;
-            bool isScavengeableWest = false;
-            foreach (Actor a in northActors)
-            {
-                if (a is Adventurer) isAdventurerExistNorth = true;
-                if (a is Enemy) isEnemyExistNorth = true;
-                if (a is IScavengeable) isScavengeableNorth = true;
-            }
-            foreach (Actor a in southActors)
-            {
-                if (a is Adventurer) isAdventurerExistSouth = true;
-                if (a is Enemy) isEnemyExistSouth = true;
-                if (a is IScavengeable) isScavengeableSouth = true;
-            }
-            foreach (Actor a in eastActors)
-            {
-                if (a is Adventurer) isAdventurerExistEast = true;
-                if (a is Enemy) isEnemyExistEast = true;
-                if (a is IScavengeable) isScavengeableEast = true;
-            }
-            foreach (Actor a in westActors)
-            {
-                if (a is Adventurer) isAdventurerExistWest = true;
-                if (a is Enemy) isEnemyExistWest = true;
-                if (a is IScavengeable) isScavengeableWest = true;
-            }
+            State north = CheckCell(_adventurer.Coords + Vector2Int.up);
+            State south = CheckCell(_adventurer.Coords + Vector2Int.down);
+            State east = CheckCell(_adventurer.Coords + Vector2Int.right);
+            State west = CheckCell(_adventurer.Coords + Vector2Int.left);
 
             // それぞれの方向に冒険者がいる場合、その方向に移動できない。
             // いない場合のスコアは、箱や樽が空っぽの状態で漁らずに移動するよう促すために0より少し高い。
-            _actions.SetScore("MoveNorth", isAdventurerExistNorth ? -1.0f : 0.1f);
-            _actions.SetScore("MoveSouth", isAdventurerExistSouth ? -1.0f : 0.1f);
-            _actions.SetScore("MoveEast", isAdventurerExistEast ? -1.0f : 0.1f);
-            _actions.SetScore("MoveWest", isAdventurerExistWest ? -1.0f : 0.1f);
+            _actions.SetScore("MoveNorth", north.Adventurer ? -1.0f : 0.1f);
+            _actions.SetScore("MoveSouth", south.Adventurer ? -1.0f : 0.1f);
+            _actions.SetScore("MoveEast", east.Adventurer ? -1.0f : 0.1f);
+            _actions.SetScore("MoveWest", west.Adventurer ? -1.0f : 0.1f);
 
             // 燃え上がっているタイルの場合はスコアを0にし、その方向に移動しないように促す。
             if (DungeonManager.GetCell(_adventurer.Coords + Vector2Int.up).TerrainEffect == TerrainEffect.Flaming)
@@ -161,14 +131,10 @@ namespace Game
                 {
                     _actions.SetScore("MoveToArtifact", -1.0f);
                 }
-
             }
 
             // 何れかの方向に敵がいる場合は、周囲の敵に攻撃できる。
-            if (isEnemyExistNorth || 
-                isEnemyExistSouth || 
-                isEnemyExistEast || 
-                isEnemyExistWest)
+            if (north.Enemy || south.Enemy || east.Enemy || west.Enemy)
             {
                 _actions.SetScore("AttackToEnemy", 1.0f);
             }
@@ -178,10 +144,7 @@ namespace Game
             }
 
             // 何れかの方向に冒険者がいる場合は、周囲の冒険者を攻撃もしくは会話できる。
-            if (isAdventurerExistNorth || 
-                isAdventurerExistSouth || 
-                isAdventurerExistEast || 
-                isAdventurerExistWest)
+            if (north.Adventurer || south.Adventurer || east.Adventurer || west.Adventurer)
             {
                 // 狂気状態のときは攻撃しかできない。
                 if (_madness.IsValid)
@@ -202,10 +165,7 @@ namespace Game
             }
 
             // 何れかの方向に宝箱やレバーなどインタラクトできる対象がある場合は、周囲を漁ることが出来る。
-            if(isScavengeableNorth || 
-               isScavengeableSouth || 
-               isScavengeableEast ||
-               isScavengeableWest)
+            if(north.Scavengeable || south.Scavengeable || east.Scavengeable || west.Scavengeable)
             {
                 // 狂気状態のときは漁ることが出来ない。
                 if (_madness.IsValid)
@@ -246,6 +206,19 @@ namespace Game
                     break;
                 }
             }
+        }
+
+        static State CheckCell(Vector2Int coords)
+        {
+            State direction = new State();
+            foreach (Actor a in DungeonManager.GetActors(coords))
+            {
+                if (a is Adventurer) direction.Adventurer = true;
+                if (a is Enemy) direction.Enemy = true;
+                if (a is IScavengeable) direction.Scavengeable = true;
+            }
+
+            return direction;
         }
     }
 }
