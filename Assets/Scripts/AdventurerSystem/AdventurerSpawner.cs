@@ -1,8 +1,10 @@
 using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using UnityEngine;
+using VTNConnect;
 
 namespace Game
 {
@@ -28,7 +30,7 @@ namespace Game
 
         public async UniTask<int> SpawnAsync(int count, CancellationToken token)
         {
-            IReadOnlyList<AdventurerData>  profiles = await AdventurerLoader.GetDataAsync(token);
+            IReadOnlyList<UserData> profiles = VantanConnect.GetMainGameUsers().ToList();
 
             _spawned.Clear();
 
@@ -39,8 +41,10 @@ namespace Game
                 if (IsCellEmpty())
                 {
                     // 冒険者側に自身のプロフィールとコメント、アバターの情報を渡して初期化する。
-                    AvatarData avatarData = _avatarCustomizer.GetData(profiles[i]);
-                    AdventurerSheet adventurerSheet = new AdventurerSheet(i, profiles[i], avatarData);
+                    //AdventurerData data = APIUtility.Marshal<AdventurerData, UserData>(profiles[i]); //0.4.1で対応
+                    AdventurerData data = new AdventurerData(); //この行は消してね
+                    AvatarData avatarData = _avatarCustomizer.GetData(data);
+                    AdventurerSheet adventurerSheet = new AdventurerSheet(i, data, avatarData);
                     Adventurer adventurer = Instantiate(avatarData.Prefab);
                     adventurer.Initialize(adventurerSheet);
 

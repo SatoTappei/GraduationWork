@@ -8,6 +8,7 @@ namespace Game
     {
         public AdventurerSheet(int number, AdventurerData profile, AvatarData avatarData)
         {
+            UserId = profile.UserId;
             Number = number;
             FullName = profile.Name;
             DisplayName = profile.DisplayName;
@@ -23,6 +24,7 @@ namespace Game
             Icon = avatarData.Icon;
         }
 
+        public int UserId { get; }
         public int Number { get; }
         public string FullName { get; }
         public string DisplayName { get; }

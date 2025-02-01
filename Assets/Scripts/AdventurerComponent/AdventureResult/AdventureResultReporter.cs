@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using VTNConnect;
 
 namespace Game
 {
@@ -62,6 +63,10 @@ namespace Game
                 Debug.LogWarning($"サブゴールを終えていない。:{path.Path[0].Check()}");
                 result[3] = "Failed";
             }
+
+            //ユーザの冒険ログを保存(GameEndで送信される)
+            //0.4.1で対応
+            //VantanConnect.UserRecord(adventurer.AdventurerSheet.UserId, adventurer.Status.CurrentHp > 0, path.Path[0].Check() == SubGoal.State.Completed);
 
             // 送信。
             string csv = string.Join(",", result);
