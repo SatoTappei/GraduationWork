@@ -50,11 +50,9 @@ namespace Game
 
         public void OnEventCall(EventData data)
         {
-            if (data.EventCode == EventDefine.DemonUI)
-            {
-                // ñvÇ¡ÇΩÅH
-            }
-            else if (data.EventCode == EventDefine.DeathTrap)
+            Debug.Log($"WebSocket Event Received: {data.EventCode}");
+
+            if (data.EventCode == EventDefine.DeathTrap)
             {
                 _fallingBear.Execute();
             }

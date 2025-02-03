@@ -41,7 +41,7 @@ namespace Game
 
             if (IsButtonClicked(0, "ﾀﾞﾒｰｼﾞ"))
             {
-                _dealingDamage.Execute(1); // ダメージ量は適当。
+                _dealingDamage.Execute(1000); // ダメージ量は適当。
             }
             else if (IsButtonClicked(1, "ｸﾏｻﾝ"))
             {

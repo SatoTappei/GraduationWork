@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Game.ItemData;
+using VTNConnect;
 
 namespace Game
 {
@@ -37,11 +38,12 @@ namespace Game
 
         // タルやコンテナと同じく、漁ることで仕掛けが動作する。
         // 行動ログには「漁ったが何も手に入らなかった。」と記録される。
-        public string Scavenge(Actor _, out Item item)
+        public string Scavenge(Actor actor, out Item item)
         {
             if (!_isPlaying)
             {
                 StartCoroutine(PlayAsync());
+                SendEpisode(actor.GetComponent<Adventurer>());
             }
 
             item = null;
@@ -87,6 +89,18 @@ namespace Game
         static float Easing(float t)
         {
             return t * t * t * t * t;
+        }
+
+        static void SendEpisode(Adventurer user)
+        {
+            if (user == null) return;
+
+            GameEpisode episode = new GameEpisode(
+                EpisodeCode.VCMainTalk,
+                user.AdventurerSheet.UserId
+            );
+            episode.SetEpisode("レバーを起動した");
+            VantanConnect.SendEpisode(episode);
         }
     }
 }

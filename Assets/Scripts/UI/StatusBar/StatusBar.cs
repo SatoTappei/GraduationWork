@@ -20,63 +20,59 @@ namespace Game
             return GameObject.FindGameObjectWithTag("UiManager").GetComponent<StatusBar>();
         }
 
-        public int RegisterStatus(IStatusBarDisplayable status)
+        public void RegisterStatus(int displayID, IStatusBarDisplayable status)
         {
-            for (int i = 0; i < _used.Length; i++)
+            if (!IsInArray(displayID)) return;
+
+            if (_used[displayID])
             {
-                if (_used[i]) continue;
-
-                _used[i] = true;
-                _statusBarUI[i].SetStatus(status);
-                
-                return i;
-            }
-
-            Debug.LogWarning($"未使用の{nameof(StatusBarUI)}がない。");
-
-            return -1;
-        }
-
-        public void UpdateStatus(int id, IStatusBarDisplayable status)
-        {
-            if (IsWithinArray(id))
-            {
-                _statusBarUI[id].UpdateStatus(status);
-            }
-        }
-
-        public void DeleteStatus(int id)
-        {
-            if (!IsWithinArray(id)) return;
-
-            for (int i = 0; i < _used.Length; i++)
-            {
-                // 既に未使用もしくはIDが違う場合。
-                if (!_used[i] || i != id) continue;
-
-                _used[i] = false;
-
-                if (_statusBarUI[i] != null) _statusBarUI[i].DeleteStatus();
-
+                Debug.LogWarning($"既に登録済み。{displayID}");
                 return;
             }
 
-            Debug.LogWarning($"既に削除済みの{nameof(StatusBarUI)}。: {id}");
+            _used[displayID] = true;
+            _statusBarUI[displayID].SetStatus(status);
         }
 
-        public void ShowLine(int id, string line)
+        public void UpdateStatus(int displayID, IStatusBarDisplayable status)
         {
-            if (IsWithinArray(id))
+            if (IsInArray(displayID))
             {
-                _statusBarUI[id].ShowLine(line);
+                _statusBarUI[displayID].UpdateStatus(status);
             }
         }
 
-        bool IsWithinArray(int index)
+        public void ShowLine(int displayID, string line)
+        {
+            if (IsInArray(displayID))
+            {
+                _statusBarUI[displayID].ShowLine(line);
+            }
+        }
+
+        public void DeleteStatus(int displayID)
+        {
+            if (!IsInArray(displayID)) return;
+
+            if (!_used[displayID])
+            {
+                Debug.LogWarning($"既に削除済み。{displayID}");
+                return;
+            }
+
+            _used[displayID] = false;
+
+            if (_statusBarUI[displayID] != null)
+            {
+                _statusBarUI[displayID].DeleteStatus();
+            }
+        }
+
+        bool IsInArray(int index)
         {
             if (0 <= index && index < _used.Length) return true;
 
-            Debug.LogWarning($"IDに対応する{nameof(StatusBarUI)}が存在しない。: {index}");
+            Debug.LogWarning($"対応する{nameof(StatusBarUI)}が存在しない。: {index}");
             return false;
         }
     }

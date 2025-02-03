@@ -20,43 +20,55 @@ namespace Game
             return GameObject.FindGameObjectWithTag("UiManager").GetComponent<NameTag>();
         }
 
-        public void Register(Adventurer adventurer)
+        public void Register(int displayID, Adventurer adventurer)
         {
-            // 冒険者の番号に対応するUIがあるかチェック。
-            int num = adventurer.AdventurerSheet.Number;
-            if (num < 0 || _nameTagUI.Length <= num)
+            if (!IsInArray(displayID)) return;
+
+            if (_used[displayID])
             {
-                Debug.LogWarning($"番号に対応するUIが無い。{num}");
+                Debug.LogWarning($"既に登録済み。{displayID}");
                 return;
             }
 
-            // 冒険者の番号に重複が無いかチェック。
-            if (_used[num])
-            {
-                Debug.LogWarning($"番号が重複している。{num}");
-                return;
-            }
-            else
-            {
-                _used[num] = true;
-            }
+            _used[displayID] = true;
 
             for (int i = 0; i < _nameTagUI.Length; i++)
             {
                 // 自分以外の冒険者の名前を表示したいので、自分の番号に対応するUI以外に対して追加する。
-                if (i != num)
+                if (i != displayID)
                 {
                     _nameTagUI[i].Add(adventurer);
                 }
             }
         }
 
-        public void Delete(Adventurer adventurer)
+        public void Delete(int displayID, Adventurer adventurer)
         {
-            foreach (NameTagUI ui in _nameTagUI)
+            if (!IsInArray(displayID)) return;
+
+            if (!_used[displayID])
             {
-                ui.Remove(adventurer);
+                Debug.LogWarning($"既に削除済み。{displayID}");
+                return;
             }
+
+            _used[displayID] = false;
+
+            for (int i = 0; i < _nameTagUI.Length; i++)
+            {
+                if (i != displayID)
+                {
+                    _nameTagUI[i].Remove(adventurer);
+                }
+            }
+        }
+
+        bool IsInArray(int index)
+        {
+            if (0 <= index && index < _used.Length) return true;
+
+            Debug.LogWarning($"対応する{nameof(ProfileWindow)}が存在しない。: {index}");
+            return false;
         }
     }
 }

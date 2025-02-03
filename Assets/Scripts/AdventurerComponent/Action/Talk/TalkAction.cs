@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using VTNConnect;
 
 namespace Game
 {
@@ -68,12 +69,31 @@ namespace Game
                 isTalked = false;
             }
 
+            Adventurer targetAdventurer = null;
+            if (target != null) targetAdventurer = target.GetComponent<Adventurer>();
+
+            // 1度も会話をしたことのない相手の場合、エピソードを送信する。
+            if (targetAdventurer != null)
+            {
+                string targetName = targetAdventurer.AdventurerSheet.FullName;
+                if (!_history.Contains(targetName))
+                {
+                    GameEpisode episode = new GameEpisode(
+                        EpisodeCode.VCMainTalk,
+                        _adventurer.AdventurerSheet.UserId
+                    );
+                    episode.SetEpisode("冒険者と会話した");
+                    episode.DataPack("会話した相手", targetName);
+                    VantanConnect.SendEpisode(episode);
+                }
+            }
+
             // 会話相手を記録。
-            if (target != null && target.TryGetComponent(out Adventurer targetAdventurer))
+            if (targetAdventurer != null)
             {
                 _history.Add(targetAdventurer.AdventurerSheet.FullName);
             }
-            else
+            else if (target != null)
             {
                 _history.Add(target.ID);
             }

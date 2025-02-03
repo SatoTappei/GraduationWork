@@ -20,55 +20,51 @@ namespace Game
             return GameObject.FindGameObjectWithTag("UiManager").GetComponent<ProfileWindow>();
         }
 
-        public int RegisterStatus(IProfileWindowDisplayable status)
+        public void RegisterStatus(int displayID, IProfileWindowDisplayable status)
         {
-            for (int i = 0; i < _used.Length; i++)
+            if (!IsInArray(displayID)) return;
+
+            if (_used[displayID])
             {
-                if (_used[i]) continue;
-
-                _used[i] = true;
-                _profileWindowUI[i].SetStatus(status);
-
-                return i;
-            }
-
-            Debug.LogWarning($"未使用の{nameof(ProfileWindow)}がない。");
-
-            return -1;
-        }
-
-        public void UpdateStatus(int id, IProfileWindowDisplayable status)
-        {
-            if (IsInArray(id))
-            {
-                _profileWindowUI[id].UpdateStatus(status);
-            }
-        }
-
-        public void DeleteStatus(int id)
-        {
-            if (!IsInArray(id)) return;
-
-            for (int i = 0; i < _used.Length; i++)
-            {
-                // 既に未使用もしくはIDが違う場合。
-                if (!_used[i] || i != id) continue;
-
-                _used[i] = false;
-
-                if (_profileWindowUI[i] != null) _profileWindowUI[i].DeleteStatus();
-
+                Debug.LogWarning($"既に登録済み。{displayID}");
                 return;
             }
 
-            Debug.LogWarning($"既に削除済みの{nameof(ProfileWindow)}。: {id}");
+            _used[displayID] = true;
+            _profileWindowUI[displayID].SetStatus(status);
+        }
+
+        public void UpdateStatus(int displayID, IProfileWindowDisplayable status)
+        {
+            if (IsInArray(displayID))
+            {
+                _profileWindowUI[displayID].UpdateStatus(status);
+            }
+        }
+
+        public void DeleteStatus(int displayID)
+        {
+            if (!IsInArray(displayID)) return;
+
+            if (!_used[displayID])
+            {
+                Debug.LogWarning($"既に削除済み。{displayID}");
+                return;
+            }
+
+            _used[displayID] = false;
+
+            if (_profileWindowUI[displayID] != null)
+            {
+                _profileWindowUI[displayID].DeleteStatus();
+            }
         }
 
         bool IsInArray(int index)
         {
             if (0 <= index && index < _used.Length) return true;
 
-            Debug.LogWarning($"IDに対応する{nameof(ProfileWindow)}が存在しない。: {index}");
+            Debug.LogWarning($"対応する{nameof(ProfileWindow)}が存在しない。: {index}");
             return false;
         }
     }

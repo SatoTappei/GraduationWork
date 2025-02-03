@@ -75,7 +75,7 @@ namespace Game
             {
                 if (target == null) break;
 
-                _vcam.Follow.transform.position = target.transform.position;          
+                _vcam.Follow.transform.position = target.transform.position;
                 _vcam.transform.RotateAround(_vcam.transform.position, Vector3.up, RotateSpeed);
 
                 yield return null;

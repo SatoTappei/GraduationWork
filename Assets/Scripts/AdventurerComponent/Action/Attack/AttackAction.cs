@@ -60,7 +60,7 @@ namespace Game
             // 攻撃のアニメーションの再生終了を待つ。
             await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
 
-            // 敵を撃破した場合、台詞とログを表示し、撃破カウントを増やす。
+            // 撃破した場合、台詞とログを表示し、撃破カウントを増やす。
             if (result == "Defeat")
             {
                 _line.ShowLine(RequestLineType.DefeatEnemy);
@@ -100,11 +100,44 @@ namespace Game
                 actionLog = "I tried to attack it.";
             }
 
-            // 敵を倒した場合はイベントを送信。
+            // 撃破した場合はイベントとエピソードを送信。
             if (result == "Defeat")
             {
+                // 岩垂くんイベント。
                 EventData eventData = new EventData(EventDefine.DefeatBomb);
                 VantanConnect.SendEvent(eventData);
+
+                // 冒険者撃破エピソード。
+                if (target.TryGetComponent(out Adventurer targetAdventurer))
+                {
+                    GameEpisode episode = new GameEpisode(
+                        EpisodeCode.VCMainAttack,
+                        _adventurer.AdventurerSheet.UserId
+                    );
+                    episode.SetEpisode("冒険者を倒した");
+                    episode.DataPack("倒した相手", targetAdventurer.AdventurerSheet.FullName);
+                    VantanConnect.SendEpisode(episode);
+                }
+                
+                // 敵撃破エピソード。
+                if (target.TryGetComponent(out Enemy targetEnemy))
+                {
+                    GameEpisode episode = new GameEpisode(
+                        EpisodeCode.VCMainEnemy,
+                        _adventurer.AdventurerSheet.UserId
+                    );
+
+                    if (targetEnemy.ID == nameof(Golem))
+                    {
+                        episode.SetEpisode("ダンジョンのボスを倒した");
+                    }
+                    else
+                    {
+                        episode.SetEpisode("敵を倒した");
+                    }
+
+                    VantanConnect.SendEpisode(episode);
+                }
             }
 
             return new ActionResult(

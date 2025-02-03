@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using VTNConnect;
 
 namespace Game
 {
@@ -34,6 +35,7 @@ namespace Game
         ScavengeAction _scavenge;
         HelpAction _help;
         ThrowAction _throw;
+        IdleAction _idle;
         DefeatedAction _defeated;
         EscapeAction _escape;
 
@@ -43,7 +45,6 @@ namespace Game
         SubGoalPath _subGoal;
         HoldInformation _information;
         HungryStatusEffect _hungry;
-        AdventureResultReporter _result;
         StatusEffect[] _statusEffects;
 
         public AdventurerSheet AdventurerSheet => _adventurerSheet;
@@ -74,6 +75,7 @@ namespace Game
             _scavenge = GetComponent<ScavengeAction>();
             _help = GetComponent<HelpAction>();
             _throw = GetComponent<ThrowAction>();
+            _idle = GetComponent<IdleAction>();
             _defeated = GetComponent<DefeatedAction>();
             _escape = GetComponent<EscapeAction>();
             _preEvaluator = GetComponent<PreActionEvaluator>();
@@ -81,7 +83,6 @@ namespace Game
             _subGoal = GetComponent<SubGoalPath>();
             _information = GetComponent<HoldInformation>();
             _hungry = GetComponent<HungryStatusEffect>();
-            _result = GetComponent<AdventureResultReporter>();
             _statusEffects = GetComponents<StatusEffect>();
         }
 
@@ -151,6 +152,14 @@ namespace Game
 
             // サブゴールを決める。
             _subGoal.Initialize(await SubGoalSelector.SelectAsync(AdventurerSheet, token));
+
+            // サブゴールをエピソードとして送信。
+            GameEpisode episode = new GameEpisode(
+                EpisodeCode.VCMainPurpose,
+                AdventurerSheet.UserId
+            );
+            episode.SetEpisode(_subGoal.Path[0].Description.Japanese);
+            VantanConnect.SendEpisode(episode);
 
             // ここまでが1ターン目開始までの処理。以降の処理は毎ターン繰り返される。
             while (!token.IsCancellationRequested)
@@ -251,7 +260,11 @@ namespace Game
                 }
                 else if (selectedAction == "ThrowItem")
                 {
-                    actionResult= await _throw.PlayAsync(token);
+                    actionResult = await _throw.PlayAsync(token);
+                }
+                else if (selectedAction == "Idle")
+                {
+                    actionResult = await _idle.PlayAsync(token);
                 }
                 else
                 {
@@ -340,7 +353,11 @@ namespace Game
             _isCompleted = true;
 
             // 冒険結果を送信。
-            _result.Send();
+            GameManager.SetAdventureResult(
+                AdventurerSheet.UserId, 
+                Status.CurrentHp > 0, 
+                _subGoal.Path[0].Check() == SubGoal.State.Completed
+            );
 
             // セルから削除。
             DungeonManager.RemoveActor(Coords, this);

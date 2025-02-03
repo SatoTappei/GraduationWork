@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using VTNConnect;
 
 namespace Game
 {
@@ -25,6 +26,14 @@ namespace Game
                 LogColor.White,
                 _adventurer.AdventurerSheet.Number
             );
+
+            // エピソードを送信。
+            GameEpisode episode = new GameEpisode(
+                EpisodeCode.VCMainItem,
+                _adventurer.AdventurerSheet.UserId
+            );
+            episode.SetEpisode("情報を整理した");
+            VantanConnect.SendEpisode(episode);
 
             // アニメーション等の演出を待つ処理。
             await UniTask.Yield(cancellationToken: token);

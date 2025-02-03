@@ -167,30 +167,39 @@ namespace Game
             }
 
             // 入手したアイテムに対応したイベントがある場合は送信。
-            EventData eventData = null;
             if (foundItem == null) { }
             else if (foundItem.Name.Japanese == "クラッカー")
             {
-                eventData = new EventData(EventDefine.ActorEffect);
+                VantanConnect.SendEvent(new EventData(EventDefine.ActorEffect));
             }
             else if (foundItem.Name.Japanese == "壊れた罠")
             {
-                eventData = new EventData(EventDefine.ReviveGimmick);
+                // 
             }
             else if (foundItem.Name.Japanese == "錆びた剣")
             {
-                eventData = new EventData(EventDefine.PickupItem);
+                VantanConnect.SendEvent(new EventData(EventDefine.PickupItem));
             }
             else if (foundItem.Name.Japanese == "切れた電球")
             {
-                eventData = new EventData(EventDefine.DarkRoom);
+                VantanConnect.SendEvent(new EventData(EventDefine.DarkRoom));
             }
             else if (foundItem.Name.Japanese == "ヘルメット")
             {
-                eventData = new EventData(EventDefine.SummonEnemy);
+                VantanConnect.SendEvent(new EventData(EventDefine.SummonEnemy));
             }
 
-            if (eventData != null) VantanConnect.SendEvent(eventData);
+            // アイテムを入手したことをエピソードとして送信。
+            if (foundItem != null)
+            {
+                GameEpisode episode = new GameEpisode(
+                    EpisodeCode.VCMainItem,
+                    _adventurer.AdventurerSheet.UserId
+                );
+                episode.SetEpisode("アイテムを入手した");
+                episode.DataPack("入手したアイテム", foundItem.Name.Japanese);
+                VantanConnect.SendEpisode(episode);
+            }
 
             // 何かしらアイテムを入手出来れば成功、出来なければ失敗。
             return new ActionResult(

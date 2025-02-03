@@ -9,12 +9,11 @@ namespace Game
     public class GameManager : MonoBehaviour
     {
         AdventurerSpawner _spawner;
-        Dictionary<Adventurer, string> _results;
+        int _resultCount;
 
         void Awake()
         {
             _spawner = AdventurerSpawner.Find();
-            _results = new Dictionary<Adventurer, string>();
         }
 
         void Start()
@@ -23,10 +22,12 @@ namespace Game
         }
 
         // –`Œ¯Ò‚ª’Eo‚âŒ‚”j‚³‚ê‚½ê‡A–`Œ¯Ò‘¤‚©‚çŒÄ‚Ño‚µ‚Ä–`Œ¯‚ÌŒ‹‰Ê‚ğ•ñ‚·‚éB
-        public static void ReportAdventureResult(Adventurer adventurer, string result)
+        public static void SetAdventureResult(int userID, bool isEscape, bool isSubGoalClear)
         {
+            VantanConnect.UserRecord(userID, isEscape, isSubGoalClear);
+
             GameManager gameManager = GameObject.FindGameObjectWithTag("GameManager").GetComponent<GameManager>();
-            gameManager._results.Add(adventurer, result);
+            gameManager._resultCount++;
         }
 
         async UniTask UpdateAsync(CancellationToken token)
@@ -40,17 +41,19 @@ namespace Game
                 await VantanConnect.GameStart();
                 token.ThrowIfCancellationRequested();
 
-                _results.Clear();
+                _resultCount = 0;
 
                 // ˆê’èŠÔŠu‚Å–`Œ¯Ò‚ğ¶¬B
                 int spawnedCount = await _spawner.SpawnAsync(Max, token);
 
                 // ¶¬‚µ‚½–`Œ¯Ò‚ª‘SˆõA–`Œ¯‚ÌŒ‹‰Ê‚ğ•ñ‚·‚é‚Ü‚Å‘Ò‚ÂB
-                await UniTask.WaitUntil(() => _results.Count == spawnedCount, cancellationToken: token);
+                await UniTask.WaitUntil(() => _resultCount == spawnedCount, cancellationToken: token);
 
                 // ƒQ[ƒ€I—¹B
                 await VantanConnect.GameEnd();
                 token.ThrowIfCancellationRequested();
+
+                VantanConnect.SystemReset();
             }
         }
     }

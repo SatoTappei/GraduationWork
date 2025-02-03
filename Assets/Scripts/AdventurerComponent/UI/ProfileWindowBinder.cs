@@ -12,7 +12,6 @@ namespace Game
         ItemInventory _itemInventory;
         HoldInformation _information;
         ProfileWindow _profileWindow;
-        int _id;
         bool _isRegistered;
 
         string IProfileWindowDisplayable.FullName
@@ -69,7 +68,7 @@ namespace Game
             else
             {
                 _isRegistered = true;
-                _id = _profileWindow.RegisterStatus(this);
+                _profileWindow.RegisterStatus(_adventurer.AdventurerSheet.Number, this);
             }
         }
 
@@ -77,7 +76,7 @@ namespace Game
         {
             if (_isRegistered)
             {
-                _profileWindow.UpdateStatus(_id, this);
+                _profileWindow.UpdateStatus(_adventurer.AdventurerSheet.Number, this);
             }
             else
             {
@@ -87,7 +86,10 @@ namespace Game
 
         void OnDestroy()
         {
-            if (_profileWindow != null) _profileWindow.DeleteStatus(_id);
+            if (_profileWindow != null)
+            {
+                _profileWindow.DeleteStatus(_adventurer.AdventurerSheet.Number);
+            }
 
             _isRegistered = false;
         }

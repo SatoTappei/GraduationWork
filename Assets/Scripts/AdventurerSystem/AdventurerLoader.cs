@@ -5,7 +5,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Game
+namespace Game.Unused
 {
     public static class AdventurerLoader
     {

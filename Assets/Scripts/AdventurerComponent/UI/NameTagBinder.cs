@@ -27,7 +27,7 @@ namespace Game
             else
             {
                 _isRegisterd = true;
-                _nameTag.Register(_adventurer);
+                _nameTag.Register(_adventurer.AdventurerSheet.Number, _adventurer);
             }
         }
 
@@ -35,7 +35,7 @@ namespace Game
         {
             if (_nameTag != null)
             {
-                _nameTag.Delete(_adventurer);
+                _nameTag.Delete(_adventurer.AdventurerSheet.Number, _adventurer);
             }
         }
     }

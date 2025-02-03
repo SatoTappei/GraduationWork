@@ -8,7 +8,6 @@ namespace Game
     {
         Adventurer _adventurer;
         StatusBar _statusBar;
-        int _id;
         bool _isRegistered;
 
         Sprite IStatusBarDisplayable.Icon => _adventurer.AdventurerSheet.Icon;
@@ -32,7 +31,7 @@ namespace Game
             }
             else
             {
-                _id = _statusBar.RegisterStatus(this);
+                _statusBar.RegisterStatus(_adventurer.AdventurerSheet.Number, this);
                 _isRegistered = true;
             }
         }
@@ -41,7 +40,7 @@ namespace Game
         {
             if (_isRegistered)
             {
-                _statusBar.UpdateStatus(_id, this);
+                _statusBar.UpdateStatus(_adventurer.AdventurerSheet.Number, this);
             }
             else
             {
@@ -53,7 +52,7 @@ namespace Game
         {
             if (_isRegistered)
             {
-                _statusBar.ShowLine(_id, line);
+                _statusBar.ShowLine(_adventurer.AdventurerSheet.Number, line);
             }
             else
             {
@@ -63,7 +62,10 @@ namespace Game
 
         void OnDestroy()
         {
-            if (_statusBar != null) _statusBar.DeleteStatus(_id);
+            if (_statusBar != null)
+            {
+                _statusBar.DeleteStatus(_adventurer.AdventurerSheet.Number);
+            }
 
             _isRegistered = false;
         }
