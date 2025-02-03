@@ -53,9 +53,9 @@ namespace Game
         {
             foreach (Adventurer a in _spawner.Spawned)
             {
-                if (a.AdventurerSheet.FullName == target)
+                if (a.Sheet.FullName == target)
                 {
-                    return a.AdventurerSheet.Number;
+                    return a.Sheet.DisplayID;
                 }
             }
 

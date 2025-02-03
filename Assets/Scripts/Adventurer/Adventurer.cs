@@ -8,7 +8,7 @@ namespace Game
 {
     public class Adventurer : Actor
     {
-        AdventurerSheet _adventurerSheet;
+        AdventurerSheet _sheet;
         Status _status;
         ActionLog _actionLog;
         ExploreRecord _exploreRecord;
@@ -47,7 +47,7 @@ namespace Game
         HungryStatusEffect _hungry;
         StatusEffect[] _statusEffects;
 
-        public AdventurerSheet AdventurerSheet => _adventurerSheet;
+        public AdventurerSheet Sheet => _sheet;
         public Status Status => _status;
         public ActionLog ActionLog => _actionLog;
         public ExploreRecord ExploreRecord => _exploreRecord;
@@ -104,7 +104,7 @@ namespace Game
 
         public void Initialize(AdventurerSheet adventurerSheet)
         {
-            _adventurerSheet = adventurerSheet;
+            _sheet = adventurerSheet;
             _status = new Status(adventurerSheet.Level);
 
             // ダンジョンの入り口が固定で1箇所。
@@ -151,12 +151,12 @@ namespace Game
             _statusBar.Apply();
 
             // サブゴールを決める。
-            _subGoal.Initialize(await SubGoalSelector.SelectAsync(AdventurerSheet, token));
+            _subGoal.Initialize(await SubGoalSelector.SelectAsync(Sheet, token));
 
             // サブゴールをエピソードとして送信。
             GameEpisode episode = new GameEpisode(
                 EpisodeCode.VCMainPurpose,
-                AdventurerSheet.UserId
+                Sheet.UserId
             );
             episode.SetEpisode(_subGoal.Path[0].Description.Japanese);
             VantanConnect.SendEpisode(episode);
@@ -177,7 +177,7 @@ namespace Game
                             "システム",
                             $"お腹がすいてきた。", 
                             LogColor.White,
-                            _adventurerSheet.Number
+                            _sheet.DisplayID
                         );
                     }
 
@@ -325,7 +325,7 @@ namespace Game
                             $"システム",
                             $"「{_subGoal.GetCurrent().Description.Japanese}」を達成。",
                             LogColor.White,
-                            _adventurerSheet.Number
+                            _sheet.DisplayID
                         );
                     }
                     else if (_subGoal.GetCurrent().Check() == SubGoal.State.Failed)
@@ -334,7 +334,7 @@ namespace Game
                             $"システム",
                             $"「{_subGoal.GetCurrent().Description.Japanese}」を諦めた。",
                             LogColor.White,
-                            _adventurerSheet.Number
+                            _sheet.DisplayID
                         );
                     }
                     else
@@ -354,7 +354,7 @@ namespace Game
 
             // 冒険結果を送信。
             GameManager.SetAdventureResult(
-                AdventurerSheet.UserId, 
+                Sheet.UserId, 
                 Status.CurrentHp > 0, 
                 _subGoal.Path[0].Check() == SubGoal.State.Completed
             );

@@ -58,7 +58,7 @@ namespace Game
                     if (_spawner.Spawned.Count > 0)
                     {
                         int r = Random.Range(0, _spawner.Spawned.Count);
-                        _heal.Execute(_spawner.Spawned[r].AdventurerSheet.FullName, 1); // 回復量は適当。
+                        _heal.Execute(_spawner.Spawned[r].Sheet.FullName, 1); // 回復量は適当。
                     }
                 }
                 else if (random == 3)

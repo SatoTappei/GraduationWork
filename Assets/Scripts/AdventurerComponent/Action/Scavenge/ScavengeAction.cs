@@ -73,7 +73,7 @@ namespace Game
                         "システム",
                         $"{foundItem.Name.Japanese}を入手！",
                         LogColor.Yellow,
-                        _adventurer.AdventurerSheet.Number
+                        _adventurer.Sheet.DisplayID
                     );
                 }
                 else if(foundItem != null)
@@ -82,7 +82,7 @@ namespace Game
                         "システム",
                         $"{foundItem.Name.Japanese}を入手。",
                         LogColor.White,
-                        _adventurer.AdventurerSheet.Number
+                        _adventurer.Sheet.DisplayID
                     );
                 }
             }
@@ -96,7 +96,7 @@ namespace Game
                     "システム",
                     $"宝箱の鍵を持っていない。",
                     LogColor.White,
-                    _adventurer.AdventurerSheet.Number
+                    _adventurer.Sheet.DisplayID
                 );
             }
             else
@@ -194,7 +194,7 @@ namespace Game
             {
                 GameEpisode episode = new GameEpisode(
                     EpisodeCode.VCMainItem,
-                    _adventurer.AdventurerSheet.UserId
+                    _adventurer.Sheet.UserId
                 );
                 episode.SetEpisode("アイテムを入手した");
                 episode.DataPack("入手したアイテム", foundItem.Name.Japanese);

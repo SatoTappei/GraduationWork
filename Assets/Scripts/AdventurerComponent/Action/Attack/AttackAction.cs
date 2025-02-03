@@ -69,7 +69,7 @@ namespace Game
                     $"ƒVƒXƒeƒ€", 
                     $"“G‚ğ“|‚µ‚½B",
                     LogColor.White,
-                    _adventurer.AdventurerSheet.Number
+                    _adventurer.Sheet.DisplayID
                 );
 
                 _adventurer.Status.DefeatCount++;
@@ -112,10 +112,10 @@ namespace Game
                 {
                     GameEpisode episode = new GameEpisode(
                         EpisodeCode.VCMainAttack,
-                        _adventurer.AdventurerSheet.UserId
+                        _adventurer.Sheet.UserId
                     );
                     episode.SetEpisode("–`Œ¯Ò‚ğ“|‚µ‚½");
-                    episode.DataPack("“|‚µ‚½‘Šè", targetAdventurer.AdventurerSheet.FullName);
+                    episode.DataPack("“|‚µ‚½‘Šè", targetAdventurer.Sheet.FullName);
                     VantanConnect.SendEpisode(episode);
                 }
                 
@@ -124,7 +124,7 @@ namespace Game
                 {
                     GameEpisode episode = new GameEpisode(
                         EpisodeCode.VCMainEnemy,
-                        _adventurer.AdventurerSheet.UserId
+                        _adventurer.Sheet.UserId
                     );
 
                     if (targetEnemy.ID == nameof(Golem))

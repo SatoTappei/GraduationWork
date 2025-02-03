@@ -19,7 +19,7 @@ namespace Game
             {
                 if (adventurer != null)
                 {
-                    Execute(adventurer.AdventurerSheet.FullName, amount);
+                    Execute(adventurer.Sheet.FullName, amount);
                 }
             }
         }
@@ -29,7 +29,7 @@ namespace Game
             foreach (Adventurer adventurer in _spawner.Spawned)
             {
                 if (adventurer == null) continue;
-                else if (adventurer.AdventurerSheet.FullName != name) continue;
+                else if (adventurer.Sheet.FullName != name) continue;
 
                 if(adventurer.TryGetComponent(out HealReceiver heal))
                 {

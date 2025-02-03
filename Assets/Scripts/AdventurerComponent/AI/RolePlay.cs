@@ -30,7 +30,7 @@ namespace Game
         {
             TryGetComponent(out Adventurer adventurer);
 
-            if (adventurer.AdventurerSheet == null)
+            if (adventurer.Sheet == null)
             {
                 Debug.LogWarning("冒険者のデータが読み込まれていない。");
 
@@ -43,10 +43,10 @@ namespace Game
                     $"# 指示内容\n" +
                     $"- 以下のキャラクターになりきって各質問に答えてください。\n" +
                     $"# キャラクター\n" +
-                    $"- {adventurer.AdventurerSheet.Sex}\n" +
-                    $"- {adventurer.AdventurerSheet.Age}\n" +
-                    $"- {adventurer.AdventurerSheet.Job}\n" +
-                    $"- {adventurer.AdventurerSheet.Background}";
+                    $"- {adventurer.Sheet.Sex}\n" +
+                    $"- {adventurer.Sheet.Age}\n" +
+                    $"- {adventurer.Sheet.Job}\n" +
+                    $"- {adventurer.Sheet.Background}";
 
                 _ai = new AIClient(prompt);
             }

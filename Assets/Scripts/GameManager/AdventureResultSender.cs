@@ -54,7 +54,7 @@ namespace Game.Unused
                 List<Result> results = new List<Result>(adventureResults.Count);
                 foreach (KeyValuePair<Adventurer, string> result in adventureResults)
                 {
-                    string adventurerName = result.Key.AdventurerSheet.FullName;
+                    string adventurerName = result.Key.Sheet.FullName;
                     string resultContents = result.Value;
                     results.Add(new Result(adventurerName, resultContents));
                 }

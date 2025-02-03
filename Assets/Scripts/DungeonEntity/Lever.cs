@@ -97,7 +97,7 @@ namespace Game
 
             GameEpisode episode = new GameEpisode(
                 EpisodeCode.VCMainTalk,
-                user.AdventurerSheet.UserId
+                user.Sheet.UserId
             );
             episode.SetEpisode("ƒŒƒo[‚ğ‹N“®‚µ‚½");
             VantanConnect.SendEpisode(episode);

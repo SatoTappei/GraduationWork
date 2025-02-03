@@ -55,7 +55,7 @@ namespace Game
                 "システム", 
                 $"力尽きた…", 
                 LogColor.Red,
-                _adventurer.AdventurerSheet.Number
+                _adventurer.Sheet.DisplayID
             );
 
             // イベントを送信。

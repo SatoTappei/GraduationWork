@@ -19,7 +19,7 @@ namespace Game
             {
                 if (adventurer == null) continue;
 
-                Execute(adventurer.AdventurerSheet.FullName);
+                Execute(adventurer.Sheet.FullName);
             }
         }
 
@@ -28,7 +28,7 @@ namespace Game
             foreach (Adventurer adventurer in _spawner.Spawned)
             {
                 if (adventurer == null) continue;
-                else if (adventurer.AdventurerSheet.FullName != name) continue;
+                else if (adventurer.Sheet.FullName != name) continue;
 
                 if (adventurer.TryGetComponent(out BuffStatusEffect buff))
                 {

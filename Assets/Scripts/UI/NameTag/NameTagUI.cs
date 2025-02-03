@@ -51,7 +51,7 @@ namespace Game
         public void Add(Adventurer adventurer)
         {
             Text t = Instantiate(_textPrefab, transform);
-            t.text = adventurer.AdventurerSheet.DisplayName;
+            t.text = adventurer.Sheet.DisplayName;
 
             _registered.Add(
                 adventurer.GetInstanceID(), 
@@ -71,7 +71,7 @@ namespace Game
             }
             else
             {
-                Debug.LogWarning($"Šù‚ÉíœÏ‚İB{adventurer.AdventurerSheet.DisplayName}");
+                Debug.LogWarning($"Šù‚ÉíœÏ‚İB{adventurer.Sheet.DisplayName}");
             }
         }
     }

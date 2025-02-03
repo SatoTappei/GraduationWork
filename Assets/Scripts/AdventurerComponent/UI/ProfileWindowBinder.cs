@@ -16,17 +16,17 @@ namespace Game
 
         string IProfileWindowDisplayable.FullName
         {
-            get => _adventurer.AdventurerSheet.FullName;
+            get => _adventurer.Sheet.FullName;
         }
 
         string IProfileWindowDisplayable.Job
         {
-            get => _adventurer.AdventurerSheet.Job;
+            get => _adventurer.Sheet.Job;
         }
         
         string IProfileWindowDisplayable.Background
         {
-            get => _adventurer.AdventurerSheet.Background;
+            get => _adventurer.Sheet.Background;
         }
         
         SubGoal IProfileWindowDisplayable.CurrentSubGoal
@@ -68,7 +68,7 @@ namespace Game
             else
             {
                 _isRegistered = true;
-                _profileWindow.RegisterStatus(_adventurer.AdventurerSheet.Number, this);
+                _profileWindow.RegisterStatus(_adventurer.Sheet.DisplayID, this);
             }
         }
 
@@ -76,7 +76,7 @@ namespace Game
         {
             if (_isRegistered)
             {
-                _profileWindow.UpdateStatus(_adventurer.AdventurerSheet.Number, this);
+                _profileWindow.UpdateStatus(_adventurer.Sheet.DisplayID, this);
             }
             else
             {
@@ -88,7 +88,7 @@ namespace Game
         {
             if (_profileWindow != null)
             {
-                _profileWindow.DeleteStatus(_adventurer.AdventurerSheet.Number);
+                _profileWindow.DeleteStatus(_adventurer.Sheet.DisplayID);
             }
 
             _isRegistered = false;

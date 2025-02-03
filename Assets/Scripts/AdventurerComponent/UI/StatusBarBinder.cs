@@ -10,8 +10,8 @@ namespace Game
         StatusBar _statusBar;
         bool _isRegistered;
 
-        Sprite IStatusBarDisplayable.Icon => _adventurer.AdventurerSheet.Icon;
-        string IStatusBarDisplayable.DisplayName => _adventurer.AdventurerSheet.DisplayName;
+        Sprite IStatusBarDisplayable.Icon => _adventurer.Sheet.Icon;
+        string IStatusBarDisplayable.DisplayName => _adventurer.Sheet.DisplayName;
         int IStatusBarDisplayable.MaxHp => _adventurer.Status.MaxHp;
         int IStatusBarDisplayable.CurrentHp => _adventurer.Status.CurrentHp;
         int IStatusBarDisplayable.MaxEmotion => _adventurer.Status.MaxEmotion;
@@ -31,7 +31,7 @@ namespace Game
             }
             else
             {
-                _statusBar.RegisterStatus(_adventurer.AdventurerSheet.Number, this);
+                _statusBar.RegisterStatus(_adventurer.Sheet.DisplayID, this);
                 _isRegistered = true;
             }
         }
@@ -40,7 +40,7 @@ namespace Game
         {
             if (_isRegistered)
             {
-                _statusBar.UpdateStatus(_adventurer.AdventurerSheet.Number, this);
+                _statusBar.UpdateStatus(_adventurer.Sheet.DisplayID, this);
             }
             else
             {
@@ -52,7 +52,7 @@ namespace Game
         {
             if (_isRegistered)
             {
-                _statusBar.ShowLine(_adventurer.AdventurerSheet.Number, line);
+                _statusBar.ShowLine(_adventurer.Sheet.DisplayID, line);
             }
             else
             {
@@ -64,7 +64,7 @@ namespace Game
         {
             if (_statusBar != null)
             {
-                _statusBar.DeleteStatus(_adventurer.AdventurerSheet.Number);
+                _statusBar.DeleteStatus(_adventurer.Sheet.DisplayID);
             }
 
             _isRegistered = false;

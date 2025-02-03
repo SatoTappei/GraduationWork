@@ -6,10 +6,10 @@ namespace Game
 {
     public class AdventurerSheet
     {
-        public AdventurerSheet(int number, AdventurerData profile, AvatarData avatarData)
+        public AdventurerSheet(int displayID, AdventurerData profile, AvatarData avatarData)
         {
             UserId = profile.UserId;
-            Number = number;
+            DisplayID = displayID;
             FullName = profile.Name;
             DisplayName = profile.DisplayName;
             Sex = profile.Gender;
@@ -25,7 +25,7 @@ namespace Game
         }
 
         public int UserId { get; }
-        public int Number { get; }
+        public int DisplayID { get; }
         public string FullName { get; }
         public string DisplayName { get; }
         public string Sex { get; }

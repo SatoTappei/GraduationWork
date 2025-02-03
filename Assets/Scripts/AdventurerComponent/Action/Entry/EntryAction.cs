@@ -32,7 +32,7 @@ namespace Game
                 $"システム", 
                 $"ダンジョンにやってきた。", 
                 LogColor.White,
-                adventurer.AdventurerSheet.Number
+                adventurer.Sheet.DisplayID
             );
         }
     }

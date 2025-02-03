@@ -24,13 +24,13 @@ namespace Game
                 "システム",
                 $"状況を整理した。",
                 LogColor.White,
-                _adventurer.AdventurerSheet.Number
+                _adventurer.Sheet.DisplayID
             );
 
             // エピソードを送信。
             GameEpisode episode = new GameEpisode(
                 EpisodeCode.VCMainItem,
-                _adventurer.AdventurerSheet.UserId
+                _adventurer.Sheet.UserId
             );
             episode.SetEpisode("情報を整理した");
             VantanConnect.SendEpisode(episode);

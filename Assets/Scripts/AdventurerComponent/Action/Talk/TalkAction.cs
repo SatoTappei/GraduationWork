@@ -75,12 +75,12 @@ namespace Game
             // 1度も会話をしたことのない相手の場合、エピソードを送信する。
             if (targetAdventurer != null)
             {
-                string targetName = targetAdventurer.AdventurerSheet.FullName;
+                string targetName = targetAdventurer.Sheet.FullName;
                 if (!_history.Contains(targetName))
                 {
                     GameEpisode episode = new GameEpisode(
                         EpisodeCode.VCMainTalk,
-                        _adventurer.AdventurerSheet.UserId
+                        _adventurer.Sheet.UserId
                     );
                     episode.SetEpisode("冒険者と会話した");
                     episode.DataPack("会話した相手", targetName);
@@ -91,7 +91,7 @@ namespace Game
             // 会話相手を記録。
             if (targetAdventurer != null)
             {
-                _history.Add(targetAdventurer.AdventurerSheet.FullName);
+                _history.Add(targetAdventurer.Sheet.FullName);
             }
             else if (target != null)
             {

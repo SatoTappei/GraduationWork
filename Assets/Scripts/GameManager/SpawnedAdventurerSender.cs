@@ -49,15 +49,15 @@ namespace Game.Unused
                     if (adventurers[i] == null) continue;
 
                     Profile profile = new Profile();
-                    profile.FullName = adventurers[i].AdventurerSheet.FullName;
-                    profile.DisplayName = adventurers[i].AdventurerSheet.DisplayName;
-                    profile.Sex = adventurers[i].AdventurerSheet.Sex;
-                    profile.Age = adventurers[i].AdventurerSheet.Age;
-                    profile.Job = adventurers[i].AdventurerSheet.Job;
-                    profile.Personality = adventurers[i].AdventurerSheet.Personality;
-                    profile.Motivation = adventurers[i].AdventurerSheet.Motivation;
-                    profile.Weaknesses = adventurers[i].AdventurerSheet.Weaknesses;
-                    profile.Background = adventurers[i].AdventurerSheet.Background;
+                    profile.FullName = adventurers[i].Sheet.FullName;
+                    profile.DisplayName = adventurers[i].Sheet.DisplayName;
+                    profile.Sex = adventurers[i].Sheet.Sex;
+                    profile.Age = adventurers[i].Sheet.Age;
+                    profile.Job = adventurers[i].Sheet.Job;
+                    profile.Personality = adventurers[i].Sheet.Personality;
+                    profile.Motivation = adventurers[i].Sheet.Motivation;
+                    profile.Weaknesses = adventurers[i].Sheet.Weaknesses;
+                    profile.Background = adventurers[i].Sheet.Background;
 
                     profiles.Add(profile);
                 }

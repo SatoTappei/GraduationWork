@@ -122,7 +122,7 @@ namespace Game
 
         void Initialize()
         {
-            if (_adventurer.AdventurerSheet == null)
+            if (_adventurer.Sheet == null)
             {
                 Debug.LogWarning("冒険者のデータが読み込まれていない。");
 
@@ -136,9 +136,9 @@ namespace Game
                     $"- Consider these profiles carefully when deciding the next action.\n" +
                     $"- Avoid actions that go against their personality or expose their weaknesses.\n" +
                     $"# CharacterProfiles(Japanese)\n" +
-                    $"- {_adventurer.AdventurerSheet.Personality}\n" +
-                    $"- {_adventurer.AdventurerSheet.Motivation}\n" +
-                    $"- {_adventurer.AdventurerSheet.Weaknesses}\n" +
+                    $"- {_adventurer.Sheet.Personality}\n" +
+                    $"- {_adventurer.Sheet.Motivation}\n" +
+                    $"- {_adventurer.Sheet.Weaknesses}\n" +
                     $"# OutputFormat\n" +
 #if true
                     $"- Select one of the AvailableActions and output the value only.";

@@ -44,7 +44,7 @@ namespace Game
                 $"システム", 
                 $"ダンジョンから脱出した！", 
                 LogColor.Yellow,
-                adventurer.AdventurerSheet.Number
+                adventurer.Sheet.DisplayID
             );
 
             // 演出の終了を待つ。

@@ -39,7 +39,7 @@ namespace Game
                     "システム",
                     $"気が狂った。",
                     LogColor.White,
-                    _adventurer.AdventurerSheet.Number
+                    _adventurer.Sheet.DisplayID
                 );
             }
         }
