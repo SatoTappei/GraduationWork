@@ -9,14 +9,14 @@ namespace Game
     {
         CinemachineVirtualCamera _vcam;
         CinemachineFramingTransposer _transposer;
-
-        AudioListener _audio;
+        CinemachineImpulseSource _impulse;
         Coroutine _focus;
 
         void Awake()
         {
             _vcam = GetComponent<CinemachineVirtualCamera>();
             _transposer = _vcam.GetCinemachineComponent<CinemachineFramingTransposer>();
+            _impulse = GetComponent<CinemachineImpulseSource>();
 
             GameObject follow = new GameObject($"{name}_Follow");
             _vcam.Follow = follow.transform;
@@ -34,9 +34,9 @@ namespace Game
             if (_focus != null) StopCoroutine(_focus);
         }
 
-        public void EnableAudio(bool value)
+        public void Shake()
         {
-            _audio.enabled = value;
+            _impulse.GenerateImpulse();
         }
 
         IEnumerator FocusRepeatingAsync(Adventurer target)

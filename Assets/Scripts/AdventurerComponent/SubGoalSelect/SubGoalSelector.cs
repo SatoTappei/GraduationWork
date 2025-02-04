@@ -86,16 +86,16 @@ namespace Game
             List<string> subGoals = new List<string>();
             foreach (int n in result)
             {
-                if (n == 0) subGoals.Add("お宝を手に入れる");
-                else if (n == 1) subGoals.Add("依頼されたアイテムを手に入れる");
-                else if (n == 2) subGoals.Add("依頼された敵を倒す");
-                else if (n == 3) subGoals.Add("ダンジョンのボスを倒す");
-                else if (n == 4) subGoals.Add("他の冒険者を倒す");
-                else subGoals.Add("お宝を手に入れる");
+                if (n == 0) subGoals.Add(nameof(FindTreasureGoal));
+                else if (n == 1) subGoals.Add(nameof(FindItemGoal));
+                else if (n == 2) subGoals.Add(nameof(DefeatEnemyGoal));
+                else if (n == 3) subGoals.Add(nameof(DefeatBossGoal));
+                else if (n == 4) subGoals.Add(nameof(DefeatAdventurerGoal));
+                else subGoals.Add(nameof(FindTreasureGoal));
             }
 
             // 2つめのサブゴールは全キャラクター共通で「ダンジョンの入口に戻る」になる。
-            subGoals.Add("ダンジョンの入口に戻る");
+            subGoals.Add(nameof(ReturnEntranceGoal));
 
             return subGoals;
         }

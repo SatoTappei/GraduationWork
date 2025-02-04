@@ -8,7 +8,6 @@ namespace Game
     {
         Adventurer _adventurer;
         CameraManager _cameraManager;
-        int _id;
         bool _isRegisterd;
 
         void Awake()
@@ -26,7 +25,7 @@ namespace Game
             else
             {
                 _isRegisterd = true;
-                _id = _cameraManager.RegisterTarget(_adventurer);
+                _cameraManager.RegisterTarget(_adventurer.Sheet.DisplayID, _adventurer);
             }
         }
 
@@ -34,7 +33,7 @@ namespace Game
         {
             if (_cameraManager != null)
             {
-                _cameraManager.DeleteTarget(_id);
+                _cameraManager.DeleteTarget(_adventurer.Sheet.DisplayID);
             }
         }
     }

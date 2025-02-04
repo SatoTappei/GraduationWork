@@ -95,10 +95,9 @@ namespace Game
                     if (item.Count == 0) continue;
 
                     // ‚Æ‚è‚ ‚¦‚¸‚Ç‚¿‚ç‚ÌŒ®‚Å‚àŠJ‚­‚æ‚¤‚É‚µ‚Ä‚¨‚­B
-                    string itemName = item[0].Name.Japanese;
-                    if (itemName == "Œy‚¢Œ®" || itemName == "d‚¢Œ®")
+                    if (item[0].ID == nameof(LightKey) || item[0].ID == nameof(HeavyKey))
                     {
-                        key = itemName;
+                        key = item[0].ID;
                     }
                 }
 

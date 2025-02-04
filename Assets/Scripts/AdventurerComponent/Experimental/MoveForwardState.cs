@@ -4,33 +4,29 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-namespace Game.FSM
+namespace Game.Experimental.FSM
 {
-    public class IdleState : State
+    public class MoveForwardState : State
     {
-        SubGoalPath _subGoal;
-
-        void Awake()
-        {
-            _subGoal = GetComponent<SubGoalPath>();
-        }
-
         protected override async UniTask<string> EnterAsync(CancellationToken token)
         {
-            await UniTask.Yield();
+            await UniTask.Yield(cancellationToken: token);
+            Debug.Log("MoveForwardState");
             return "Idle";
         }
 
         protected override async UniTask<string> ExitAsync(CancellationToken token)
         {
-            await UniTask.Yield();
+            await UniTask.Yield(cancellationToken: token);
+            Debug.Log("MoveForwardState");
             return "Idle";
         }
 
         protected override async UniTask<string> StayAsync(CancellationToken token)
         {
-            await UniTask.Yield();
-            return "Idle";
+            await UniTask.Yield(cancellationToken: token);
+            Debug.Log("MoveForwardState");
+            return "MoveWest";
         }
     }
 }

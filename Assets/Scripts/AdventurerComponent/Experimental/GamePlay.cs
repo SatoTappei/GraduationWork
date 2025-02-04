@@ -1,5 +1,5 @@
 using Cysharp.Threading.Tasks;
-using Game.FSM;
+using Game.Experimental.FSM;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -16,8 +16,14 @@ namespace Game.Experimental
         {
             _states = new Dictionary<string, State>
             {
-                { nameof(IdleState), gameObject.AddComponent<IdleState>() }
+                { nameof(IdleState), gameObject.AddComponent<IdleState>() },
+                { nameof(ExploreThisRoomState), gameObject.AddComponent<ExploreThisRoomState>() },
+                { nameof(MoveForwardState), gameObject.AddComponent<MoveForwardState>() }
             };
+
+            _states[nameof(IdleState)].Initialize(_states);
+            _states[nameof(ExploreThisRoomState)].Initialize(_states);
+            _states[nameof(MoveForwardState)].Initialize(_states);
 
             _currentState = _states[nameof(IdleState)];
         }

@@ -42,7 +42,7 @@ namespace Game
                 { "TalkWithAdventurer", new Score(-1.0f) },
                 { "Scavenge", new Score(-1.0f) },
                 { "RequestHelp", new Score(-1.0f) },
-                { "ThrowItem", new Score(-1.0f) }
+                { "ThrowItem", new Score(-1.0f) },
             };
         }
 

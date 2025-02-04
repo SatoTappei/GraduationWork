@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
-namespace Game.FSM
+namespace Game.Experimental.FSM
 {
     public abstract class State : MonoBehaviour
     {

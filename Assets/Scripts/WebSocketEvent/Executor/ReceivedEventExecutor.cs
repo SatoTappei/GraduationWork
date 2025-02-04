@@ -98,6 +98,20 @@ namespace Game
                 _heal.Execute(data.GetStringData("Target"), 100);
                 _powerUp.Execute(data.GetStringData("Target"));
             }
+            else if (data.EventCode == EventDefine.Levelup)
+            {
+                //
+            }
+            else if (data.EventCode == EventDefine.GetArtifact)
+            {
+                //
+            }
+            else if (EventDefine.FieldEvent01 <= data.EventCode && data.EventCode <= EventDefine.FieldEvent05)
+            {
+                // ランダムでどちらかのイベントが起きる、確率は適当。
+                if (Random.value <= 0.5f) _trapGenerate.Execute();
+                else _mindReading.Execute();
+            }
         }
     }
 }

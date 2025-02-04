@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Game.FSM
+namespace Game.Experimental.FSM
 {
     public class Result
     {

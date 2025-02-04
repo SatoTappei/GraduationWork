@@ -68,7 +68,7 @@ namespace Game
             }
             else
             {
-                _item.Remove(throwItem.Name.Japanese);
+                _item.Remove(throwItem.ID);
             }
 
             // アイテムを生成し、投げる。

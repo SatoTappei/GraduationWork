@@ -24,28 +24,28 @@ namespace Game
             }
             else
             {
-                if (!_items.ContainsKey(item.Name.Japanese))
+                if (!_items.ContainsKey(item.ID))
                 {
-                    _items.Add(item.Name.Japanese, new List<Item>());
+                    _items.Add(item.ID, new List<Item>());
                 }
 
-                _items[item.Name.Japanese].Add(item);
+                _items[item.ID].Add(item);
             }
         }
 
-        public bool Remove(string name)
+        public bool Remove(string itemID)
         {
-            if (_items.ContainsKey(name) && 0 < _items[name].Count)
+            if (_items.ContainsKey(itemID) && 0 < _items[itemID].Count)
             {
                 // 同じ種類のアイテムのうち末尾の1つを削除している。
                 // 個々のアイテムが状態を持たないことが前提。
-                _items[name].RemoveAt(_items[name].Count - 1);
+                _items[itemID].RemoveAt(_items[itemID].Count - 1);
 
                 // 残り0個になったアイテムはリスト自体を削除しておく。
                 // 取得した際に「このアイテムを0個持っている」状態になってしまうのを防ぐ。
-                if (_items[name].Count == 0)
+                if (_items[itemID].Count == 0)
                 {
-                    _items.Remove(name);
+                    _items.Remove(itemID);
                 }
 
                 return true;
@@ -80,8 +80,21 @@ namespace Game
         {
             foreach (KeyValuePair<string, IReadOnlyList<Item>> e in Get())
             {
-                yield return new ItemEntry(e.Key, e.Value.Count);
+                yield return new ItemEntry(
+                    e.Value[0].Name.Japanese, 
+                    e.Value.Count
+                );
             }
+        }
+
+        public bool IsHave(string itemID)
+        {
+            foreach (ItemEntry e in GetEntries())
+            {
+                if (e.Name == itemID) return true;
+            }
+
+            return false;
         }
     }
 }

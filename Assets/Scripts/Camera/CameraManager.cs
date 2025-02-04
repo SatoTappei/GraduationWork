@@ -20,47 +20,51 @@ namespace Game
             return GameObject.FindGameObjectWithTag("CameraManager").GetComponent<CameraManager>();
         }
 
-        public int RegisterTarget(Adventurer target)
+        public void RegisterTarget(int displayID, Adventurer target)
         {
-            for (int i = 0; i < _used.Length; i++)
+            if (!IsInArray(displayID)) return;
+
+            if (_used[displayID])
             {
-                if (_used[i]) continue;
-
-                _used[i] = true;
-                _cameras[i].SetTarget(target);
-
-                return i;
-            }
-
-            Debug.LogWarning($"未使用の{nameof(TargetFocusCamera)}がない。");
-
-            return -1;
-        }
-
-        public void DeleteTarget(int id)
-        {
-            if (!IsWithinArray(id)) return;
-
-            for (int i = 0; i < _used.Length; i++)
-            {
-                // 既に未使用もしくはIDが違う場合。
-                if (!_used[i] || i != id) continue;
-
-                _used[i] = false;
-
-                if (_cameras[i] != null) _cameras[i].DeleteTarget();
-
+                Debug.LogWarning($"既に登録済み。{displayID}");
                 return;
             }
 
-            Debug.LogWarning($"既に削除済みの{nameof(TargetFocusCamera)}。: {id}");
+            _used[displayID] = true;
+            _cameras[displayID].SetTarget(target);
         }
 
-        bool IsWithinArray(int index)
+        public void DeleteTarget(int displayID)
+        {
+            if (!IsInArray(displayID)) return;
+
+            if (!_used[displayID])
+            {
+                Debug.LogWarning($"既に削除済み。{displayID}");
+                return;
+            }
+
+            _used[displayID] = false;
+
+            if (_cameras[displayID] != null)
+            {
+                _cameras[displayID].DeleteTarget();
+            }
+        }
+
+        public void Shake()
+        {
+            foreach (TargetFocusCamera c in _cameras)
+            {
+                c.Shake();
+            }
+        }
+
+        bool IsInArray(int index)
         {
             if (0 <= index && index < _used.Length) return true;
 
-            Debug.LogWarning($"IDに対応する{nameof(TargetFocusCamera)}が存在しない。: {index}");
+            Debug.LogWarning($"対応する{nameof(TargetFocusCamera)}が存在しない。: {index}");
             return false;
         }
     }

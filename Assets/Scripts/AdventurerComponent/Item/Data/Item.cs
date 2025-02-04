@@ -8,10 +8,21 @@ namespace Game.ItemData
 
     public abstract class Item
     {
+        string _id = string.Empty;
+
         public Item(string japaneseName, string englishName, Usage usage)
         {
             Name = new BilingualString(japaneseName, englishName);
             Usage = usage;
+        }
+
+        public string ID
+        {
+            get
+            {
+                if (_id == string.Empty) _id = GetType().Name;
+                return _id;
+            }
         }
 
         public Usage Usage { get; }

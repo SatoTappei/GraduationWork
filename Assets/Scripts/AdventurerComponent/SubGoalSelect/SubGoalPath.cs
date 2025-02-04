@@ -21,27 +21,27 @@ namespace Game
             // サブゴールに対応したコンポーネントを追加。
             foreach (string s in subGoals)
             {
-                if (s == "お宝を手に入れる")
+                if (s == nameof(FindTreasureGoal))
                 {
                     _path.Add(gameObject.AddComponent<FindTreasureGoal>());
                 }
-                else if (s == "依頼されたアイテムを手に入れる")
+                else if (s == nameof(FindItemGoal))
                 {
                     _path.Add(gameObject.AddComponent<FindItemGoal>());
                 }
-                else if (s == "依頼された敵を倒す")
+                else if (s == nameof(DefeatEnemyGoal))
                 {
                     _path.Add(gameObject.AddComponent<DefeatEnemyGoal>());
                 }
-                else if (s == "ダンジョンのボスを倒す")
+                else if (s == nameof(DefeatBossGoal))
                 {
                     _path.Add(gameObject.AddComponent<DefeatBossGoal>());
                 }
-                else if (s == "他の冒険者を倒す")
+                else if (s == nameof(DefeatAdventurerGoal))
                 {
                     _path.Add(gameObject.AddComponent<DefeatAdventurerGoal>());
                 }
-                else if (s == "ダンジョンの入口に戻る")
+                else if (s == nameof(ReturnEntranceGoal))
                 {
                     _path.Add(gameObject.AddComponent<ReturnEntranceGoal>());
                 }

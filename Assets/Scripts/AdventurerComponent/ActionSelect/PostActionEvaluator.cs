@@ -106,6 +106,10 @@ namespace Game
             {
                 //
             }
+            else if (result.Action == "Idle")
+            {
+                //
+            }
             else
             {
                 Debug.LogWarning($"行動後のスコア付けが出来ない。{result.Action}");

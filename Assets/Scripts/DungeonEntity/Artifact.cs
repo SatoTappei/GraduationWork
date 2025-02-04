@@ -12,6 +12,7 @@ namespace Game
         [SerializeField] Renderer _renderer;
         [SerializeField] ParticleSystem[] _particles;
 
+        CameraManager _camera;
         Coroutine _rotate;
         bool _isEmpty;
         bool _isActive;
@@ -21,6 +22,8 @@ namespace Game
 
         void Awake()
         {
+            _camera = CameraManager.Find();
+
             // 条件を満たすことで出現するので、初期状態では入手できないようフラグを立てておく。
             _isEmpty = true;
 
@@ -41,7 +44,12 @@ namespace Game
 
         public void OnEventCall(EventData data)
         {
-            Refill();
+            Debug.Log($"WebSocket Event Received: {data.EventCode}");
+
+            if (EventDefine.Artifact01 <= data.EventCode && data.EventCode <= EventDefine.Artifact03)
+            {
+                Refill();
+            }
         }
 
         public string Scavenge(Actor _, out Item item)
@@ -81,6 +89,10 @@ namespace Game
 
             // モデルを回転させる。
             _rotate = StartCoroutine(RotateAsync());
+
+            // 出現演出。
+            _camera.Shake();
+            GameLog.Add("システム", "アーティファクトが出現！", LogColor.Yellow);
 
             _isEmpty = false;
         }

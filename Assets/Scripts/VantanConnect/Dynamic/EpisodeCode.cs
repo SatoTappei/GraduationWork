@@ -13,9 +13,6 @@ namespace VTNConnect
         VCMainReset = 205,  //情報を整理した
         VCMainSnatch = 206,  //アーティファクトを奪った
         VCMainPurpose = 207,  //冒険の目的
-        CfDefeatBoss = 210,  //エリアボスを倒した
-        BADefeatBoss = 215,  //ボスを倒した
-        BADead = 216,  //死んだ
         SGEnemyLeave = 500,  //敵を取り逃がした
 
     }

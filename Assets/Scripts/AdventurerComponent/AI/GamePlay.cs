@@ -86,7 +86,7 @@ namespace Game
             // 行動ログ。
             format.ActionLog = _adventurer.ActionLog.Log.ToArray();
             
-            // 情報。ユーザーが送信したコメントの場合、英語ではなく日本語の文章になる。
+            // 情報。
             format.Information = _information.Information.Select(info => info.Text.English).ToArray();
             
             // この中から1つ行動を選ぶ。
@@ -231,6 +231,15 @@ namespace Game
                 {
                     // 扉、入口、その他はそのままIDを返す。
                     info = actor.ID;
+                }
+            }
+
+            // 所持していたアーティファクトが落ちた場合、ドアなどの上に重なることがある。
+            foreach (Actor actor in cell.GetActors())
+            {
+                if (actor.ID == nameof(DroppedArtifact))
+                {
+                    info = "Here is a legendary treasure. You can get it when you scavenge.";
                 }
             }
 

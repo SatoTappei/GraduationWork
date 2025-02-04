@@ -10,12 +10,15 @@ namespace Game
     public class DefeatedAction : BaseAction
     {
         [SerializeField] AudioClip _defeatedSE;
+        [SerializeField] DroppedArtifact _droppedArtifact;
 
         Adventurer _adventurer;
+        ItemInventory _item;
 
         void Awake()
         {
             _adventurer = GetComponent<Adventurer>();
+            _item = GetComponent<ItemInventory>();
         }
 
         public async UniTask<bool> PlayAsync(CancellationToken token)
@@ -24,6 +27,13 @@ namespace Game
 
             // 生存している場合。
             if (_adventurer.Status.IsAlive) return false;
+
+            // アーティファクトを保持している場合は落とす。
+            if (_item.IsHave(nameof(Artifact)))
+            {
+                DroppedArtifact a = Instantiate(_droppedArtifact);
+                a.Place(_adventurer.Coords, Vector2Int.up);
+            }
 
             // 死亡時のアニメーション再生。
             Animator animator = GetComponentInChildren<Animator>();

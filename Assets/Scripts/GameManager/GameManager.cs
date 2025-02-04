@@ -2,12 +2,16 @@ using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
+using UnityEngine.Events;
 using VTNConnect;
 
 namespace Game
 {
     public class GameManager : MonoBehaviour
     {
+        public static event UnityAction OnGameStart;
+        public static event UnityAction OnGameEnd;
+
         AdventurerSpawner _spawner;
         int _resultCount;
 
@@ -19,6 +23,12 @@ namespace Game
         void Start()
         {
             UpdateAsync(this.GetCancellationTokenOnDestroy()).Forget();
+        }
+
+        void OnDestroy()
+        {
+            OnGameStart = null;
+            OnGameEnd = null;
         }
 
         // 冒険者が脱出や撃破された場合、冒険者側から呼び出して冒険の結果を報告する。
@@ -40,6 +50,7 @@ namespace Game
                 // ゲーム開始。
                 await VantanConnect.GameStart();
                 token.ThrowIfCancellationRequested();
+                OnGameStart?.Invoke();
 
                 _resultCount = 0;
 
@@ -52,6 +63,7 @@ namespace Game
                 // ゲーム終了。
                 await VantanConnect.GameEnd();
                 token.ThrowIfCancellationRequested();
+                OnGameEnd?.Invoke();
 
                 VantanConnect.SystemReset();
             }
