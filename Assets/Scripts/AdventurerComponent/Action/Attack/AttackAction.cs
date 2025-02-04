@@ -26,6 +26,18 @@ namespace Game
             const float RotateSpeed = 4.0f;
             const float PlayTime = 2.0f;
 
+            // 行動開始のタイミングで死亡していた場合。
+            if (_adventurer.Status.CurrentHp <= 0)
+            {
+                return new ActionResult(
+                    "Attack",
+                    "Failure",
+                    $"Died.",
+                    _adventurer.Coords,
+                    _adventurer.Direction
+                );
+            }
+
             // 周囲に攻撃可能な対象が居ない場合。
             if (!TryGetTarget<TTarget>(out Actor target))
             {
@@ -58,7 +70,13 @@ namespace Game
             }
 
             // 攻撃のアニメーションの再生終了を待つ。
-            await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
+            // 攻撃中に死亡した場合は中断されるが、攻撃自体はヒットする。
+            for (float i = 0; i <= PlayTime; i += Time.deltaTime)
+            {
+                if (_adventurer.Status.CurrentHp <= 0) break;
+
+                await UniTask.Yield(cancellationToken: token);
+            }
 
             // 撃破した場合、台詞とログを表示し、撃破カウントを増やす。
             if (result == "Defeat")

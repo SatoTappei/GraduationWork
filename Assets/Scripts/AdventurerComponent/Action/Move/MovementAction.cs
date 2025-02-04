@@ -25,6 +25,18 @@ namespace Game
         // 派生クラスから呼び出す移動処理。
         protected async UniTask<ActionResult> MoveAsync(CancellationToken token)
         {
+            // 行動開始のタイミングで死亡していた場合。
+            if (_adventurer.Status.CurrentHp <= 0)
+            {
+                return new ActionResult(
+                    "Move",
+                    "Failure",
+                    $"Died.",
+                    _adventurer.Coords,
+                    _adventurer.Direction
+                );
+            }
+
             Vector2Int nextCoords = _movementPath.GetCurrent().Coords;
             Vector2Int nextDirection = nextCoords - _adventurer.Coords;
 

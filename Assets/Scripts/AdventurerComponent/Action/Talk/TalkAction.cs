@@ -37,6 +37,18 @@ namespace Game
             const float RotateSpeed = 4.0f;
             const float PlayTime = 3.28f;
 
+            // 行動開始のタイミングで死亡していた場合。
+            if (_adventurer.Status.CurrentHp <= 0)
+            {
+                return new ActionResult(
+                    "Talk",
+                    "Failure",
+                    $"Died.",
+                    _adventurer.Coords,
+                    _adventurer.Direction
+                );
+            }
+
             // 周囲に会話可能な冒険者がいない場合。
             if (!TryGetTarget<Adventurer>(out Actor target))
             {
@@ -98,8 +110,13 @@ namespace Game
                 _history.Add(target.ID);
             }
 
-            // 会話の演出が終わるまで待つ。
-            await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
+            // 会話の演出が終わるまで待つ。会話中に死亡した場合は中断される。
+            for (float i = 0; i <= PlayTime; i += Time.deltaTime)
+            {
+                if (_adventurer.Status.CurrentHp <= 0) break;
+
+                await UniTask.Yield(cancellationToken: token);
+            }
 
             // 会話できたかどうか、結果を返す。
             if (isTalked)

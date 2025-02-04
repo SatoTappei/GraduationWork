@@ -29,6 +29,18 @@ namespace Game
             const float RotateSpeed = 4.0f;
             const float PlayTime = 2.0f;
 
+            // 行動開始のタイミングで死亡していた場合。
+            if (_adventurer.Status.CurrentHp <= 0)
+            {
+                return new ActionResult(
+                    "Scavenge",
+                    "Failure",
+                    $"Died.",
+                    _adventurer.Coords,
+                    _adventurer.Direction
+                );
+            }
+
             // 漁る際の優先度は 鍵->宝箱->その他 の順。
             if (TryGetTarget<TreasureChestKey>(out Actor target) || 
                 TryGetTarget<Treasure>(out target) || 
@@ -128,8 +140,14 @@ namespace Game
                 _adventurer.Status.TreasureCount++;
             }
 
-            // アニメーションなどの演出を待つ。
-            await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
+            // 漁るのアニメーションの再生終了を待つ。
+            // 漁る中に死亡した場合は中断されるが、取得はされる。
+            for (float i = 0; i <= PlayTime; i += Time.deltaTime)
+            {
+                if (_adventurer.Status.CurrentHp <= 0) break;
+
+                await UniTask.Yield(cancellationToken: token);
+            }
 
             // 漁った結果ごとの行動ログに追加する文章。
             string actionLog;

@@ -28,6 +28,18 @@ namespace Game
             const float RotateSpeed = 4.0f;
             const float PlayTime = 2.0f;
 
+            // 行動開始のタイミングで死亡していた場合。
+            if (_adventurer.Status.CurrentHp <= 0)
+            {
+                return new ActionResult(
+                    "Throw",
+                    "Failure",
+                    $"Died.",
+                    _adventurer.Coords,
+                    _adventurer.Direction
+                );
+            }
+
             // 周囲に敵もしくは冒険者がいる場合は向いて投げる。敵を優先する。
             if (TryGetTarget<Enemy>(out Actor target) || TryGetTarget<Adventurer>(out target)) { }
 
@@ -83,8 +95,13 @@ namespace Game
                 Debug.LogWarning($"対応するアイテムの生成が出来ない。スペルミス？{throwItem.Name.Japanese}");
             }
 
-            // アニメーションなどの演出を待つ。
-            await UniTask.WaitForSeconds(PlayTime, cancellationToken: token);
+            // アニメーションを待つ。途中で死亡した場合は中断される。
+            for (float i = 0; i <= PlayTime; i += Time.deltaTime)
+            {
+                if (_adventurer.Status.CurrentHp <= 0) break;
+
+                await UniTask.Yield(cancellationToken: token);
+            }
 
             return new ActionResult(
                 "Throw",
