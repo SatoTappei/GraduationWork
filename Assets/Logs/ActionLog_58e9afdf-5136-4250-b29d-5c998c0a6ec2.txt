@@ -1,0 +1,722 @@
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveSouth
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Entrance (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the south."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveNorth
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Explored: 1) ",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the south.",
+        "Turn2: Successfully moved to the north."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveEast
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "Door (Unexplored)",
+        "West": "Entrance (Explored: 1) "
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the south.",
+        "Turn2: Successfully moved to the north.",
+        "Turn3: Successfully moved to the east."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveSouth
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Wall",
+        "East": "Wall",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn2: Successfully moved to the north.",
+        "Turn3: Successfully moved to the east.",
+        "Turn4: Successfully moved to the south."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveWest (Score: 0.33)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveWest
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Entrance (Explored: 1) ",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Explored: 1) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn3: Successfully moved to the east.",
+        "Turn4: Successfully moved to the south.",
+        "Turn5: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveSouth
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "There is an adventurer exploring a dungeon. (Explored: 2) ",
+        "South": "Floor (Unexplored)",
+        "East": "Wall",
+        "West": "Wall"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn4: Successfully moved to the south.",
+        "Turn5: Successfully moved to the west.",
+        "Turn6: Successfully moved to the south."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.33)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveSouth
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "There is an adventurer exploring a dungeon. (Explored: 1) ",
+        "South": "Floor (Unexplored)",
+        "East": "Wall",
+        "West": "Wall"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn5: Successfully moved to the west.",
+        "Turn6: Successfully moved to the south.",
+        "Turn7: Successfully moved to the south."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.33)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveSouth
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "There is an adventurer exploring a dungeon. (Explored: 1) ",
+        "South": "Floor (Unexplored)",
+        "East": "Door (Unexplored)",
+        "West": "Wall"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn6: Successfully moved to the south.",
+        "Turn7: Successfully moved to the south.",
+        "Turn8: Successfully moved to the south."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.33)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveEast
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Wall",
+        "East": "Floor (Unexplored)",
+        "West": "There is an adventurer exploring a dungeon. (Explored: 1) "
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn7: Successfully moved to the south.",
+        "Turn8: Successfully moved to the south.",
+        "Turn9: Successfully moved to the east."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveEast (Score: 0.33)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveEast
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Unexplored)",
+        "West": "Door (Explored: 1) "
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn8: Successfully moved to the south.",
+        "Turn9: Successfully moved to the east.",
+        "Turn10: Successfully moved to the east."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveNorth
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Floor (Explored: 1) ",
+        "East": "Floor (Unexplored)",
+        "West": "Wall"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn9: Successfully moved to the east.",
+        "Turn10: Successfully moved to the east.",
+        "Turn11: Successfully moved to the north."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.33)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveEast
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn10: Successfully moved to the east.",
+        "Turn11: Successfully moved to the north.",
+        "Turn12: Successfully moved to the east."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveSouth
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Floor (Unexplored)",
+        "East": "There is a treasure chest. You can get it when you scavenge out the contents. (Unexplored)",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn11: Successfully moved to the north.",
+        "Turn12: Successfully moved to the east.",
+        "Turn13: Successfully moved to the south."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)",
+        "MoveWest (Score: 0.1)",
+        "Scavenge (Score: 0.5)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+Scavenge
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Floor (Unexplored)",
+        "East": "There is a treasure chest. You can get it when you scavenge out the contents. (Explored: 1) ",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn12: Successfully moved to the east.",
+        "Turn13: Successfully moved to the south.",
+        "Turn14: I did not have the keys to open the surrounding treasure chests."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "Scavenge (Score: 0)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveWest
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Explored: 1) ",
+        "West": "Door (Explored: 1) "
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn13: Successfully moved to the south.",
+        "Turn14: I did not have the keys to open the surrounding treasure chests.",
+        "Turn15: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveSouth
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 2) ",
+        "South": "Wall",
+        "East": "Floor (Unexplored)",
+        "West": "Wall"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn14: I did not have the keys to open the surrounding treasure chests.",
+        "Turn15: Successfully moved to the west.",
+        "Turn16: Successfully moved to the south."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveEast (Score: 0.33)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveEast
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Wall",
+        "East": "There's a container. You might be able to obtain items or information by scavenging it. (Unexplored)",
+        "West": "There is an adventurer exploring a dungeon. (Explored: 1) "
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn15: Successfully moved to the west.",
+        "Turn16: Successfully moved to the south.",
+        "Turn17: Successfully moved to the east."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)",
+        "Scavenge (Score: 0.15)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+Scavenge
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Wall",
+        "East": "There's a container. You might be able to obtain items or information by scavenging it. (Explored: 1) ",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "Luggage (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn16: Successfully moved to the south.",
+        "Turn17: Successfully moved to the east.",
+        "Turn18: I scavenged the surrounding boxes. I got the Luggage."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)",
+        "Scavenge (Score: 0.15)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "There is an adventurer exploring a dungeon. (Explored: 1) ",
+        "East": "There is a treasure chest. You can get it when you scavenge out the contents. (Explored: 1) ",
+        "West": "Floor (Explored: 2) "
+    },
+    "Items": [
+        "Luggage (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn17: Successfully moved to the east.",
+        "Turn18: I scavenged the surrounding boxes. I got the Luggage.",
+        "Turn19: Successfully moved to the north."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveWest (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)",
+        "Scavenge (Score: 0.2)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Floor (Explored: 1) ",
+        "East": "There is an adventurer exploring a dungeon. (Explored: 2) ",
+        "West": "Door (Explored: 1) "
+    },
+    "Items": [
+        "Luggage (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn18: I scavenged the surrounding boxes. I got the Luggage.",
+        "Turn19: Successfully moved to the north.",
+        "Turn20: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)",
+        "MoveWest (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Wall",
+        "East": "Floor (Explored: 3) ",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "Luggage (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn19: Successfully moved to the north.",
+        "Turn20: Successfully moved to the west.",
+        "Turn21: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Floor (Unexplored)",
+        "East": "Door (Explored: 2) ",
+        "West": "Wall"
+    },
+    "Items": [
+        "Luggage (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn20: Successfully moved to the west.",
+        "Turn21: Successfully moved to the west.",
+        "Turn22: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)",
+        "MoveEast (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveSouth
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Floor (Explored: 2) ",
+        "South": "Floor (Unexplored)",
+        "East": "Wall",
+        "West": "Wall"
+    },
+    "Items": [
+        "Luggage (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn21: Successfully moved to the west.",
+        "Turn22: Successfully moved to the west.",
+        "Turn23: Successfully moved to the south."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Floor (Explored: 1) ",
+        "East": "Door (Explored: 2) ",
+        "West": "Wall"
+    },
+    "Items": [
+        "Luggage (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn22: Successfully moved to the west.",
+        "Turn23: Successfully moved to the south.",
+        "Turn24: Successfully moved to the north."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Floor (Explored: 3) ",
+        "East": "Wall",
+        "West": "Wall"
+    },
+    "Items": [
+        "Luggage (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn23: Successfully moved to the south.",
+        "Turn24: Successfully moved to the north.",
+        "Turn25: Successfully moved to the north."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Floor (Explored: 2) ",
+        "South": "Floor (Explored: 2) ",
+        "East": "Wall",
+        "West": "Wall"
+    },
+    "Items": [
+        "Luggage (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn24: Successfully moved to the north.",
+        "Turn25: Successfully moved to the north.",
+        "Turn26: Successfully moved to the north."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Entrance (Explored: 1) ",
+        "South": "Floor (Explored: 2) ",
+        "East": "Floor (Explored: 1) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Luggage (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn25: Successfully moved to the north.",
+        "Turn26: Successfully moved to the north.",
+        "Turn27: Successfully moved to the north."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance

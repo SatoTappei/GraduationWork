@@ -27,11 +27,20 @@ namespace GameLoopTest
             //メッセージ
             APIGetMessagesImplement api = new APIGetMessagesImplement();
             var messages = await api.Request(VantanConnect.SystemSave.UseConnectUserId);
-            Debug.Log(messages.Messages.Length);
+            Debug.Log(messages.Messages);
         }
 
         private void Update()
         {
+#if AIGAME_IMPLEMENT
+            //ゲームスタート時に通信する
+            UniTask.RunOnThreadPool(async () =>
+            {
+                var result = await VantanConnect.GameStart();
+                Debug.Log(result.GameTitle);
+            }).Forget();
+            SceneManager.LoadScene("InGame");
+#else
             if(Input.GetKeyDown(KeyCode.Return))
             {
                 //ゲームスタート時に通信する
@@ -40,6 +49,7 @@ namespace GameLoopTest
                     SceneManager.LoadScene("InGame");
                 });
             }
+#endif
         }
     }
 }

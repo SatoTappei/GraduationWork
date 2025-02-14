@@ -42,20 +42,17 @@ namespace Game
 
         async UniTask UpdateAsync(CancellationToken token)
         {
-            // ˆê“x‚É¶¬‚·‚é–`Œ¯ŽÒ‚ÌÅ‘å”B
-            const int Max = 4;
-
             while (!token.IsCancellationRequested)
             {
                 // ƒQ[ƒ€ŠJŽnB
-                await VantanConnect.GameStart();
+                GameStartAIGameResult gameStartResult = await VantanConnect.GameStart();
                 token.ThrowIfCancellationRequested();
                 OnGameStart?.Invoke();
 
                 _resultCount = 0;
 
                 // ˆê’èŠÔŠu‚Å–`Œ¯ŽÒ‚ð¶¬B
-                int spawnedCount = await _spawner.SpawnAsync(Max, token);
+                int spawnedCount = await _spawner.SpawnAsync(gameStartResult.Artifacts, token);
 
                 // ¶¬‚µ‚½–`Œ¯ŽÒ‚ª‘SˆõA–`Œ¯‚ÌŒ‹‰Ê‚ð•ñ‚·‚é‚Ü‚Å‘Ò‚ÂB
                 await UniTask.WaitUntil(() => _resultCount == spawnedCount, cancellationToken: token);

@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine.UI;
 using GameLoopTest;
 using UnityEngine.SceneManagement;
+using Cysharp.Threading.Tasks;
 
 namespace VTNConnect
 {
@@ -32,20 +33,20 @@ namespace VTNConnect
         void Update()
         {
             _timer += Time.deltaTime;
+            /*
             if (_timer > _spawnInterval)
             {
                 _timer -= _spawnInterval;
                 GameObject.Instantiate(_enemy, new Vector3(UnityEngine.Random.Range(-20,20), 50, -1), Quaternion.identity);
             }
+            */
 
             if(Input.GetKeyDown(KeyCode.Space))
             {
 #if AIGAME_IMPLEMENT
                 //ゲーム終了
-                VantanConnect.GameEnd((VC_StatusCode status) =>
-                {
-                    SceneManager.LoadScene("Title");
-                });
+                VantanConnect.GameEnd().Forget();
+                SceneManager.LoadScene("Title");
 #else
                 //ゲーム終了
                 VantanConnect.GameEnd(false, (VC_StatusCode status) =>
@@ -55,14 +56,12 @@ namespace VTNConnect
 #endif
             }
 
-            if(_timer > 10.0f)
+            if(_timer > 2.0f)
             {
 #if AIGAME_IMPLEMENT
                 //ゲーム終了
-                VantanConnect.GameEnd((VC_StatusCode status) =>
-                {
-                    SceneManager.LoadScene("Title");
-                });
+                VantanConnect.GameEnd().Forget();
+                SceneManager.LoadScene("Title");
 #else
                 //ゲーム終了
                 VantanConnect.GameEnd(true, (VC_StatusCode status) =>

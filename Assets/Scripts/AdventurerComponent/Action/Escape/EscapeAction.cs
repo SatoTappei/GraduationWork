@@ -36,7 +36,7 @@ namespace Game
 
             // 脱出時の台詞。
             TryGetComponent(out LineDisplayer line);
-            line.ShowLine(RequestLineType.Goal);
+            line.Show(RequestLineType.Goal);
 
             // ゲーム進行ログに表示。
             TryGetComponent(out Adventurer adventurer);

@@ -6,6 +6,7 @@ using System.Threading;
 using UnityEngine;
 using AI;
 using Game.ItemData;
+using System.IO;
 
 namespace Game
 {
@@ -46,6 +47,9 @@ namespace Game
 
         // 次にリクエストする際、事前にAIを初期化するフラグ。
         bool _isPreInitialize;
+        // FTのログを取る用。情報を整理せずに冒険を終えた場合に取る。
+        bool _isHelped;
+        List<string> _logs;
 
         void Awake()
         {
@@ -54,6 +58,21 @@ namespace Game
             _actions = GetComponent<AvailableActions>();
             _subGoalPath = GetComponent<SubGoalPath>();
             _item = GetComponent<ItemInventory>();
+
+            _logs = new List<string>();
+        }
+
+        void OnDestroy()
+        {
+            if (_isHelped) return;
+
+            StreamWriter writer = new StreamWriter($"./Assets/Logs/ActionLog_{System.Guid.NewGuid()}.txt", false);
+            foreach (string s in _logs)
+            {
+                writer.WriteLine(s);
+            }
+            writer.Flush();
+            writer.Close();
         }
 
         public void PreInitialize()
@@ -116,7 +135,11 @@ namespace Game
             // 選択肢とスコアがスペース区切りで返ってくることを想定。
             // ダブルクオーテーションが付いている場合もある。
             string result = response.Split()[0].Trim('"');
-            
+
+            // ログに追加。
+            _logs.Add($"{json}\n{result}");
+            if (result == "RequestHelp") _isHelped = true;
+
             return result;
         }
 
@@ -126,19 +149,20 @@ namespace Game
             {
                 Debug.LogWarning("冒険者のデータが読み込まれていない。");
 
-                _ai = new AIClient($"Select one of the AvailableActions and output the value only.");
+                string model = "ft:gpt-4o-mini-2024-07-18:personal::AyDu9Zhp";
+                string prompt = $"Select one of the AvailableActions and output the value only.";
+                _ai = new AIClient(model, prompt);
             }
             else
             {
                 string prompt =
                     $"# Instructions\n" +
-                    $"- Your character’s profiles are as follows.\n" +
-                    $"- Consider these profiles carefully when deciding the next action.\n" +
-                    $"- Avoid actions that go against their personality or expose their weaknesses.\n" +
-                    $"# CharacterProfiles(Japanese)\n" +
-                    $"- {_adventurer.Sheet.Personality}\n" +
-                    $"- {_adventurer.Sheet.Motivation}\n" +
-                    $"- {_adventurer.Sheet.Weaknesses}\n" +
+                    $"- You are an adventurer in a roguelike game.\n" +
+                    $"- Your objective is to achieve the goal.\n" +
+                    $"- Prioritize exploring unexplored areas.\n" +
+                    $"- Defeating enemies may grant you items.\n" +
+                    $"- Scavenge chests and containers may yield items.\n" +
+                    $"- You can choose to interact with other players either friendly or aggressively.\n" +
                     $"# OutputFormat\n" +
 #if true
                     $"- Select one of the AvailableActions and output the value only.";

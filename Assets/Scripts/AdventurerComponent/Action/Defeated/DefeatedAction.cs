@@ -57,7 +57,7 @@ namespace Game
             // 死亡時の台詞。
             if (TryGetComponent(out LineDisplayer line))
             {
-                line.ShowLine(RequestLineType.Defeated);
+                line.Show(RequestLineType.Defeated);
             }
 
             // ログに表示。

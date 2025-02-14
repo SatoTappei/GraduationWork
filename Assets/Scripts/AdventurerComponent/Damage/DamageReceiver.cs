@@ -36,7 +36,7 @@ namespace Game
             _adventurer.Status.CurrentHp -= value;
 
             // ダメージを受けた際の台詞。
-            _line.ShowLine(RequestLineType.Damage);
+            _line.Show(RequestLineType.Damage);
 
             // UIに反映。
             _statusBar.Apply();

@@ -1,0 +1,25 @@
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "There is an adventurer exploring a dungeon. (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [],
+    "Information": [
+        "On the west side is a long corridor."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)",
+        "MoveWest (Score: 0.1)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Find the treasure chest in the dungeon and scavenge."
+}
+MoveNorth

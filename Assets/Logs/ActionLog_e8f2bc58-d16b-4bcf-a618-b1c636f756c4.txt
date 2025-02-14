@@ -1,0 +1,99 @@
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "There is an adventurer exploring a dungeon. (Unexplored)",
+        "West": "There is an adventurer exploring a dungeon. (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveSouth
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Entrance (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the south."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveSouth
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Floor (Unexplored)",
+        "East": "Wall",
+        "West": "Wall"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the south.",
+        "Turn2: Successfully moved to the south."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveSouth
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Floor (Unexplored)",
+        "East": "Wall",
+        "West": "Wall"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the south.",
+        "Turn2: Successfully moved to the south.",
+        "Turn3: Successfully moved to the south."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveSouth

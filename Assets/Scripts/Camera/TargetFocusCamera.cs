@@ -50,7 +50,6 @@ namespace Game
         IEnumerator FocusAsync(Adventurer target)
         {
             const float Duration = 5.0f;
-            const float RotateSpeed = 0.1f;
 
             // 冒険者が「移動」以外の行動をしている場合はズームする。
             float zoom;
@@ -76,7 +75,7 @@ namespace Game
                 if (target == null) break;
 
                 _vcam.Follow.transform.position = target.transform.position;
-                _vcam.transform.RotateAround(_vcam.transform.position, Vector3.up, RotateSpeed);
+                //_vcam.transform.RotateAround(_vcam.transform.position, Vector3.up, RotateSpeed);
 
                 yield return null;
             }

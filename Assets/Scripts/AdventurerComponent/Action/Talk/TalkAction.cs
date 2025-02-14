@@ -61,12 +61,15 @@ namespace Game
                 );
             }
 
+            // 会話内容を決める。
+            BilingualString theme = await _talkTheme.SelectAsync(token);
+
             // 会話する前に目標に向く。
             Vector3 targetPosition = DungeonManager.GetCell(target.Coords).Position;
             await RotateAsync(RotateSpeed, targetPosition, token);
 
             _animator.Play("Talk");
-            _line.ShowLine(RequestLineType.Greeting);
+            _line.Show(RequestLineType.Greeting);
             _particle.Play();
 
             // 目標を向いている間に会話対象が消える可能性があるので事前にチェックする必要がある。
@@ -74,7 +77,7 @@ namespace Game
             bool isTalked = true;
             if (target != null && target.TryGetComponent(out TalkReceiver talk))
             {
-                talk.Talk(_talkTheme.Selected, "Adventurer", _adventurer.Coords);
+                talk.Talk(theme, "Adventurer", _adventurer.Coords);
             }
             else
             {

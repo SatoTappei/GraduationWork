@@ -6,7 +6,6 @@ TagManager:
   tags:
   - DungeonManager
   - UiManager
-  - AdventurerSpawner
   - GameManager
   - CameraManager
   layers:

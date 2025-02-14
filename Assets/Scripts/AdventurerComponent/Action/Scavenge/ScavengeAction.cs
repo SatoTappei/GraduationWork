@@ -119,15 +119,15 @@ namespace Game
             // 手に入れたアイテムによって台詞が変わる。
             if (foundItem == null)
             {
-                _line.ShowLine(RequestLineType.GetItemFailure);
+                _line.Show(RequestLineType.GetItemFailure);
             }
             else if (foundItem.Name.English == "Artifact")
             {
-                _line.ShowLine(RequestLineType.GetArtifactSuccess);
+                _line.Show(RequestLineType.GetArtifactSuccess);
             }
             else
             {
-                _line.ShowLine(RequestLineType.GetItemSuccess);
+                _line.Show(RequestLineType.GetItemSuccess);
             }
 
             // 手に入れたアイテムに対応したカウントを増やす。
@@ -205,6 +205,12 @@ namespace Game
             else if (foundItem.Name.Japanese == "ヘルメット")
             {
                 VantanConnect.SendEvent(new EventData(EventDefine.SummonEnemy));
+            }
+            else if (foundItem.Name.Japanese == "★アーティファクト")
+            {
+                EventData data = new EventData(EventDefine.GetArtifact);
+                data.DataPack("UserId", _adventurer.Sheet.UserId);
+                VantanConnect.SendEvent(data);
             }
 
             // アイテムを入手したことをエピソードとして送信。

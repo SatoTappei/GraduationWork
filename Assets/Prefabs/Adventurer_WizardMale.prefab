@@ -702,6 +702,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _damageSE: {fileID: 8300000, guid: 11ace16e3191e694b87d3a8fa81372a6, type: 3}
   _particle: {fileID: 3887529919898987497}
+  _blood: {fileID: -7416692990005610826, guid: a67e8a610882d66429d2f025e781c1bb, type: 3}
 --- !u!114 &1360249265096054865
 MonoBehaviour:
   m_ObjectHideFlags: 0

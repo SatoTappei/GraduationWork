@@ -20,7 +20,6 @@ namespace Game
 
         GamePlay _gamePlay;
         RolePlay _rolePlay;
-        TalkThemeSelector _talkTheme;
         
         StatusBarBinder _statusBar;
         ProfileWindowBinder _profileWindow;
@@ -44,6 +43,7 @@ namespace Game
 
         SubGoalPath _subGoal;
         HoldInformation _information;
+        ItemInventory _item;
         HungryStatusEffect _hungry;
         StatusEffect[] _statusEffects;
 
@@ -62,7 +62,6 @@ namespace Game
             _exploreRecord = new ExploreRecord();
             _gamePlay = GetComponent<GamePlay>();
             _rolePlay = GetComponent<RolePlay>();
-            _talkTheme = GetComponent<TalkThemeSelector>();
             _statusBar = GetComponent<StatusBarBinder>();
             _profileWindow = GetComponent<ProfileWindowBinder>();
             _camera = GetComponent<CameraFocusBinder>();
@@ -82,6 +81,7 @@ namespace Game
             _postEvaluator = GetComponent<PostActionEvaluator>();
             _subGoal = GetComponent<SubGoalPath>();
             _information = GetComponent<HoldInformation>();
+            _item = GetComponent<ItemInventory>();
             _hungry = GetComponent<HungryStatusEffect>();
             _statusEffects = GetComponents<StatusEffect>();
         }
@@ -161,6 +161,9 @@ namespace Game
             episode.SetEpisode(_subGoal.Path[0].Description.Japanese);
             VantanConnect.SendEpisode(episode);
 
+            // アーティファクト所持者の場合は持ち物に追加。
+            _item.Add(new ItemData.Artifact());
+
             // ここまでが1ターン目開始までの処理。以降の処理は毎ターン繰り返される。
             while (!token.IsCancellationRequested)
             {
@@ -206,7 +209,6 @@ namespace Game
                 // 保持している情報を更新。
                 // 新しい情報を知った場合、このタイミングで保持している情報に追加される。
                 await _information.UpdateAsync(token);
-                await _talkTheme.SelectAsync(token);
 
                 // 保持している情報を更新したのでUIに反映。
                 _profileWindow.Apply();

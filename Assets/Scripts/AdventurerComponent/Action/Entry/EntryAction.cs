@@ -24,7 +24,7 @@ namespace Game
 
             // 登場時の台詞。
             TryGetComponent(out LineDisplayer line);
-            line.ShowLine(RequestLineType.Entry);
+            line.Show(RequestLineType.Entry);
 
             // ゲーム進行ログに表示。
             TryGetComponent(out Adventurer adventurer);

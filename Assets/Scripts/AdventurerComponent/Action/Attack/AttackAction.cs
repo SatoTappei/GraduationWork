@@ -55,7 +55,7 @@ namespace Game
             await RotateAsync(RotateSpeed, targetPosition, token);
 
             _animator.Play("Attack");
-            _line.ShowLine(RequestLineType.Attack);
+            _line.Show(RequestLineType.Attack);
 
             // ダメージを与える。
             string result;
@@ -81,7 +81,7 @@ namespace Game
             // 撃破した場合、台詞とログを表示し、撃破カウントを増やす。
             if (result == "Defeat")
             {
-                _line.ShowLine(RequestLineType.DefeatEnemy);
+                _line.Show(RequestLineType.DefeatEnemy);
 
                 GameLog.Add(
                     $"システム", 

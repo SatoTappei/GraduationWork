@@ -1,0 +1,51 @@
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "There is an adventurer exploring a dungeon. (Unexplored)",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveWest
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "Entrance (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the west."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveWest

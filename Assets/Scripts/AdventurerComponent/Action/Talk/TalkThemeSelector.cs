@@ -23,14 +23,12 @@ namespace Game
             public int Number;
         }
 
-        HoldInformation _informationStock;
+        HoldInformation _information;
         AIClient _ai;
-
-        public BilingualString Selected { get; private set; }
 
         void Awake()
         {
-            _informationStock = GetComponent<HoldInformation>();
+            _information = GetComponent<HoldInformation>();
 
             // 他の冒険者に伝える内容を判断する基準はAI任せなので、ヒントより挨拶を優先してしまうことがある。
             string prompt =
@@ -44,21 +42,20 @@ namespace Game
             _ai = new AIClient(prompt);
         }
 
-        public async UniTask SelectAsync(CancellationToken token)
+        public async UniTask<BilingualString> SelectAsync(CancellationToken token)
         {
-            // 保持している情報が無い場合、伝える情報も無い。
-            if (_informationStock.Information == null || _informationStock.Information.Count == 0)
+            // 保持している情報が無い場合、適当に挨拶する。
+            if (_information.Information == null || _information.Information.Count == 0)
             {
-                Selected = null;
-                return;
+                return new BilingualString("こんにちは", "Hello");
             }
             
             // AIにリクエストする用のフォーマットに変換。
             // 保持している各情報の英文に対応する番号をふる。
-            Choice[] choices = new Choice[_informationStock.Information.Count];
+            Choice[] choices = new Choice[_information.Information.Count];
             for (int i = 0; i < choices.Length; i++)
             {
-                Information info = _informationStock.Information[i];
+                Information info = _information.Information[i];
 
                 if (info == null) continue;
                 else if (info.Text==null)continue;
@@ -90,13 +87,16 @@ namespace Game
 
             // リクエストする用のフォーマットには英文しかデータが無い。
             // 順番は元の情報と一緒なので、元の情報を番号で指定する。
-            if (0 <= index && index < _informationStock.Information.Count)
+            if (0 <= index && index < _information.Information.Count)
             {
-                Selected = _informationStock.Information[index].Text;
+                return _information.Information[index].Text;
             }
             else
             {
                 Debug.LogWarning($"対応する情報が無いので会話内容を選択出来ない。: {index}");
+
+                // 適当に挨拶する。
+                return new BilingualString("こんにちは", "Hello");
             }
         }
     }

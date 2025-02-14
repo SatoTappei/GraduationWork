@@ -1,0 +1,51 @@
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Unexplored)",
+        "West": "There is an adventurer exploring a dungeon. (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [],
+    "Information": [
+        "On the south side is a long corridor."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.33)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Defeat requested enemies roaming in the dungeon."
+}
+MoveEast
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "Door (Unexplored)",
+        "West": "Entrance (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the east."
+    ],
+    "Information": [
+        "On the south side is a long corridor."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Defeat requested enemies roaming in the dungeon."
+}
+MoveSouth

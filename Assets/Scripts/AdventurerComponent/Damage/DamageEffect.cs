@@ -8,16 +8,17 @@ namespace Game
     {
         [SerializeField] AudioClip _damageSE;
         [SerializeField] ParticleSystem _particle;
+        [SerializeField] Blood _blood;
 
         Actor _actor;
-        AudioSource _audioSource;
+        AudioSource _audio;
         Transform _fbx;
         bool _isKnockback;
 
         void Awake()
         {
             _actor = GetComponent<Actor>();
-            _audioSource = GetComponent<AudioSource>();
+            _audio = GetComponent<AudioSource>();
             _fbx = transform.FindChildRecursive("FBX");
         }
 
@@ -33,16 +34,23 @@ namespace Game
             _isKnockback = true;
 
             // SEを再生。
-            if (!(_audioSource == null || _damageSE == null))
+            if (!(_audio == null || _damageSE == null))
             {
-                _audioSource.clip = _damageSE;
-                _audioSource.Play();
+                _audio.clip = _damageSE;
+                _audio.Play();
             }
 
             // パーティクルを再生。
             if (_particle != null)
             {
                 _particle.Play();
+            }
+
+            // 一定確率で血糊を生成。
+            if (_blood != null && Random.value < 0.5f) // 確率は適当に指定。
+            {
+                Blood b = Instantiate(_blood);
+                b.transform.position = DungeonManager.GetCell(_actor.Coords).Position;
             }
 
             // ノックバック。

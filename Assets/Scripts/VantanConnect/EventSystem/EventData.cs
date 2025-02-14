@@ -60,7 +60,7 @@ namespace VTNConnect
             var target = Payload.Where(p => p.Key == Key);
             if (target.Count() == 0)
             {
-                Debug.LogError($"データがNULLです");
+                Debug.LogError($"データがNULLです:" + Key);
                 return null;
             }
             return target.First();
@@ -74,7 +74,7 @@ namespace VTNConnect
         {
             var data = GetData(Key);
             if (data == null) return 0;
-            if (data.TypeName != "Integer" && !data.TypeName.StartsWith("Int"))
+            if (data.TypeName != "Integer" && !data.TypeName.StartsWith("Int") && data.TypeName != "number")
             {
                 Debug.LogWarning($"Intじゃない値かもしれません:{data.Data}({data.TypeName })");
             }
@@ -106,7 +106,7 @@ namespace VTNConnect
         #region 内部実装
         //シリアライズされるメンバ
         [SerializeField] public EventDefine EventId;                                    // イベントコード(ルールシートを参照)
-        [SerializeField] protected int FromId = ProjectSettings.GameID;                 // 誰から送信されたイベントか(自動付与)
+        [SerializeField] protected int FromId = VantanConnect.GameID;                 // 誰から送信されたイベントか(自動付与)
         [SerializeField] protected string GameHash = "";                                // ゲームハッシュ(自動付与)
         [SerializeField] protected List<ParamData> Payload = new List<ParamData>();     // 補足情報
         //ここまで

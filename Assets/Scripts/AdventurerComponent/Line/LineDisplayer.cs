@@ -17,12 +17,12 @@ namespace Game
             _statusBar = GetComponent<StatusBarBinder>();
         }
 
-        public void ShowLine(RequestLineType type)
+        public void Show(RequestLineType type)
         {
-            ShowLineAsync(type, this.GetCancellationTokenOnDestroy()).Forget();
+            ShowAsync(type, this.GetCancellationTokenOnDestroy()).Forget();
         }
 
-        async UniTask ShowLineAsync(RequestLineType type, CancellationToken token)
+        async UniTask ShowAsync(RequestLineType type, CancellationToken token)
         {
             string line = await _rolePlay.RequestLineAsync(type, token);
             token.ThrowIfCancellationRequested();

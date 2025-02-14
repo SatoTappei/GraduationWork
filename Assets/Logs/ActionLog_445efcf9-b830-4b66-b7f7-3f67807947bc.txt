@@ -1,0 +1,970 @@
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "There is an adventurer exploring a dungeon. (Unexplored)",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [],
+    "Information": [
+        "There is a door on the north side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveWest
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "There is an adventurer exploring a dungeon. (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the west."
+    ],
+    "Information": [
+        "There is a door on the north side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)",
+        "MoveWest (Score: 0.1)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveNorth
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Floor (Explored: 1) ",
+        "East": "Floor (Unexplored)",
+        "West": "Wall"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the west.",
+        "Turn2: Successfully moved to the north."
+    ],
+    "Information": [
+        "There is a door on the north side of this room."
+    ],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.33)",
+        "MoveEast (Score: 0.1)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveSouth
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Floor (Unexplored)",
+        "East": "There is an adventurer exploring a dungeon. (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the west.",
+        "Turn2: Successfully moved to the north.",
+        "Turn3: Successfully moved to the south."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveWest
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Wall",
+        "East": "Floor (Explored: 2) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn2: Successfully moved to the north.",
+        "Turn3: Successfully moved to the south.",
+        "Turn4: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveEast (Score: 0.33)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveWest
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Door (Unexplored)",
+        "East": "Floor (Explored: 1) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn3: Successfully moved to the south.",
+        "Turn4: Successfully moved to the west.",
+        "Turn5: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.33)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveSouth
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Floor (Unexplored)",
+        "East": "Wall",
+        "West": "Wall"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn4: Successfully moved to the west.",
+        "Turn5: Successfully moved to the west.",
+        "Turn6: Successfully moved to the south."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveSouth
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Door (Explored: 1) ",
+        "South": "There's a barrel. You might be able to obtain items or information by scavenging it. (Unexplored)",
+        "East": "Wall",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn5: Successfully moved to the west.",
+        "Turn6: Successfully moved to the south.",
+        "Turn7: Successfully moved to the south."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "Scavenge (Score: 0.5)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+Scavenge
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Door (Explored: 1) ",
+        "South": "There's a barrel. You might be able to obtain items or information by scavenging it. (Explored: 1) ",
+        "East": "Wall",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn6: Successfully moved to the south.",
+        "Turn7: Successfully moved to the south.",
+        "Turn8: I scavenged the surrounding boxes. I got the Junk."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveWest (Score: 0.1)",
+        "Scavenge (Score: 0.5)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveWest
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "There's a barrel. You might be able to obtain items or information by scavenging it. (Unexplored)",
+        "East": "Floor (Explored: 1) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn7: Successfully moved to the south.",
+        "Turn8: I scavenged the surrounding boxes. I got the Junk.",
+        "Turn9: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveEast (Score: 0.33)",
+        "MoveWest (Score: 0.1)",
+        "Scavenge (Score: 0.5)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+Scavenge
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "There's a barrel. You might be able to obtain items or information by scavenging it. (Explored: 1) ",
+        "East": "There is an adventurer exploring a dungeon. (Explored: 1) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn8: I scavenged the surrounding boxes. I got the Junk.",
+        "Turn9: Successfully moved to the west.",
+        "Turn10: I scavenged the surrounding boxes. I got the RustySword."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveWest (Score: 0.33)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)",
+        "Scavenge (Score: 0.5)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+TalkWithAdventurer
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "There's a barrel. You might be able to obtain items or information by scavenging it. (Explored: 1) ",
+        "East": "There is an adventurer exploring a dungeon. (Explored: 1) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn9: Successfully moved to the west.",
+        "Turn10: I scavenged the surrounding boxes. I got the RustySword.",
+        "Turn11: I talked to the adventurers around me about what I knew."
+    ],
+    "Information": [
+        "Hello"
+    ],
+    "AvailableActions": [
+        "MoveWest (Score: 0.33)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)",
+        "Scavenge (Score: 0.5)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveWest
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Explored: 1) ",
+        "West": "There is a hostile bandit. A fight seems unavoidable. Will you attack him? (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn10: I scavenged the surrounding boxes. I got the RustySword.",
+        "Turn11: I talked to the adventurers around me about what I knew.",
+        "Turn12: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "AttackToEnemy (Score: 1)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+AttackToEnemy
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Explored: 1) ",
+        "West": "EnemySpawner (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn11: I talked to the adventurers around me about what I knew.",
+        "Turn12: Successfully moved to the west.",
+        "Turn13: There are no enemies around to attack."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.33)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveSouth
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Wall",
+        "East": "There's a barrel. You might be able to obtain items or information by scavenging it. (Explored: 1) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn12: Successfully moved to the west.",
+        "Turn13: There are no enemies around to attack.",
+        "Turn14: Successfully moved to the south."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "Scavenge (Score: 0.5)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+MoveWest
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "There is a hostile bandit. A fight seems unavoidable. Will you attack him? (Unexplored)",
+        "South": "Wall",
+        "East": "Floor (Explored: 1) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn13: There are no enemies around to attack.",
+        "Turn14: Successfully moved to the south.",
+        "Turn15: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "AttackToEnemy (Score: 1)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+AttackToEnemy
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "There is a hostile bandit. A fight seems unavoidable. Will you attack him? (Unexplored)",
+        "South": "Wall",
+        "East": "There is an adventurer exploring a dungeon. (Explored: 1) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn14: Successfully moved to the south.",
+        "Turn15: Successfully moved to the west.",
+        "Turn16: I attacked the enemy. The enemy is still alive."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "AttackToEnemy (Score: 1)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Defeat boss enemies roaming in the dungeon."
+}
+AttackToEnemy
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "There is a key to the treasure chest. You can get it when you scavenge. (Unexplored)",
+        "South": "Wall",
+        "East": "There is an adventurer exploring a dungeon. (Explored: 1) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn15: Successfully moved to the west.",
+        "Turn16: I attacked the enemy. The enemy is still alive.",
+        "Turn17: I attacked the enemy. I defeated the enemy."
+    ],
+    "Information": [
+        "Hello"
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)",
+        "AttackToEnemy (Score: 1)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Wall",
+        "East": "There's a barrel. You might be able to obtain items or information by scavenging it. (Explored: 1) ",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn16: I attacked the enemy. The enemy is still alive.",
+        "Turn17: I attacked the enemy. I defeated the enemy.",
+        "Turn18: Successfully moved to the east."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)",
+        "Scavenge (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+Scavenge
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Wall",
+        "East": "There's a barrel. You might be able to obtain items or information by scavenging it. (Explored: 2) ",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn17: I attacked the enemy. I defeated the enemy.",
+        "Turn18: Successfully moved to the east.",
+        "Turn19: I scavenged the surrounding boxes. There was nothing in them."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)",
+        "Scavenge (Score: 0)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Floor (Explored: 2) ",
+        "East": "Floor (Explored: 1) ",
+        "West": "There is a key to the treasure chest. You can get it when you scavenge. (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn18: Successfully moved to the east.",
+        "Turn19: I scavenged the surrounding boxes. There was nothing in them.",
+        "Turn20: Successfully moved to the north."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)",
+        "Scavenge (Score: 0.05)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveWest
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "There is an adventurer exploring a dungeon. (Explored: 1) ",
+        "East": "Floor (Explored: 2) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn19: I scavenged the surrounding boxes. There was nothing in them.",
+        "Turn20: Successfully moved to the north.",
+        "Turn21: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveWest
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Floor (Unexplored)",
+        "East": "There is a key to the treasure chest. You can get it when you scavenge. (Explored: 1) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn20: Successfully moved to the north.",
+        "Turn21: Successfully moved to the west.",
+        "Turn22: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.33)",
+        "MoveWest (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)",
+        "Scavenge (Score: 0.15)"
+    ],
+    "Goal": "Return to the entrance."
+}
+Scavenge
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Floor (Unexplored)",
+        "East": "EnemySpawner (Explored: 2) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn21: Successfully moved to the west.",
+        "Turn22: Successfully moved to the west.",
+        "Turn23: I scavenged the surrounding boxes. I got the LightKey."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveWest
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Door (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Explored: 1) ",
+        "West": "Wall"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn22: Successfully moved to the west.",
+        "Turn23: I scavenged the surrounding boxes. I got the LightKey.",
+        "Turn24: Successfully moved to the west."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveNorth
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Explored: 1) ",
+        "East": "Wall",
+        "West": "Wall"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn23: I scavenged the surrounding boxes. I got the LightKey.",
+        "Turn24: Successfully moved to the west.",
+        "Turn25: Successfully moved to the north."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveNorth
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Door (Explored: 1) ",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn24: Successfully moved to the west.",
+        "Turn25: Successfully moved to the north.",
+        "Turn26: Successfully moved to the north."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.33)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveSouth
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "There is an adventurer exploring a dungeon. (Explored: 1) ",
+        "East": "Wall",
+        "West": "Wall"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn25: Successfully moved to the north.",
+        "Turn26: Successfully moved to the north.",
+        "Turn27: Successfully moved to the south."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Door (Explored: 2) ",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn26: Successfully moved to the north.",
+        "Turn27: Successfully moved to the south.",
+        "Turn28: Successfully moved to the north."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Wall",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Explored: 2) "
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn27: Successfully moved to the south.",
+        "Turn28: Successfully moved to the north.",
+        "Turn29: Successfully moved to the east."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveEast (Score: 0.33)",
+        "MoveWest (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Wall",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn28: Successfully moved to the north.",
+        "Turn29: Successfully moved to the east.",
+        "Turn30: Successfully moved to the east."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Wall",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn29: Successfully moved to the east.",
+        "Turn30: Successfully moved to the east.",
+        "Turn31: Successfully moved to the east."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveEast (Score: 0.33)",
+        "MoveWest (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Wall",
+        "East": "Floor (Explored: 1) ",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn30: Successfully moved to the east.",
+        "Turn31: Successfully moved to the east.",
+        "Turn32: Successfully moved to the east."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveEast (Score: 0.33)",
+        "MoveWest (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Door (Explored: 1) ",
+        "East": "Floor (Explored: 1) ",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn31: Successfully moved to the east.",
+        "Turn32: Successfully moved to the east.",
+        "Turn33: Successfully moved to the east."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.33)",
+        "MoveWest (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Wall",
+        "East": "Floor (Explored: 2) ",
+        "West": "Floor (Explored: 2) "
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn32: Successfully moved to the east.",
+        "Turn33: Successfully moved to the east.",
+        "Turn34: Successfully moved to the east."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveEast (Score: 0.33)",
+        "MoveWest (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Explored: 1) ",
+        "South": "Floor (Unexplored)",
+        "East": "Entrance (Unexplored)",
+        "West": "Floor (Explored: 2) "
+    },
+    "Items": [
+        "Junk (Usage: None)",
+        "RustySword (Usage: None)",
+        "LightKey (Usage: None)"
+    ],
+    "ActionLog": [
+        "Turn33: Successfully moved to the east.",
+        "Turn34: Successfully moved to the east.",
+        "Turn35: Successfully moved to the east."
+    ],
+    "Information": [],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.33)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)",
+        "MoveToEntrance (Score: 0.5)"
+    ],
+    "Goal": "Return to the entrance."
+}
+MoveToEntrance

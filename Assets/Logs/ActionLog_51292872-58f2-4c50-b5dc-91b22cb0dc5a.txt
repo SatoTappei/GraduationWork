@@ -1,0 +1,378 @@
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveWest
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "Entrance (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the west."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.33)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveEast
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Unexplored)",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the west.",
+        "Turn2: Successfully moved to the east."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.1)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveNorth
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Door (Unexplored)",
+        "South": "There is an adventurer exploring a dungeon. (Explored: 1) ",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn1: Successfully moved to the west.",
+        "Turn2: Successfully moved to the east.",
+        "Turn3: Successfully moved to the north."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+TalkWithAdventurer
+{
+    "CurrentLocation": "EntranceHall",
+    "Surroundings": {
+        "North": "Door (Unexplored)",
+        "South": "There is an adventurer exploring a dungeon. (Explored: 1) ",
+        "East": "Floor (Unexplored)",
+        "West": "There is an adventurer exploring a dungeon. (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn2: Successfully moved to the east.",
+        "Turn3: Successfully moved to the north.",
+        "Turn4: I talked to the adventurers around me about what I knew."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveEast (Score: 0.1)",
+        "AttackToAdventurer (Score: 0)",
+        "TalkWithAdventurer (Score: 0.5)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveNorth
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Explored: 1) ",
+        "East": "Wall",
+        "West": "Wall"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn3: Successfully moved to the north.",
+        "Turn4: I talked to the adventurers around me about what I knew.",
+        "Turn5: Successfully moved to the north."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveNorth
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Door (Explored: 1) ",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn4: I talked to the adventurers around me about what I knew.",
+        "Turn5: Successfully moved to the north.",
+        "Turn6: Successfully moved to the north."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveNorth
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Door (Unexplored)",
+        "South": "Floor (Explored: 1) ",
+        "East": "Floor (Unexplored)",
+        "West": "There's a lever. To activate the mechanism, select Scavenge. (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn5: Successfully moved to the north.",
+        "Turn6: Successfully moved to the north.",
+        "Turn7: Successfully moved to the north."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "Scavenge (Score: 0.5)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+Scavenge
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Door (Unexplored)",
+        "South": "Floor (Explored: 1) ",
+        "East": "Floor (Unexplored)",
+        "West": "There's a lever. To activate the mechanism, select Scavenge. (Explored: 1) "
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn6: Successfully moved to the north.",
+        "Turn7: Successfully moved to the north.",
+        "Turn8: I scavenged the surrounding boxes. There was nothing in them."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "Scavenge (Score: 0)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveNorth
+{
+    "CurrentLocation": "Room",
+    "Surroundings": {
+        "North": "Floor (Unexplored)",
+        "South": "Floor (Explored: 1) ",
+        "East": "Wall",
+        "West": "Wall"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn7: Successfully moved to the north.",
+        "Turn8: I scavenged the surrounding boxes. There was nothing in them.",
+        "Turn9: Successfully moved to the north."
+    ],
+    "Information": [
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0.33)",
+        "MoveSouth (Score: 0.1)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveNorth
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Door (Explored: 1) ",
+        "East": "Floor (Unexplored)",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn8: I scavenged the surrounding boxes. There was nothing in them.",
+        "Turn9: Successfully moved to the north.",
+        "Turn10: Successfully moved to the north."
+    ],
+    "Information": [
+        "West is a long corridor. East is a bend.",
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.33)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveEast
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "The floor is on fire. If you step on the floor, you will get burned. (Unexplored)",
+        "South": "Wall",
+        "East": "Wall",
+        "West": "Floor (Explored: 1) "
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn9: Successfully moved to the north.",
+        "Turn10: Successfully moved to the north.",
+        "Turn11: Successfully moved to the east."
+    ],
+    "Information": [
+        "West is a long corridor. East is a bend.",
+        "There is a door on the east side of this room."
+    ],
+    "AvailableActions": [
+        "MoveNorth (Score: 0)",
+        "MoveWest (Score: 0.33)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveWest
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Door (Explored: 1) ",
+        "East": "Floor (Explored: 1) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn10: Successfully moved to the north.",
+        "Turn11: Successfully moved to the east.",
+        "Turn12: Successfully moved to the west."
+    ],
+    "Information": [
+        "West is a long corridor. East is a bend."
+    ],
+    "AvailableActions": [
+        "MoveSouth (Score: 0.1)",
+        "MoveEast (Score: 0.1)",
+        "MoveWest (Score: 0.33)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveWest
+{
+    "CurrentLocation": "Corridor",
+    "Surroundings": {
+        "North": "Wall",
+        "South": "Wall",
+        "East": "Floor (Explored: 2) ",
+        "West": "Floor (Unexplored)"
+    },
+    "Items": [
+        "None"
+    ],
+    "ActionLog": [
+        "Turn11: Successfully moved to the east.",
+        "Turn12: Successfully moved to the west.",
+        "Turn13: Successfully moved to the west."
+    ],
+    "Information": [
+        "West is a long corridor. East is a bend."
+    ],
+    "AvailableActions": [
+        "MoveEast (Score: 0.33)",
+        "MoveWest (Score: 0.1)"
+    ],
+    "Goal": "Scavenge containers and barrels to obtain items."
+}
+MoveEast
