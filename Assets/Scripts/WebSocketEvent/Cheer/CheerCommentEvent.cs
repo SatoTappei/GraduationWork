@@ -23,9 +23,9 @@ namespace Game
             _spawner = AdventurerSpawner.Find();
         }
 
-        public void Execute(string target, string comment, int emotion = 0)
+        public void ExecuteMessage(int targetUserId, string comment, int emotion = 0)
         {
-            Execute(GetTargetNumber(target), comment, emotion);
+            Execute(GetTargetNumber(targetUserId), comment, emotion);
         }
 
         public void Execute(int number, string comment, int emotion = 0)
@@ -49,17 +49,17 @@ namespace Game
             }
         }
 
-        int GetTargetNumber(string target)
+        int GetTargetNumber(int targetUserId)
         {
             foreach (Adventurer a in _spawner.Spawned)
             {
-                if (a.Sheet.FullName == target)
+                if (a.Sheet.UserId == targetUserId)
                 {
                     return a.Sheet.DisplayID;
                 }
             }
 
-            Debug.LogWarning($"ダンジョン内に冒険者がいない。{target}");
+            Debug.LogWarning($"ダンジョン内に冒険者がいない。{targetUserId}");
 
             return -1;
         }
