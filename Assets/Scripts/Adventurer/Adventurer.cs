@@ -179,7 +179,7 @@ namespace Game
             while (!token.IsCancellationRequested)
             {
                 // 自身へのコメントを表示し、心情の変化によって演出が発生。
-                int emotion = _cheerComment.Display(Sheet.DisplayName, Sheet.DisplayID);
+                int emotion = _cheerComment.Display(Sheet.UserId, Sheet.DisplayID);
                 if (emotion > 0)
                 {
                     // バフ量を適当に設定。基準となる値に倍率をかける。

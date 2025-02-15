@@ -31,7 +31,7 @@ namespace Game
             {
                 return new ActionResult(
                     "Attack",
-                    "Failure",
+                    "Miss",
                     $"Died.",
                     _adventurer.Coords,
                     _adventurer.Direction

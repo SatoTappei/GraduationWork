@@ -86,7 +86,7 @@ namespace Game
                 if (data.GetIntData("Emotion") > 0) _powerUp.Execute();
                 else if (data.GetIntData("Emotion") < 0) _madness.Execute();
 
-                _cheerComment.ExecuteMessage(
+                _cheerComment.AddPending(
                     data.GetIntData("Target"),
                     data.GetStringData("Message"),
                     data.GetIntData("Emotion")
