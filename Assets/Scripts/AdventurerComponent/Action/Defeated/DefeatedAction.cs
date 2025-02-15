@@ -29,7 +29,7 @@ namespace Game
             if (_adventurer.Status.IsAlive) return false;
 
             // アーティファクトを保持している場合は落とす。
-            if (_item.IsHave(nameof(Artifact)))
+            if (_item.IsHave(nameof(ItemData.Artifact)))
             {
                 DroppedArtifact a = Instantiate(_droppedArtifact);
                 a.Place(_adventurer.Coords, Vector2Int.up);

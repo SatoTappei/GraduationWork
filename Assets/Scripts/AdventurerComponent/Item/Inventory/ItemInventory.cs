@@ -89,9 +89,9 @@ namespace Game
 
         public bool IsHave(string itemID)
         {
-            foreach (ItemEntry e in GetEntries())
+            foreach (string id in Get().Keys)
             {
-                if (e.Name == itemID) return true;
+                if (id == itemID) return true;
             }
 
             return false;

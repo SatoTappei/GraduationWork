@@ -40,12 +40,15 @@ namespace Game
 
         PreActionEvaluator _preEvaluator;
         PostActionEvaluator _postEvaluator;
-
         SubGoalPath _subGoal;
         HoldInformation _information;
         ItemInventory _item;
         HungryStatusEffect _hungry;
+        BuffStatusEffect _buff;
+        DamageReceiver _damage;
         StatusEffect[] _statusEffects;
+
+        CheerCommentEvent _cheerComment;
 
         public AdventurerSheet Sheet => _sheet;
         public Status Status => _status;
@@ -60,6 +63,7 @@ namespace Game
         {
             _actionLog = new ActionLog();
             _exploreRecord = new ExploreRecord();
+            
             _gamePlay = GetComponent<GamePlay>();
             _rolePlay = GetComponent<RolePlay>();
             _statusBar = GetComponent<StatusBarBinder>();
@@ -83,7 +87,11 @@ namespace Game
             _information = GetComponent<HoldInformation>();
             _item = GetComponent<ItemInventory>();
             _hungry = GetComponent<HungryStatusEffect>();
+            _buff = GetComponent<BuffStatusEffect>();
+            _damage = GetComponent<DamageReceiver>();
             _statusEffects = GetComponents<StatusEffect>();
+
+            _cheerComment = CheerCommentEvent.Find();
         }
 
         void Start()
@@ -162,11 +170,27 @@ namespace Game
             VantanConnect.SendEpisode(episode);
 
             // アーティファクト所持者の場合は持ち物に追加。
-            _item.Add(new ItemData.Artifact());
-
+            if (Sheet.IsArtifactOwner)
+            {
+                _item.Add(new ItemData.Artifact());
+            }
+            
             // ここまでが1ターン目開始までの処理。以降の処理は毎ターン繰り返される。
             while (!token.IsCancellationRequested)
             {
+                // 自身へのコメントを表示し、心情の変化によって演出が発生。
+                int emotion = _cheerComment.Display(Sheet.DisplayName, Sheet.DisplayID);
+                if (emotion > 0)
+                {
+                    // バフ量を適当に設定。基準となる値に倍率をかける。
+                    _buff.Set("Attack", 1.2f);
+                    _buff.Set("Speed", 2.0f);
+                }
+                else if(emotion < 0)
+                {
+                    _damage.Damage(0, default, "Madness");
+                }
+
                 // 経過ターン数、空腹を増加。
                 _status.ElapsedTurn++;
                 _status.CurrentHunger++;

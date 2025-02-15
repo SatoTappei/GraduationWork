@@ -8,6 +8,7 @@ TagManager:
   - UiManager
   - GameManager
   - CameraManager
+  - WebSocketEvent
   layers:
   - Default
   - TransparentFX
