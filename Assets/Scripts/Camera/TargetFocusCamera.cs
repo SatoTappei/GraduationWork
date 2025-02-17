@@ -12,6 +12,8 @@ namespace Game
         CinemachineImpulseSource _impulse;
         Coroutine _focus;
 
+        float _defaultDistance;
+
         void Awake()
         {
             _vcam = GetComponent<CinemachineVirtualCamera>();
@@ -24,6 +26,11 @@ namespace Game
             follow.transform.position = new Vector3(11, 0, 8);
         }
 
+        void Start()
+        {
+            _defaultDistance = _transposer.m_CameraDistance;
+        }
+
         public void SetTarget(Adventurer target)
         {
             _focus = StartCoroutine(FocusRepeatingAsync(target));
@@ -32,6 +39,8 @@ namespace Game
         public void DeleteTarget()
         {
             if (_focus != null) StopCoroutine(_focus);
+
+            _transposer.m_CameraDistance = _defaultDistance;
         }
 
         public void Shake()
@@ -66,8 +75,7 @@ namespace Game
             }
 
             // 目標をズームする。
-            float baseDistance = _transposer.m_CameraDistance;
-            _transposer.m_CameraDistance = baseDistance / zoom;
+            _transposer.m_CameraDistance = _defaultDistance / zoom;
 
             // 一定時間、カメラが目標をフォーカスする。
             for (float f = 0; f < Duration; f += Time.deltaTime)
@@ -80,7 +88,7 @@ namespace Game
                 yield return null;
             }
 
-            _transposer.m_CameraDistance = baseDistance;
+            _transposer.m_CameraDistance = _defaultDistance;
         }
     }
 }
