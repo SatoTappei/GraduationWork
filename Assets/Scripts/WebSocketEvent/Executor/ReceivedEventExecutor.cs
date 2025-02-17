@@ -58,15 +58,15 @@ namespace Game
             }
             else if (data.EventCode == EventDefine.JengaInfo)
             {
-                string material = data.GetStringData("Material");
-                if (material == "Plastic") _giveItem.Execute("軽い鍵");
-                else if (material == "Wood") _giveItem.Execute("軽い鍵");
-                else if (material == "Iron") _giveItem.Execute("重い鍵");
+                int material = data.GetIntData("SelectBlock");
+                if (material == 0) _giveItem.Execute("軽い鍵");
+                else if (material == 1) _giveItem.Execute("軽い鍵");
+                else if (material == 3) _giveItem.Execute("重い鍵");
                 else Debug.LogWarning($"対応するアイテムが無い。スペルミス？: {material}");
             }
             else if (data.EventCode == EventDefine.BadJengaInfo)
             {
-                _dealingDamage.Execute(data.GetIntData("Turn"));
+                _dealingDamage.Execute(data.GetIntData("JengaFinish"));
             }
             else if (data.EventCode == EventDefine.SummonHeliCopter)
             {
@@ -90,6 +90,11 @@ namespace Game
                     data.GetIntData("Target"),
                     data.GetStringData("Message"),
                     data.GetIntData("Emotion")
+                );
+
+                _revelation.Execute(
+                    data.GetStringData("Message"),
+                    data.GetIntData("Target")
                 );
             }
             else if (data.EventCode == EventDefine.BonusCoin)

@@ -26,14 +26,14 @@ namespace Game
             _spawner = AdventurerSpawner.Find();
         }
 
-        public void Execute(string text)
+        public void Execute(string text, int userID = -1)
         {
             if (_isRunning) return;
 
-            ExecuteAsync(text, this.GetCancellationTokenOnDestroy()).Forget();
+            ExecuteAsync(text, userID, this.GetCancellationTokenOnDestroy()).Forget();
         }
 
-        async UniTask ExecuteAsync(string text, CancellationToken token)
+        async UniTask ExecuteAsync(string text, int userID, CancellationToken token)
         {
             _isRunning = true;
 
@@ -49,7 +49,8 @@ namespace Game
             foreach (Adventurer adventurer in _spawner.Spawned)
             {
                 if (adventurer == null) continue;
-
+                if (!(userID == -1 || userID == adventurer.Sheet.UserId)) continue;
+                
                 if (adventurer.TryGetComponent(out TalkReceiver talk))
                 {
                     talk.Talk(
