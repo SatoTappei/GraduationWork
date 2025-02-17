@@ -78,7 +78,7 @@ namespace Game
             }
             else if (data.EventCode == EventDefine.ConfrontHeal)
             {
-                _heal.Execute(data.GetIntData("Value"));
+                _heal.Execute(data.GetIntData("ConfrontHeal"));
             }
             else if (data.EventCode == EventDefine.Cheer)
             {
