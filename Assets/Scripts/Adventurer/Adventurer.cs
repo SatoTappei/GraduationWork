@@ -191,6 +191,8 @@ namespace Game
                     _damage.Damage(0, default, "Madness");
                 }
 
+                Status.CurrentEmotion += emotion;
+
                 // 経過ターン数、空腹を増加。
                 _status.ElapsedTurn++;
                 _status.CurrentHunger++;
