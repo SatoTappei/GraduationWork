@@ -62,6 +62,7 @@ namespace Game
             _logs = new List<string>();
         }
 
+#if UNITY_EDITOR
         void OnDestroy()
         {
             if (_isHelped) return;
@@ -74,6 +75,7 @@ namespace Game
             writer.Flush();
             writer.Close();
         }
+#endif
 
         public void PreInitialize()
         {
