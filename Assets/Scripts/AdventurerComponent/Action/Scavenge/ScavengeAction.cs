@@ -186,27 +186,27 @@ namespace Game
 
             // 入手したアイテムに対応したイベントがある場合は送信。
             if (foundItem == null) { }
-            else if (foundItem.Name.Japanese == "クラッカー")
+            else if (foundItem.ID == nameof(Cracker))
             {
                 VantanConnect.SendEvent(new EventData(EventDefine.ActorEffect));
             }
-            else if (foundItem.Name.Japanese == "壊れた罠")
+            else if (foundItem.ID == nameof(BrokenTrap))
             {
                 // 
             }
-            else if (foundItem.Name.Japanese == "錆びた剣")
+            else if (foundItem.ID == nameof(RustySword))
             {
                 VantanConnect.SendEvent(new EventData(EventDefine.PickupItem));
             }
-            else if (foundItem.Name.Japanese == "切れた電球")
+            else if (foundItem.ID == nameof(LightBlub))
             {
                 VantanConnect.SendEvent(new EventData(EventDefine.DarkRoom));
             }
-            else if (foundItem.Name.Japanese == "ヘルメット")
+            else if (foundItem.ID == nameof(Helmet))
             {
                 VantanConnect.SendEvent(new EventData(EventDefine.SummonEnemy));
             }
-            else if (foundItem.Name.Japanese == "★アーティファクト")
+            else if (foundItem.ID == nameof(ItemData.Artifact))
             {
                 EventData data = new EventData(EventDefine.GetArtifact);
                 data.DataPack("UserId", _adventurer.Sheet.UserId);
