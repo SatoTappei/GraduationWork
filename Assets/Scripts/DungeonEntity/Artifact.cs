@@ -69,7 +69,7 @@ namespace Game
                 p.gameObject.SetActive(false);
             }
 
-            // モデルを回転させる。
+            // モデルの回転を止める。
             if (_rotate != null) StopCoroutine(_rotate);
 
             item = new ItemData.Artifact();
@@ -88,7 +88,10 @@ namespace Game
             }
 
             // モデルを回転させる。
-            _rotate = StartCoroutine(RotateAsync());
+            if (_rotate == null)
+            {
+                _rotate = StartCoroutine(RotateAsync());
+            }
 
             // 出現演出。
             _camera.Shake();

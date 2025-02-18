@@ -29,6 +29,9 @@ namespace Game
         {
             OnGameStart = null;
             OnGameEnd = null;
+
+            VantanConnect.GameEnd().Forget();
+            VantanConnect.SystemReset();
         }
 
         // –`Œ¯Ò‚ª’Eo‚âŒ‚”j‚³‚ê‚½ê‡A–`Œ¯Ò‘¤‚©‚çŒÄ‚Ño‚µ‚Ä–`Œ¯‚ÌŒ‹‰Ê‚ğ•ñ‚·‚éB
