@@ -32,7 +32,8 @@ namespace Game
 
         public void AddPending(Information info)
         {
-            _pending.Enqueue(info);
+            if (info == null) Debug.LogWarning("’Ç‰Á‚µ‚æ‚¤‚Æ‚µ‚½î•ñ‚ªnull");
+            else _pending.Enqueue(info);
         }
 
         public void RequestDelete()

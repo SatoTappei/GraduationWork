@@ -59,7 +59,7 @@ namespace Game
             { 
                 UserId = targetUserId, 
                 Comment = comment, 
-                Emotion = emotion 
+                Emotion = emotion
             });
         }
 

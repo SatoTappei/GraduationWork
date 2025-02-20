@@ -96,7 +96,7 @@ namespace Game
             if (user == null) return;
 
             GameEpisode episode = new GameEpisode(
-                EpisodeCode.VCMainTalk,
+                EpisodeCode.VCMainSearch,
                 user.Sheet.UserId
             );
             episode.SetEpisode("ƒŒƒo[‚ğ‹N“®‚µ‚½");

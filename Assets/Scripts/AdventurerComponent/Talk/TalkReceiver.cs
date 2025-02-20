@@ -17,10 +17,20 @@ namespace Game
             _tinfoilHatEffect =GetComponent<TinfoilHatEffect>();
         }
 
-        public void Talk(BilingualString text, string source, Vector2Int coords, string effect = "")
+        public void Talk(BilingualString text, string source, string effect = "")
         {
             _information.AddPending(text, source);
+            PlayEffect(effect);
+        }
 
+        public void Talk(Information info, string effect = "")
+        {
+            _information.AddPending(info);
+            PlayEffect(effect);
+        }
+
+        void PlayEffect(string effect)
+        {
             // 各種イベントの場合、それぞれ専用の演出を再生する。
             if (effect == nameof(RevelationEvent))
             {

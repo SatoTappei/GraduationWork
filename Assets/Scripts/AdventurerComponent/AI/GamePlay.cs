@@ -188,9 +188,9 @@ namespace Game
             string info = "Floor";
             foreach (Actor actor in cell.GetActors())
             {
-                if (actor.TryGetComponent(out Adventurer _))
+                if (actor.TryGetComponent(out Adventurer a))
                 {
-                    info = $"There is an adventurer exploring a dungeon.";
+                    info = $"There is an adventurer exploring a dungeon. His name is {a.Sheet.DisplayName}";
                 }
                 else if (actor.TryGetComponent(out Enemy enemy))
                 {

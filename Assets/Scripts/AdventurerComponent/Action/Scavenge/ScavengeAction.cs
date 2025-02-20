@@ -216,13 +216,26 @@ namespace Game
             // アイテムを入手したことをエピソードとして送信。
             if (foundItem != null)
             {
-                GameEpisode episode = new GameEpisode(
-                    EpisodeCode.VCMainItem,
-                    _adventurer.Sheet.UserId
-                );
-                episode.SetEpisode("アイテムを入手した");
-                episode.DataPack("入手したアイテム", foundItem.Name.Japanese);
-                VantanConnect.SendEpisode(episode);
+                if (foundItem.ID == nameof(ItemData.Artifact))
+                {
+                    GameEpisode episode = new GameEpisode(
+                        EpisodeCode.VCMainSnatch,
+                        _adventurer.Sheet.UserId
+                    );
+                    episode.SetEpisode("アーティファクトを入手した");
+                    episode.DataPack("入手したアーティファクト", foundItem.Name.Japanese);
+                    VantanConnect.SendEpisode(episode);
+                }
+                else
+                {
+                    GameEpisode episode = new GameEpisode(
+                        EpisodeCode.VCMainItem,
+                        _adventurer.Sheet.UserId
+                    );
+                    episode.SetEpisode("アイテムを入手した");
+                    episode.DataPack("入手したアイテム", foundItem.Name.Japanese);
+                    VantanConnect.SendEpisode(episode);
+                }
             }
 
             // 何かしらアイテムを入手出来れば成功、出来なければ失敗。

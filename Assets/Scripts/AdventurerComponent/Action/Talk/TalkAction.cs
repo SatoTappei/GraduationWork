@@ -77,7 +77,7 @@ namespace Game
             bool isTalked = true;
             if (target != null && target.TryGetComponent(out TalkReceiver talk))
             {
-                talk.Talk(theme, "Adventurer", _adventurer.Coords);
+                talk.Talk(theme, "Adventurer");
             }
             else
             {

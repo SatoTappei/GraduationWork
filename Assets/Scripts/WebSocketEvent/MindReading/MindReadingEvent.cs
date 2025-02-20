@@ -35,12 +35,7 @@ namespace Game
 
                 if (adventurer != null && adventurer.TryGetComponent(out TalkReceiver talk))
                 {
-                    talk.Talk(
-                        info.Text, 
-                        "‘M‚¢‚½", 
-                        adventurer.Coords,
-                        nameof(MindReadingEvent)
-                    );
+                    talk.Talk(info.Text, "‘M‚¢‚½", nameof(MindReadingEvent));
                 }
             }
         }

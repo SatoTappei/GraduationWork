@@ -94,6 +94,7 @@ namespace Game
 
                 _revelation.Execute(
                     data.GetStringData("Message"),
+                    data.GetIntData("Turn"),
                     data.GetIntData("Target")
                 );
             }

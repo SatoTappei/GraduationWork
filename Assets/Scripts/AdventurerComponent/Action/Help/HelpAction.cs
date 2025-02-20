@@ -29,7 +29,7 @@ namespace Game
 
             // エピソードを送信。
             GameEpisode episode = new GameEpisode(
-                EpisodeCode.VCMainItem,
+                EpisodeCode.VCMainReset,
                 _adventurer.Sheet.UserId
             );
             episode.SetEpisode("情報を整理した");
