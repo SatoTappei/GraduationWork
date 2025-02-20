@@ -98,6 +98,7 @@ namespace Game
                         _adventurer.Sheet.UserId
                     );
                     episode.SetEpisode("–`Œ¯ŽÒ‚Æ‰ï˜b‚µ‚½");
+                    episode.DataPack("TargetId", targetAdventurer.Sheet.UserId);
                     episode.DataPack("‰ï˜b‚µ‚½‘ŠŽè", targetName);
                     VantanConnect.SendEpisode(episode);
                 }
