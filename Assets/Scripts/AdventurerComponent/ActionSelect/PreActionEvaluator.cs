@@ -141,11 +141,8 @@ namespace Game
             }
             else
             {
-                // 大部屋にいる場合、アーティファクトがある座標の1歩手前の座標を目指す。
-                //bool isBossRoom = Blueprint.Location[_adventurer.Coords.y][_adventurer.Coords.x] == '5';
-                bool isBossRoom = true; // アーティファクト取得テスト用。
-                bool isAway = _adventurer.Coords != new Vector2Int(17, 20);
-                if (isBossRoom && isAway)
+                // アーティファクトがある座標の1歩手前の座標を目指す。
+                if (_adventurer.Coords != new Vector2Int(17, 20))
                 {
                     _actions.SetScore("MoveToArtifact", 1.0f);
                 }
